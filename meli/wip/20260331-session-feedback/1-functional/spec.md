@@ -1,6 +1,6 @@
 # Spec Funcional: Session Feedback
 
-**Feature**: session-feedback | **Status**: Draft | **Lang**: es
+**Feature**: session-feedback | **Status**: Approved | **Lang**: es
 
 ---
 

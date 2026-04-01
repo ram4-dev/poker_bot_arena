@@ -1,6 +1,6 @@
 # Spec Funcional: Poker Engine
 
-**Feature**: poker-engine | **Status**: Draft | **Lang**: es
+**Feature**: poker-engine | **Status**: Approved | **Lang**: es
 
 ---
 

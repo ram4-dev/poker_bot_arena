@@ -1,6 +1,6 @@
 # Spec Funcional: Arena & Matchmaking
 
-**Feature**: arena-matchmaking | **Status**: Draft | **Lang**: es
+**Feature**: arena-matchmaking | **Status**: Approved | **Lang**: es
 
 ---
 

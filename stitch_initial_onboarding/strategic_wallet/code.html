@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CyberStrat | Digital Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "surface-container": "#201f20",
+                        "surface-container-high": "#2a2a2b",
+                        "tertiary-container": "#ff5451",
+                        "on-primary-container": "#0d0096",
+                        "background": "#131314",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-container": "#8083ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-tertiary-fixed": "#410004",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-lowest": "#0e0e0f",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "inverse-surface": "#e5e2e3",
+                        "primary": "#c0c1ff",
+                        "surface-variant": "#353436",
+                        "tertiary": "#ffb3ad",
+                        "on-secondary-fixed": "#002113",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "on-surface": "#e5e2e3",
+                        "surface": "#131314",
+                        "secondary": "#4edea3",
+                        "on-primary": "#1000a9",
+                        "outline-variant": "#464554",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-tint": "#c0c1ff",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "tertiary-fixed": "#ffdad7",
+                        "secondary-container": "#00a572",
+                        "on-background": "#e5e2e3",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-highest": "#353436",
+                        "on-tertiary": "#68000a",
+                        "primary-fixed": "#e1e0ff",
+                        "outline": "#908fa0",
+                        "inverse-on-surface": "#313031",
+                        "inverse-primary": "#494bd6",
+                        "surface-dim": "#131314",
+                        "surface-bright": "#3a393a",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .glass-panel {
+            background: rgba(53, 52, 54, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar (from JSON) -->
+<aside class="bg-[#1C1B1C] dark:bg-[#1C1B1C] h-screen sticky left-0 top-0 w-64 border-r-0 flex flex-col h-full py-6 bg-[#1C1B1C] shadow-[4px_0_24px_rgba(0,0,0,0.5)] z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 bg-gradient-to-br from-primary to-primary-container rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-sm" data-icon="terminal">terminal</span>
+</div>
+<span class="text-xl font-bold text-[#C0C1FF] tracking-tighter">CyberStrat</span>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+                My Bots
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="swords">swords</span>
+                Arenas
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                History
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+                Leaderboard
+            </a>
+<!-- Wallet is Active -->
+<a class="text-[#4EDE93] bg-[#353436] rounded-r-none border-l-4 border-[#4EDE93] px-4 py-3 flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm transition-transform translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+                Wallet
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+                Profile
+            </a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="p-4 bg-surface-container rounded-lg border border-outline-variant/20">
+<p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-1">Architect</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-sm bg-surface-container-highest overflow-hidden">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="minimalist pixel art avatar of a futuristic digital architect with glowing visor in neon indigo and obsidian tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi6HoRGE2U5iHOBhcnGo3AAR3y2JK5e0vsYtrOZlbAzKhQ1IbJo12ug7C_OtptF6oR2c4pc2jYH3Y44akdclyeyR4rTyqNsBOS9M6cplx2hhPOVJEgPaoDbR246__rDDUeC7v6uIafhbTtLY5QL8MWJi-38bzQ2uri8XFEDvNAy9r3zLKAAd3N_YMW9-B-uXP88JqqGWkdq2oK8eFNEBY4F2GL-Rv2OLCscpLFOLG3AiUFXrZRcj9XW84iGqM7JH8NdnUEhH8QuH4c"/>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Digital Architect</p>
+<p class="text-xs text-secondary">LVL 42</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-hidden">
+<!-- TopAppBar (from JSON) -->
+<header class="bg-[#131314]/80 backdrop-blur-md sticky top-0 z-50 w-full flex justify-between items-center h-16 px-8 w-full border-b border-[#353436]/50 shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+<div class="flex items-center gap-8">
+<h2 class="font-headline font-bold text-xl text-primary tracking-tight">Digital Wallet</h2>
+<nav class="hidden md:flex gap-6 items-center">
+<span class="text-[#4EDE93] font-bold font-['Space_Grotesk'] text-sm tracking-tight">Balance: 2,450 XP</span>
+<span class="text-slate-300 font-mono text-xs tracking-tight">Rank: Gold IV</span>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-slate-300 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2 text-xs font-bold tracking-widest rounded-sm hover:opacity-90 active:scale-95 duration-100 transition-all">
+                    BATTLE NOW
+                </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<div class="flex-1 overflow-y-auto p-8 space-y-8">
+<!-- Disclaimer Header -->
+<div class="bg-tertiary-container/10 border-l-4 border-tertiary p-4 flex items-center gap-4">
+<span class="material-symbols-outlined text-tertiary" data-icon="info">info</span>
+<p class="text-sm font-label text-tertiary uppercase tracking-wider font-semibold">
+                    Fictitious currency only for competitive play.
+                </p>
+</div>
+<!-- Dashboard Grid (Bento Style) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Main Balance Display -->
+<div class="lg:col-span-1 bg-surface-container-low p-8 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-[160px]" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<div>
+<p class="text-xs font-label text-slate-500 uppercase tracking-[0.2em] mb-2">Total Combined Balance</p>
+<h1 class="text-6xl font-headline font-bold text-on-surface tracking-tighter">2,450 <span class="text-primary text-3xl">XP</span></h1>
+</div>
+<div class="mt-8 flex gap-4">
+<div class="flex-1 p-3 bg-surface-container-highest border-b-2 border-secondary">
+<p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Current Yield</p>
+<p class="text-secondary font-bold font-mono">+12.4%</p>
+</div>
+<div class="flex-1 p-3 bg-surface-container-highest border-b-2 border-primary">
+<p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Win Ratio</p>
+<p class="text-primary font-bold font-mono">68.5%</p>
+</div>
+</div>
+</div>
+<!-- Balance Chart -->
+<div class="lg:col-span-2 bg-surface-container-low p-6 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline font-bold text-on-surface uppercase tracking-wider text-sm">Performance Velocity</h3>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-[10px] font-bold bg-surface-container-highest text-primary">7D</button>
+<button class="px-3 py-1 text-[10px] font-bold text-slate-500 hover:text-on-surface">30D</button>
+<button class="px-3 py-1 text-[10px] font-bold text-slate-500 hover:text-on-surface">MAX</button>
+</div>
+</div>
+<div class="flex-1 relative min-h-[180px] w-full mt-4">
+<!-- Simulated Chart Grid -->
+<div class="absolute inset-0 flex flex-col justify-between">
+<div class="w-full border-t border-outline-variant/10 h-0"></div>
+<div class="w-full border-t border-outline-variant/10 h-0"></div>
+<div class="w-full border-t border-outline-variant/10 h-0"></div>
+<div class="w-full border-t border-outline-variant/10 h-0"></div>
+</div>
+<!-- Simple Line Chart Representation -->
+<svg class="absolute inset-0 w-full h-full overflow-visible" preserveaspectratio="none">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#4edea3" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#4edea3" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0 160 Q 100 140, 200 150 T 400 100 T 600 120 T 800 60 T 1000 80" fill="none" stroke="#4edea3" stroke-linecap="round" stroke-width="3"></path>
+<path d="M0 160 Q 100 140, 200 150 T 400 100 T 600 120 T 800 60 T 1000 80 V 180 H 0 Z" fill="url(#chartGradient)"></path>
+</svg>
+<div class="absolute bottom-0 left-0 w-full flex justify-between text-[10px] font-mono text-slate-600 pt-2">
+<span>MON</span>
+<span>TUE</span>
+<span>WED</span>
+<span>THU</span>
+<span>FRI</span>
+<span>SAT</span>
+<span>SUN</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Ledger Controls -->
+<div class="flex flex-col md:flex-row gap-4 items-end md:items-center justify-between">
+<h3 class="font-headline font-bold text-xl text-on-surface tracking-tight">Transaction Ledger</h3>
+<div class="flex flex-wrap gap-3">
+<!-- Filters -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 px-3 py-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-500" data-icon="filter_list">filter_list</span>
+<select class="bg-transparent border-none text-xs font-label text-on-surface focus:ring-0 cursor-pointer">
+<option>All Bots</option>
+<option>Sentinel-X</option>
+<option>Ghost-Runner</option>
+</select>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/20 px-3 py-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-500" data-icon="category">category</span>
+<select class="bg-transparent border-none text-xs font-label text-on-surface focus:ring-0 cursor-pointer">
+<option>Transaction Type</option>
+<option>Arena Payout</option>
+<option>Entry Fee</option>
+</select>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/20 px-3 py-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-500" data-icon="calendar_month">calendar_month</span>
+<select class="bg-transparent border-none text-xs font-label text-on-surface focus:ring-0 cursor-pointer">
+<option>Last 30 Days</option>
+<option>Last 7 Days</option>
+<option>Specific Date</option>
+</select>
+</div>
+<button class="bg-surface-container-highest p-2 rounded-sm text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<!-- Ledger Table -->
+<div class="bg-surface-container-low overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-highest/50">
+<th class="px-6 py-4 text-[10px] font-label font-bold uppercase tracking-[0.2em] text-slate-400">Timestamp</th>
+<th class="px-6 py-4 text-[10px] font-label font-bold uppercase tracking-[0.2em] text-slate-400">Transaction</th>
+<th class="px-6 py-4 text-[10px] font-label font-bold uppercase tracking-[0.2em] text-slate-400">Entity/Bot</th>
+<th class="px-6 py-4 text-[10px] font-label font-bold uppercase tracking-[0.2em] text-slate-400 text-right">Amount</th>
+<th class="px-6 py-4 text-[10px] font-label font-bold uppercase tracking-[0.2em] text-slate-400 text-right">Running Balance</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<p class="text-sm font-mono text-on-surface">2023-11-24</p>
+<p class="text-[10px] text-slate-500">14:23:02 UTC</p>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-sm bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="military_tech">military_tech</span>
+</div>
+<span class="text-sm font-medium">Low Stakes Payout</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-sm font-mono">Sentinel-X</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-secondary font-bold font-mono">+450 XP</span>
+</td>
+<td class="px-6 py-5 text-right font-mono text-on-surface">2,450 XP</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<p class="text-sm font-mono text-on-surface">2023-11-23</p>
+<p class="text-[10px] text-slate-500">09:12:44 UTC</p>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-sm bg-tertiary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-sm" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<span class="text-sm font-medium">Arena Entry Fee</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-sm font-mono">Sentinel-X</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-tertiary font-bold font-mono">-100 XP</span>
+</td>
+<td class="px-6 py-5 text-right font-mono text-on-surface">2,000 XP</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<p class="text-sm font-mono text-on-surface">2023-11-22</p>
+<p class="text-[10px] text-slate-500">22:01:15 UTC</p>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-sm bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="trophy">trophy</span>
+</div>
+<span class="text-sm font-medium">Tournament Bonus</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs px-2 py-1 bg-secondary/10 text-secondary border border-secondary/20 rounded-sm font-mono">GLOBAL</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-secondary font-bold font-mono">+1,200 XP</span>
+</td>
+<td class="px-6 py-5 text-right font-mono text-on-surface">2,100 XP</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<p class="text-sm font-mono text-on-surface">2023-11-20</p>
+<p class="text-[10px] text-slate-500">18:45:00 UTC</p>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-sm bg-tertiary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-sm" data-icon="shopping_cart">shopping_cart</span>
+</div>
+<span class="text-sm font-medium">Hardware Upgrade Fee</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-sm font-mono">Ghost-Runner</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-tertiary font-bold font-mono">-350 XP</span>
+</td>
+<td class="px-6 py-5 text-right font-mono text-on-surface">900 XP</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer Meta -->
+<div class="pt-8 border-t border-outline-variant/10 flex justify-between items-center opacity-50">
+<div class="flex items-center gap-4 text-[10px] font-mono tracking-widest uppercase">
+<span>Ledger ID: CS-WAL-7742-X</span>
+<span>Node Status: <span class="text-secondary">Synced</span></span>
+</div>
+<div class="text-[10px] font-label italic">
+                    Last activity 4 minutes ago.
+                </div>
+</div>
+</div>
+</main>
+</body></html>

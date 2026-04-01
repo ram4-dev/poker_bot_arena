@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CyberStrat - My Bots Fleet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "surface-container": "#201f20",
+                        "surface-container-high": "#2a2a2b",
+                        "tertiary-container": "#ff5451",
+                        "on-primary-container": "#0d0096",
+                        "background": "#131314",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-container": "#8083ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-tertiary-fixed": "#410004",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-lowest": "#0e0e0f",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "inverse-surface": "#e5e2e3",
+                        "primary": "#c0c1ff",
+                        "surface-variant": "#353436",
+                        "tertiary": "#ffb3ad",
+                        "on-secondary-fixed": "#002113",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "on-surface": "#e5e2e3",
+                        "surface": "#131314",
+                        "secondary": "#4edea3",
+                        "on-primary": "#1000a9",
+                        "outline-variant": "#464554",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-tint": "#c0c1ff",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "tertiary-fixed": "#ffdad7",
+                        "secondary-container": "#00a572",
+                        "on-background": "#e5e2e3",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-highest": "#353436",
+                        "on-tertiary": "#68000a",
+                        "primary-fixed": "#e1e0ff",
+                        "outline": "#908fa0",
+                        "inverse-on-surface": "#313031",
+                        "inverse-primary": "#494bd6",
+                        "surface-dim": "#131314",
+                        "surface-bright": "#3a393a",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #353436; border-radius: 2px; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary selection:text-on-primary">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="bg-[#1C1B1C] shadow-[4px_0_24px_rgba(0,0,0,0.5)] h-screen sticky left-0 top-0 w-64 border-r-0 flex flex-col py-6 z-50">
+<div class="px-6 mb-10">
+<h1 class="text-xl font-bold text-[#C0C1FF] tracking-tighter">CyberStrat</h1>
+<p class="font-['Space_Grotesk'] uppercase tracking-wider text-xs text-slate-500 mt-1">Digital Architect</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+<a class="flex items-center gap-3 text-[#4EDE93] bg-[#353436] rounded-r-none border-l-4 border-[#4EDE93] px-4 py-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">smart_toy</span> My Bots
+                </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined">swords</span> Arenas
+                </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined">history</span> History
+                </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined">leaderboard</span> Leaderboard
+                </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span> Wallet
+                </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined">person</span> Profile
+                </a>
+</nav>
+<div class="px-4 mt-auto">
+<div class="bg-surface-container rounded-lg p-4 flex items-center gap-3">
+<img alt="User Profile Avatar" class="w-10 h-10 rounded-sm bg-primary-container p-0.5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLqQnMwf7YGwEuSm9Fo6Z44GZVGA4F1MXV3mBfNciFvjL2Or3-Is_1Fi7zS5SDqiMp8LtEW6rLvSWxPAGcDjmRugxj1fAd31pIjDnLECRdwuC6KHZHyjoDA07pGa5zexBZPvDGRwwjlSG791WziZfgZLEswzDeNZ9qa66yLpPzMF1mVXTOhZCp6MLAFUkh3HTvDe3Ig9OPgZR9vkx35p1iK_f4gS3y46xbY7vhEXnDuYJ7tzl1p3Jh_DNBSAjEGYdYXHQxE-ooRJjk"/>
+<div class="overflow-hidden">
+<p class="font-headline text-sm font-bold text-on-surface truncate">ARCHITECT_01</p>
+<p class="text-xs text-slate-500 font-mono">ID: 8829-X</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-40 w-full bg-[#131314]/80 backdrop-blur-md border-b border-[#353436]/50 shadow-[0_4px_30px_rgba(0,0,0,0.3)] flex justify-between items-center h-16 px-8">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4">
+<span class="text-slate-300 font-mono text-sm tracking-tight">Balance: <span class="text-[#C0C1FF] font-bold">2,450 XP</span></span>
+<div class="w-px h-4 bg-outline-variant/30"></div>
+<span class="text-slate-300 font-mono text-sm tracking-tight">Rank: <span class="text-[#4EDE93] font-bold uppercase">Gold IV</span></span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2 rounded-sm font-headline font-bold text-xs tracking-widest hover:opacity-90 active:scale-95 transition-all">
+                        BATTLE NOW
+                    </button>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-8 max-w-7xl mx-auto w-full">
+<!-- Header & Filters -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div class="space-y-2">
+<h2 class="text-4xl font-headline font-extrabold tracking-tighter text-on-surface">FLEET OVERVIEW</h2>
+<p class="text-on-surface-variant max-w-md font-body text-sm leading-relaxed">Manage your tactical autonomous units. Optimize performance parameters for maximum arena dominance.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex bg-surface-container-low p-1 rounded-sm border border-outline-variant/10">
+<button class="px-4 py-1.5 text-xs font-headline font-bold uppercase tracking-wider bg-surface-container-highest text-secondary transition-all">All</button>
+<button class="px-4 py-1.5 text-xs font-headline font-bold uppercase tracking-wider text-slate-500 hover:text-on-surface transition-all">Active</button>
+<button class="px-4 py-1.5 text-xs font-headline font-bold uppercase tracking-wider text-slate-500 hover:text-on-surface transition-all">Idle</button>
+</div>
+<select class="bg-surface-container-low border border-outline-variant/10 text-xs font-headline font-bold uppercase tracking-wider text-on-surface px-4 py-2 rounded-sm focus:ring-1 focus:ring-primary focus:outline-none">
+<option>Performance: High to Low</option>
+<option>Newest First</option>
+<option>XP Earned</option>
+</select>
+<button class="flex items-center gap-2 bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2 rounded-sm font-headline font-bold text-xs tracking-widest hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                            CREATE NEW BOT
+                        </button>
+</div>
+</section>
+<!-- Bots Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Bot Card 1: Active -->
+<div class="group relative bg-surface-container-low/60 backdrop-blur-sm border-l-2 border-secondary p-6 hover:bg-surface-container-low transition-all duration-300">
+<div class="absolute top-0 right-0 p-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-on-secondary-container text-secondary text-[10px] font-headline font-bold uppercase tracking-tighter">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                                Active
+                            </span>
+</div>
+<div class="flex items-start gap-5">
+<div class="w-20 h-20 bg-surface-container-highest relative flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="high-tech cybernetic robot head with neon green glowing eyes and sleek dark chrome armor plating macro shot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaEH4alinvUMRx9zR0FC9gGPLExd6gByq9Q5fWicGrELAHmpI72zrXmqXlMiCKkMxi9859tYQjSDeduHkS-veWQ2PU8jf2B8fbpMNWZo7Kn8ESGhsf03QbgfKQy_hUfiW20Ql5CYiHgvQOJEd4nz_AS8rLxpstI_RK0haoIFxoTmtOgmc7O06io_LLNONcuQa7OEvDj-CHxBrhzspifChOo2fYsPYIoP69yDg86ScXgY3BjN3Y6UtjwBhfhxQ0LHDOZEY4TTFbfY8L"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-headline text-xl font-extrabold text-on-surface tracking-tight truncate">STRIKER-X</h3>
+<p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mt-0.5">Firmware: v1.4.2_LTS</p>
+<div class="mt-4 grid grid-cols-2 gap-4">
+<div>
+<p class="text-[9px] font-headline font-bold text-slate-500 uppercase tracking-widest mb-1">Winrate</p>
+<div class="flex items-baseline gap-1">
+<span class="text-lg font-headline font-bold text-secondary">78.4</span>
+<span class="text-[10px] text-secondary/70">%</span>
+</div>
+</div>
+<div>
+<p class="text-[9px] font-headline font-bold text-slate-500 uppercase tracking-widest mb-1">XP EARNED</p>
+<div class="flex items-baseline gap-1">
+<span class="text-lg font-headline font-bold text-primary">12,450</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/10 flex items-center justify-between gap-2">
+<div class="flex gap-2">
+<button class="p-2 bg-surface-container-highest text-on-surface hover:text-primary transition-colors rounded-sm" title="Clone">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+<button class="p-2 bg-surface-container-highest text-on-surface hover:text-tertiary transition-colors rounded-sm" title="Pause">
+<span class="material-symbols-outlined text-sm">pause</span>
+</button>
+</div>
+<button class="px-4 py-2 bg-outline-variant/10 hover:bg-outline-variant/20 text-on-surface text-[10px] font-headline font-bold uppercase tracking-widest transition-all rounded-sm border border-outline-variant/20">
+                                View Details
+                            </button>
+</div>
+</div>
+<!-- Bot Card 2: In Battle -->
+<div class="group relative bg-surface-container-low/60 backdrop-blur-sm border-l-2 border-primary p-6 hover:bg-surface-container-low transition-all duration-300">
+<div class="absolute top-0 right-0 p-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-on-primary-container text-primary text-[10px] font-headline font-bold uppercase tracking-tighter">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                                In-Battle
+                            </span>
+</div>
+<div class="flex items-start gap-5">
+<div class="w-20 h-20 bg-surface-container-highest relative flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="futuristic tactical drone with multiple sensory optics and glowing indigo energy core hovering in dark laboratory" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPcrcBTyYz69GicDnk1CHQyxW1KCSFdh4xZJ-9fvR--Pr4am6pR3LPdJNPScyXfOz-MfNNH-HnF8Rdcbuccxg4V6W9_L5b6vpQWwAOCk6K8zkiwK0Wreh5IVsNAHaj-GLLmXk_1LY3gdktuzBG9cZiUXCwcDa_Hu_20e-FpHZOFnHuUBpAJ9JMshElK4axVgPpUQjvndzDS_aw9f2uQA4MbGNO6qqYqruXWQcsR5dZvoi_Sv9e3TqxMEDckO8YpyuzvJJxD8yoCgG4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-headline text-xl font-extrabold text-on-surface tracking-tight truncate">VOID-WALKER</h3>
+<p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mt-0.5">Firmware: v2.0.1_BETA</p>
+<div class="mt-4 grid grid-cols-2 gap-4">
+<div>
+<p class="text-[9px] font-headline font-bold text-slate-500 uppercase tracking-widest mb-1">Winrate</p>
+<div class="flex items-baseline gap-1">
+<span class="text-lg font-headline font-bold text-secondary">62.1</span>
+<span class="text-[10px] text-secondary/70">%</span>
+</div>
+</div>
+<div>
+<p class="text-[9px] font-headline font-bold text-slate-500 uppercase tracking-widest mb-1">XP EARNED</p>
+<div class="flex items-baseline gap-1">
+<span class="text-lg font-headline font-bold text-primary">8,122</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/10 flex items-center justify-between gap-2 opacity-60">
+<div class="flex gap-2">
+<button class="p-2 bg-surface-container-highest text-slate-600 rounded-sm cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+<button class="p-2 bg-surface-container-highest text-slate-600 rounded-sm cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-sm">pause</span>
+</button>
+</div>
+<span class="text-[9px] font-headline font-bold text-primary uppercase tracking-widest italic">Unit is currently engaged...</span>
+</div>
+</div>
+<!-- Bot Card 3: Idle -->
+<div class="group relative bg-surface-container-low/60 backdrop-blur-sm border-l-2 border-slate-700 p-6 hover:bg-surface-container-low transition-all duration-300">
+<div class="absolute top-0 right-0 p-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container-highest text-slate-400 text-[10px] font-headline font-bold uppercase tracking-tighter">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                                Idle
+                            </span>
+</div>
+<div class="flex items-start gap-5">
+<div class="w-20 h-20 bg-surface-container-highest relative flex items-center justify-center border border-outline-variant/20 overflow-hidden grayscale">
+<img class="w-full h-full object-cover" data-alt="close up of mechanical robotic hand assembly with intricate gears and hydraulic wires in a dim workshop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLuWVy1-Gk7GS9GGuIF_6JRHSiEMxtUlXPtKAkz3VjQDoNnznIZj4dMDVD1W9at0SlOhuJ63X8-2mC24CbTeOKYWhNkYLzosMLKxUJbq7eJtjAHMEzoo-l9FT82-hYfYhg9YDPeA1CQCVxUjnZAKLQaMtzgl4yiv4pOoRAqtfkGsAbAPkIgo_pF6oTOld9LY79I6mBNYFty-sjXauQXUond3XbzcjoJU7PXyBY2YmhDNI6bu8ZyHmkB_6USpV5M4JspLEBsEk9N1n2"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent"></div>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-headline text-xl font-extrabold text-on-surface tracking-tight truncate">SENTINEL-7</h3>
+<p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mt-0.5">Firmware: v0.9.8_DEV</p>
+<div class="mt-4 grid grid-cols-2 gap-4">
+<div>
+<p class="text-[9px] font-headline font-bold text-slate-500 uppercase tracking-widest mb-1">Winrate</p>
+<div class="flex items-baseline gap-1">
+<span class="text-lg font-headline font-bold text-slate-400">0.0</span>
+<span class="text-[10px] text-slate-500">%</span>
+</div>
+</div>
+<div>
+<p class="text-[9px] font-headline font-bold text-slate-500 uppercase tracking-widest mb-1">XP EARNED</p>
+<div class="flex items-baseline gap-1">
+<span class="text-lg font-headline font-bold text-slate-400">0</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/10 flex items-center justify-between gap-2">
+<div class="flex gap-2">
+<button class="p-2 bg-surface-container-highest text-on-surface hover:text-primary transition-colors rounded-sm" title="Clone">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+<button class="p-2 bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors rounded-sm" title="Deploy">
+<span class="material-symbols-outlined text-sm" data-weight="fill">play_arrow</span>
+</button>
+</div>
+<button class="px-4 py-2 bg-outline-variant/10 hover:bg-outline-variant/20 text-on-surface text-[10px] font-headline font-bold uppercase tracking-widest transition-all rounded-sm border border-outline-variant/20">
+                                View Details
+                            </button>
+</div>
+</div>
+</div>
+<!-- Empty State (Hidden by default, shown if no bots) -->
+<div class="hidden flex-col items-center justify-center py-32 text-center bg-surface-container-low/30 rounded-xl border-2 border-dashed border-outline-variant/20 mt-8">
+<div class="w-24 h-24 rounded-full bg-surface-container-highest flex items-center justify-center mb-8">
+<span class="material-symbols-outlined text-5xl text-slate-500" style="font-variation-settings: 'FILL' 0, 'wght' 200;">precision_manufacturing</span>
+</div>
+<h3 class="text-2xl font-headline font-bold text-on-surface mb-3 tracking-tight">The Hangar is Empty.</h3>
+<p class="text-on-surface-variant max-w-sm mx-auto font-body text-sm mb-10 leading-relaxed">Your fleet is currently offline. Initialize your first combat bot to begin earning XP and climbing the leaderboard.</p>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-10 py-4 rounded-sm font-headline font-bold text-sm tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20">
+                        INITIALIZE FIRST BOT
+                    </button>
+</div>
+<!-- Footer / Status Info -->
+<footer class="mt-20 border-t border-outline-variant/10 pt-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div class="flex items-center gap-10">
+<div class="space-y-1">
+<p class="text-[9px] font-headline font-bold text-slate-500 uppercase tracking-widest">Fleet Capacity</p>
+<div class="w-48 h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[12%]"></div>
+</div>
+<p class="text-[10px] font-mono text-slate-400">3 / 25 UNITS DEPLOYED</p>
+</div>
+<div class="space-y-1">
+<p class="text-[9px] font-headline font-bold text-slate-500 uppercase tracking-widest">Total Revenue</p>
+<div class="flex items-baseline gap-1">
+<span class="text-xl font-headline font-bold text-on-surface">20,572</span>
+<span class="text-[10px] font-headline font-bold text-primary tracking-widest">XP</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+<span class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-secondary"></span> System Online</span>
+<span class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-primary"></span> Latency: 14ms</span>
+</div>
+</footer>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CyberStrat // Tactical Editor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "surface-container": "#201f20",
+                        "surface-container-high": "#2a2a2b",
+                        "tertiary-container": "#ff5451",
+                        "on-primary-container": "#0d0096",
+                        "background": "#131314",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-container": "#8083ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-tertiary-fixed": "#410004",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-lowest": "#0e0e0f",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "inverse-surface": "#e5e2e3",
+                        "primary": "#c0c1ff",
+                        "surface-variant": "#353436",
+                        "tertiary": "#ffb3ad",
+                        "on-secondary-fixed": "#002113",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "on-surface": "#e5e2e3",
+                        "surface": "#131314",
+                        "secondary": "#4edea3",
+                        "on-primary": "#1000a9",
+                        "outline-variant": "#464554",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-tint": "#c0c1ff",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "tertiary-fixed": "#ffdad7",
+                        "secondary-container": "#00a572",
+                        "on-background": "#e5e2e3",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-highest": "#353436",
+                        "on-tertiary": "#68000a",
+                        "primary-fixed": "#e1e0ff",
+                        "outline": "#908fa0",
+                        "inverse-on-surface": "#313031",
+                        "inverse-primary": "#494bd6",
+                        "surface-dim": "#131314",
+                        "surface-bright": "#3a393a",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .glass-panel {
+            background: rgba(53, 52, 54, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4edea3;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SIDEBAR NAV (Shared Component: SideNavBar) -->
+<aside class="bg-[#1C1B1C] shadow-[4px_0_24px_rgba(0,0,0,0.5)] h-screen sticky left-0 top-0 w-64 flex flex-col py-6 z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-xl">smart_toy</span>
+</div>
+<span class="text-xl font-bold text-[#C0C1FF] tracking-tighter font-headline">CyberStrat</span>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
+            </a>
+<a class="text-[#4EDE93] bg-[#353436] border-l-4 border-[#4EDE93] px-6 py-3 flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span> My Bots
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="swords">swords</span> Arenas
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span> History
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span> Leaderboard
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span> Wallet
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span> Profile
+            </a>
+</nav>
+<div class="px-6 pt-6 mt-auto border-t border-outline-variant/20">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="a professional digital illustration of a futuristic robotic architect wearing sleek glasses and minimal neon armor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFpZHOUX9Cfka09qvNQKUWQE6dJgbSaWheocobpVFz_2hpJEqOmJ4rklkG07hfP9EVHH41A06JwaTcM9e2XV_hVgVq6oMtY2uDQ2WFrqXMR-89gl7XiES226ChBspzFaW8uh6p24bCDwz37-N8lOFR7noE5UFySXsdBvSYNIKvmggar88wqWgaVJ_UBeJ-_LiKXiEhHufmt9DVHgKlXEUS_stsPu53yX9clkJFtitu9BcDPm07qKjJ88aAdZV6AcYZ5HTaXFyH91VE"/>
+</div>
+<div>
+<p class="font-headline font-bold text-xs text-primary uppercase tracking-widest">Digital Architect</p>
+<p class="text-[10px] text-slate-500 font-mono">ID: CS-992-ALPHA</p>
+</div>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<!-- TOP APP BAR (Shared Component: TopAppBar) -->
+<header class="sticky top-0 z-50 w-full bg-[#131314]/80 backdrop-blur-md border-b border-[#353436]/50 flex justify-between items-center h-16 px-8 shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+<div class="flex items-center gap-6">
+<span class="text-slate-300 font-mono text-xs uppercase tracking-tighter">System Status: <span class="text-secondary">ONLINE</span></span>
+<span class="text-[#4EDE93] font-bold font-headline text-sm">Balance: 2,450 XP</span>
+<span class="text-slate-300 font-mono text-sm">Rank: Gold IV</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2 rounded-sm font-headline font-bold text-xs tracking-widest hover:opacity-90 active:scale-95 transition-all">
+                    BATTLE NOW
+                </button>
+</div>
+</header>
+<!-- MAIN BUILDER CANVAS -->
+<main class="flex-1 p-8 overflow-y-auto space-y-8 max-w-7xl mx-auto w-full">
+<!-- HEADER SECTION -->
+<div class="flex items-end justify-between border-b border-outline-variant/10 pb-6">
+<div>
+<h1 class="text-4xl font-bold font-headline tracking-tighter text-primary">Tactical Editor</h1>
+<p class="text-slate-400 font-body mt-2">Fine-tune your bot's neural weights for the upcoming Arena Season.</p>
+</div>
+<div class="flex gap-2 text-[10px] font-mono uppercase tracking-widest text-slate-500">
+<span class="px-2 py-1 bg-surface-container-high rounded text-secondary">v2.4 (Active)</span>
+<span class="px-2 py-1 bg-surface-container-high rounded text-primary">Latency: 12ms</span>
+</div>
+</div>
+<!-- ASYMMETRIC BENTO GRID -->
+<div class="grid grid-cols-12 gap-6 items-start">
+<!-- LEFT PANEL: IDENTITY (4 COLS) -->
+<section class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-surface-container-low p-6 rounded-lg space-y-6 border border-transparent hover:border-primary/10 transition-colors">
+<h3 class="font-headline font-bold text-sm text-primary uppercase tracking-[0.2em]">Identity Matrix</h3>
+<div class="space-y-4">
+<div class="flex flex-col gap-2">
+<label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Bot Codename</label>
+<input class="bg-surface-container-lowest border-none border-b border-outline-variant/30 text-on-surface p-3 focus:ring-0 focus:border-primary font-mono text-sm" type="text" value="AEGIS-V"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Neural Profile</label>
+<div class="relative group">
+<div class="w-full h-48 bg-surface-container-highest rounded flex items-center justify-center overflow-hidden">
+<img alt="Bot Avatar" class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" data-alt="a highly detailed 3D render of a futuristic combat robot head with glowing cyan eyes and brushed steel textures on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu1KgwHjcPuqyCeC_F8Akcw1wHx79LrgoIAppEDVKfcSqr33hBdnXJ1l2fIsRgEu0R6yLKPRgTd8SDmzAvXihFTHVBfB76LqsZj37ODz32rsk4yvwHrGrjy_CGwF6ozwAo4PIS7Sff-1zJmU_wltfET51Q2GnjCquOPtscI1oPHaX7nym68nlhoHPygdoSNXHSR2CdZAWSuEW2AEPSHhFC5CuUsEt6YJSzkXPbxrTGj_Sz3PX4ZMSqlt2RBs1ynuOdlOkRL_CDyPjl"/>
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer backdrop-blur-sm">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="photo_camera">photo_camera</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Behavioral Protocol</label>
+<textarea class="bg-surface-container-lowest border-none text-on-surface p-3 focus:ring-0 font-body text-xs resize-none" placeholder="Enter tactical directives..." rows="3">Optimized for mid-range defensive maneuvers with opportunistic counter-strikes.</textarea>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Base Preset</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="p-3 bg-primary text-on-primary font-headline font-bold text-xs uppercase tracking-tighter">Stalker</button>
+<button class="p-3 bg-surface-container-highest text-slate-400 font-headline font-bold text-xs uppercase tracking-tighter hover:text-primary">Tank</button>
+</div>
+</div>
+</div>
+</div>
+<!-- HISTORY SIDEBAR INLINE -->
+<div class="bg-surface-container-low p-6 rounded-lg space-y-4 border border-transparent">
+<h3 class="font-headline font-bold text-sm text-primary uppercase tracking-[0.2em]">Iteration Logs</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-3 bg-surface-container-high rounded border-l-2 border-secondary">
+<div>
+<p class="font-mono text-xs font-bold text-secondary">v2.4 <span class="text-slate-500 font-normal ml-2">Current</span></p>
+<p class="text-[10px] text-slate-500">03.24.2024 • 14:02</p>
+</div>
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest/50 rounded border-l-2 border-transparent hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div>
+<p class="font-mono text-xs font-bold text-slate-300 group-hover:text-primary transition-colors">v2.3</p>
+<p class="text-[10px] text-slate-500">03.22.2024 • 09:15</p>
+</div>
+<span class="material-symbols-outlined text-slate-600 text-sm" data-icon="history">history</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest/50 rounded border-l-2 border-transparent hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div>
+<p class="font-mono text-xs font-bold text-slate-300 group-hover:text-primary transition-colors">v2.2</p>
+<p class="text-[10px] text-slate-500">03.18.2024 • 11:45</p>
+</div>
+<span class="material-symbols-outlined text-slate-600 text-sm" data-icon="history">history</span>
+</div>
+</div>
+</div>
+</section>
+<!-- CENTER PANEL: SLIDERS (5 COLS) -->
+<section class="col-span-12 lg:col-span-5 space-y-6">
+<div class="bg-surface-container-low p-8 rounded-lg space-y-10 border border-transparent">
+<div class="flex items-center justify-between">
+<h3 class="font-headline font-bold text-sm text-primary uppercase tracking-[0.2em]">Tactical Biometrics</h3>
+<span class="font-mono text-[10px] text-slate-500">REAL-TIME ADJUSTMENT</span>
+</div>
+<div class="space-y-12 py-4">
+<!-- Slider 1 -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-xs uppercase tracking-[0.1em] text-on-surface font-bold">Aggression Factor</label>
+<span class="font-mono text-sm text-secondary font-bold">84%</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer custom-slider" type="range" value="84"/>
+<div class="flex justify-between text-[9px] text-slate-600 font-bold uppercase tracking-widest">
+<span>Passive</span>
+<span>Hyper-Lethal</span>
+</div>
+</div>
+<!-- Slider 2 -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-xs uppercase tracking-[0.1em] text-on-surface font-bold">Risk Tolerance</label>
+<span class="font-mono text-sm text-secondary font-bold">32%</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer custom-slider" type="range" value="32"/>
+<div class="flex justify-between text-[9px] text-slate-600 font-bold uppercase tracking-widest">
+<span>Conservative</span>
+<span>Reckless</span>
+</div>
+</div>
+<!-- Slider 3 -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-xs uppercase tracking-[0.1em] text-on-surface font-bold">Bluff Tendency</label>
+<span class="font-mono text-sm text-secondary font-bold">60%</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer custom-slider" type="range" value="60"/>
+<div class="flex justify-between text-[9px] text-slate-600 font-bold uppercase tracking-widest">
+<span>Transparent</span>
+<span>Deceptive</span>
+</div>
+</div>
+<!-- Slider 4 -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="text-xs uppercase tracking-[0.1em] text-on-surface font-bold">Survival Bias</label>
+<span class="font-mono text-sm text-secondary font-bold">15%</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer custom-slider" type="range" value="15"/>
+<div class="flex justify-between text-[9px] text-slate-600 font-bold uppercase tracking-widest">
+<span>Self-Sacrifice</span>
+<span>Preservation</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT PANEL: RADAR CHART (3 COLS) -->
+<section class="col-span-12 lg:col-span-3 space-y-6">
+<div class="glass-panel p-6 rounded-lg border border-primary/20 flex flex-col items-center justify-center space-y-6 min-h-[400px]">
+<h3 class="font-headline font-bold text-sm text-primary uppercase tracking-[0.2em] w-full text-center">Efficiency Radar</h3>
+<div class="relative w-48 h-48 flex items-center justify-center">
+<!-- Decorative Radar SVG -->
+<svg class="absolute inset-0 w-full h-full" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#464554" stroke-dasharray="2 2" stroke-width="0.5"></circle>
+<circle cx="50" cy="50" fill="none" r="30" stroke="#464554" stroke-dasharray="2 2" stroke-width="0.5"></circle>
+<circle cx="50" cy="50" fill="none" r="15" stroke="#464554" stroke-dasharray="2 2" stroke-width="0.5"></circle>
+<line stroke="#464554" stroke-width="0.5" x1="50" x2="50" y1="5" y2="95"></line>
+<line stroke="#464554" stroke-width="0.5" x1="5" x2="95" y1="50" y2="50"></line>
+<!-- The Radar Polygon -->
+<polygon fill="#4edea3" fill-opacity="0.3" points="50,15 80,40 60,85 20,60 35,25" stroke="#4edea3" stroke-width="1.5"></polygon>
+</svg>
+<span class="material-symbols-outlined text-primary/50 text-5xl opacity-20" data-icon="grid_view">grid_view</span>
+</div>
+<div class="grid grid-cols-2 gap-4 w-full">
+<div class="text-center p-2 bg-surface-container-highest/50 rounded">
+<p class="text-[9px] text-slate-500 uppercase tracking-widest">OFFENSE</p>
+<p class="text-sm font-headline font-bold text-on-surface">Tier-1</p>
+</div>
+<div class="text-center p-2 bg-surface-container-highest/50 rounded">
+<p class="text-[9px] text-slate-500 uppercase tracking-widest">STAMINA</p>
+<p class="text-sm font-headline font-bold text-on-surface">Alpha</p>
+</div>
+<div class="text-center p-2 bg-surface-container-highest/50 rounded">
+<p class="text-[9px] text-slate-500 uppercase tracking-widest">LOGIC</p>
+<p class="text-sm font-headline font-bold text-on-surface">9.2/10</p>
+</div>
+<div class="text-center p-2 bg-surface-container-highest/50 rounded">
+<p class="text-[9px] text-slate-500 uppercase tracking-widest">SYNC</p>
+<p class="text-sm font-headline font-bold text-on-surface">Active</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg space-y-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-tertiary rounded-full"></span>
+<span class="text-[10px] uppercase font-bold text-tertiary tracking-widest">Constraint Alerts</span>
+</div>
+<p class="text-[11px] text-slate-400 font-body">Current Aggression levels may exceed standard GPU thermal limits in long-haul arenas. <a class="text-primary underline" href="#">Review mitigation protocols?</a></p>
+</div>
+</section>
+</div>
+</main>
+<!-- FOOTER: ACTIONS (Global Context) -->
+<footer class="sticky bottom-0 bg-[#131314] border-t border-[#353436]/50 p-6 flex justify-between items-center z-50">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+<span class="text-xs font-headline font-bold uppercase tracking-widest">Discard</span>
+</button>
+<div class="h-4 w-[1px] bg-outline-variant/30"></div>
+<div class="text-[10px] font-mono text-slate-500 uppercase">
+                    LAST SAVED: 12 MINUTES AGO
+                </div>
+</div>
+<div class="flex gap-4">
+<button class="bg-surface-container-highest text-on-surface-variant hover:text-primary hover:bg-surface-variant px-8 py-3 rounded-sm font-headline font-bold text-xs uppercase tracking-widest transition-all">
+                    Save as New Version
+                </button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-10 py-3 rounded-sm font-headline font-bold text-xs uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-[0_0_20px_rgba(192,193,255,0.2)]">
+                    Apply Changes
+                </button>
+</div>
+</footer>
+</div>
+</body></html>

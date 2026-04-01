@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CyberStrat | Battle Setup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "surface-container": "#201f20",
+                        "surface-container-high": "#2a2a2b",
+                        "tertiary-container": "#ff5451",
+                        "on-primary-container": "#0d0096",
+                        "background": "#131314",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-container": "#8083ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-tertiary-fixed": "#410004",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-lowest": "#0e0e0f",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "inverse-surface": "#e5e2e3",
+                        "primary": "#c0c1ff",
+                        "surface-variant": "#353436",
+                        "tertiary": "#ffb3ad",
+                        "on-secondary-fixed": "#002113",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "on-surface": "#e5e2e3",
+                        "surface": "#131314",
+                        "secondary": "#4edea3",
+                        "on-primary": "#1000a9",
+                        "outline-variant": "#464554",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-tint": "#c0c1ff",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "tertiary-fixed": "#ffdad7",
+                        "secondary-container": "#00a572",
+                        "on-background": "#e5e2e3",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-highest": "#353436",
+                        "on-tertiary": "#68000a",
+                        "primary-fixed": "#e1e0ff",
+                        "outline": "#908fa0",
+                        "inverse-on-surface": "#313031",
+                        "inverse-primary": "#494bd6",
+                        "surface-dim": "#131314",
+                        "surface-bright": "#3a393a",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .glass-panel {
+            background: rgba(53, 52, 54, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #c0c1ff 0%, #8083ff 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="bg-[#1C1B1C] shadow-[4px_0_24px_rgba(0,0,0,0.5)] h-screen sticky left-0 top-0 w-64 flex flex-col py-6">
+<div class="px-6 mb-10">
+<span class="text-xl font-bold text-[#C0C1FF] tracking-tighter">CyberStrat</span>
+<p class="text-[10px] font-['Space_Grotesk'] uppercase tracking-widest text-slate-500 mt-1">Digital Architect</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span>My Bots</span>
+</a>
+<a class="text-[#4EDE93] bg-[#353436] border-l-4 border-[#4EDE93] px-4 py-3 flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="swords">swords</span>
+<span>Arenas</span>
+</a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span>History</span>
+</a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span>Leaderboard</span>
+</a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Wallet</span>
+</a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span>Profile</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<div class="bg-surface-container-highest p-4 rounded-lg flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">JD</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold truncate">John_Architect</p>
+<p class="text-[10px] text-secondary">PREMIUM STATUS</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0 bg-background">
+<!-- TopAppBar (Shared Component) -->
+<header class="sticky top-0 z-50 w-full bg-[#131314]/80 backdrop-blur-md border-b border-[#353436]/50 flex justify-between items-center h-16 px-8">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="text-slate-300 font-mono text-sm tracking-tight">Balance: 2,450 XP</span>
+</div>
+<div class="w-px h-4 bg-outline-variant/30"></div>
+<div class="flex items-center gap-2">
+<span class="text-[#4EDE93] font-bold text-sm font-['Space_Grotesk']">Rank: Gold IV</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity" data-icon="notifications">notifications</button>
+<button class="primary-gradient text-on-primary px-6 py-2 rounded-[4px] font-headline font-bold text-xs tracking-widest hover:opacity-90 active:scale-95 duration-100 uppercase">
+                    BATTLE NOW
+                </button>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-10 max-w-7xl mx-auto w-full grid grid-cols-12 gap-8 items-start">
+<!-- LEFT COLUMN: Battle Setup Configuration -->
+<div class="col-span-12 lg:col-span-5 space-y-8">
+<section>
+<h1 class="text-4xl font-headline font-bold tracking-tighter mb-2 text-on-surface">BATTLE SETUP</h1>
+<p class="text-on-surface-variant font-label text-sm uppercase tracking-widest">Protocol: Direct Engagement Sim</p>
+</section>
+<!-- Selectors -->
+<div class="space-y-6">
+<!-- Bot Selection -->
+<div class="space-y-3">
+<label class="text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-primary">Primary Unit</label>
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between border-b-2 border-primary">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="smart_toy">smart_toy</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-lg">VANGUARD</h3>
+<p class="text-xs text-secondary uppercase tracking-tight">Heavy Tank / Tactical Defense</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Arena Selection -->
+<div class="space-y-3">
+<label class="text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-primary">Battleground</label>
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded flex items-center justify-center overflow-hidden">
+<img alt="Arena Thumbnail" class="w-full h-full object-cover" data-alt="abstract futuristic microchip architecture with neon blue glowing lines and dark metallic surfaces" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALrcbZf82T5yY2Wq48FLWAjXN-8Hqc0ntz6HKj3xBIDF1O-mHVjEUoeE6nVZQRlvDUfcCt0BrQiu1qued3iGh8H__B8BsjWFi9tIJvintvYQU0tZeySG42fCk8G5RvXXi4U4TZg4bRwnIMzcbKQdz4yfNmTm2fDCjKs7qKC4037sQgnp3ldeGDYGl1-QyM21LlBL2J7PkW2wmKv8LeuOEhQUjnrZ9b-eIIvqSCJQmrj6H81-CceR3d7io_3ZkEHGouYOPkQxDpCS8a"/>
+</div>
+<div>
+<h3 class="font-headline font-bold text-lg">MID-STAKES</h3>
+<p class="text-xs text-on-surface-variant uppercase tracking-tight">Industrial Grid 07 // High Visibility</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Batch Selector -->
+<div class="space-y-3">
+<label class="text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-primary">Batch Simulation Size</label>
+<div class="grid grid-cols-4 gap-2">
+<button class="py-3 bg-surface-container-high text-on-surface font-headline font-bold text-sm border border-outline-variant/30 hover:border-primary transition-all">1</button>
+<button class="py-3 bg-primary text-on-primary font-headline font-bold text-sm transition-all shadow-[0_0_15px_rgba(192,193,255,0.4)]">5</button>
+<button class="py-3 bg-surface-container-high text-on-surface font-headline font-bold text-sm border border-outline-variant/30 hover:border-primary transition-all">10</button>
+<button class="py-3 bg-surface-container-high text-on-surface font-headline font-bold text-sm border border-outline-variant/30 hover:border-primary transition-all">20</button>
+</div>
+</div>
+</div>
+<!-- Risk Summary Card -->
+<div class="bg-surface-container p-6 rounded-lg border-l-4 border-primary">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-[10px] font-headline font-bold uppercase tracking-widest text-on-surface-variant mb-1">Risk Summary</p>
+<h4 class="text-2xl font-headline font-bold tracking-tighter">TOTAL COMMITMENT</h4>
+</div>
+<div class="text-right">
+<p class="text-xs font-mono text-tertiary">Cost: 500 XP</p>
+<p class="text-lg font-mono text-secondary">Max Reward: 1,250 XP</p>
+</div>
+</div>
+</div>
+<!-- Primary CTA -->
+<button class="w-full primary-gradient text-on-primary py-5 rounded-[4px] font-headline font-extrabold text-lg tracking-widest shadow-[0_8px_30px_rgba(128,131,255,0.3)] hover:scale-[1.01] active:scale-95 transition-all">
+                    CONFIRM &amp; DEPLOY
+                </button>
+</div>
+<!-- RIGHT COLUMN: Active Execution State (Matchmaking / Running) -->
+<div class="col-span-12 lg:col-span-7">
+<div class="glass-panel p-1 border-0 rounded-xl overflow-hidden relative min-h-[600px] flex flex-col items-center justify-center text-center">
+<!-- Background Visual Pattern -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<div class="w-full h-full bg-[radial-gradient(#C0C1FF_1px,transparent_1px)] [background-size:24px_24px]"></div>
+</div>
+<!-- Progress Ring (Simulated) -->
+<div class="relative mb-12">
+<svg class="w-64 h-64 -rotate-90">
+<circle class="text-surface-container-highest" cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" stroke-width="2"></circle>
+<circle class="text-secondary shadow-[0_0_20px_#4edea3]" cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" stroke-dasharray="690" stroke-dashoffset="200" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-4xl font-headline font-bold text-on-surface">68%</span>
+<span class="text-[10px] font-headline uppercase tracking-[0.3em] text-secondary">Synchronizing</span>
+</div>
+</div>
+<!-- Bot Clash Stylized Visual -->
+<div class="flex items-center gap-12 mb-8 relative">
+<div class="relative">
+<div class="w-24 h-24 bg-primary-container rounded flex items-center justify-center z-10 relative">
+<span class="material-symbols-outlined text-4xl text-on-primary-container" data-icon="smart_toy" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="absolute -inset-2 bg-primary/20 blur-xl"></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="h-px w-24 bg-gradient-to-r from-primary to-tertiary"></div>
+<span class="text-[10px] font-headline font-bold text-on-surface-variant my-2 italic">VS</span>
+<div class="h-px w-24 bg-gradient-to-r from-tertiary to-primary"></div>
+</div>
+<div class="relative">
+<div class="w-24 h-24 bg-surface-container-highest rounded border-2 border-tertiary/50 flex items-center justify-center z-10 relative">
+<span class="material-symbols-outlined text-4xl text-tertiary" data-icon="bolt">bolt</span>
+</div>
+<div class="absolute -inset-2 bg-tertiary/20 blur-xl animate-pulse"></div>
+</div>
+</div>
+<!-- Status Messages -->
+<div class="space-y-4 max-w-sm">
+<h2 class="text-xl font-headline font-bold text-secondary animate-pulse">Executing Tactical Scripts...</h2>
+<p class="text-on-surface-variant font-label text-sm leading-relaxed">Simulating high-stakes engagement on Mid-Stakes Arena Grid 07. All systems nominal. Verifying RNG seeds...</p>
+</div>
+<!-- Bottom Log Feed (Real-time data simulation) -->
+<div class="mt-12 w-full max-w-md px-4">
+<div class="bg-surface-container-lowest p-4 rounded text-left font-mono text-[10px] space-y-1 h-32 overflow-hidden opacity-80">
+<p class="text-secondary">[SUCCESS] Protocol "Vanguard_Shield" active</p>
+<p class="text-slate-500">[TRACE] Enemy packet intercepted at 0x44F</p>
+<p class="text-primary">[DATA] Calculating win probability... 74.2%</p>
+<p class="text-slate-500">[TRACE] Adjusting throttle to 88% capacity</p>
+<p class="text-slate-500">[TRACE] Re-routing logic through secondary node</p>
+<p class="text-tertiary">[WARNING] Heat accumulation at core: 42°C</p>
+<p class="text-secondary">[SUCCESS] Initiating final strike sequence</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-[#131314] shadow-[0_-4px_24px_rgba(0,0,0,0.5)] flex justify-around items-center h-16 z-[100]">
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-xl" data-icon="dashboard">dashboard</span>
+<span class="text-[9px] uppercase tracking-tighter">Dash</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-xl" data-icon="smart_toy">smart_toy</span>
+<span class="text-[9px] uppercase tracking-tighter">Bots</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#4EDE93]">
+<span class="material-symbols-outlined text-xl" data-icon="swords">swords</span>
+<span class="text-[9px] uppercase tracking-tighter">Arenas</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-xl" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="text-[9px] uppercase tracking-tighter">Wallet</span>
+</button>
+</nav>
+</body></html>

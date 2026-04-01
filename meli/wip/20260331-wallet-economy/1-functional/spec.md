@@ -1,6 +1,6 @@
 # Spec Funcional: Wallet & Economy
 
-**Feature**: wallet-economy | **Status**: Draft | **Lang**: es
+**Feature**: wallet-economy | **Status**: Approved | **Lang**: es
 
 ---
 

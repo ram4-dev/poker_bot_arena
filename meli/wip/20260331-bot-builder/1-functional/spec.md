@@ -1,6 +1,6 @@
 # Spec Funcional: Bot Builder
 
-**Feature**: bot-builder | **Status**: Draft | **Lang**: es
+**Feature**: bot-builder | **Status**: Approved | **Lang**: es
 
 ---
 

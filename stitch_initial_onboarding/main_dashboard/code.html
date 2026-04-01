@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CyberStrat | Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "surface-container": "#201f20",
+                        "surface-container-high": "#2a2a2b",
+                        "tertiary-container": "#ff5451",
+                        "on-primary-container": "#0d0096",
+                        "background": "#131314",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-container": "#8083ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-tertiary-fixed": "#410004",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-lowest": "#0e0e0f",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "inverse-surface": "#e5e2e3",
+                        "primary": "#c0c1ff",
+                        "surface-variant": "#353436",
+                        "tertiary": "#ffb3ad",
+                        "on-secondary-fixed": "#002113",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "on-surface": "#e5e2e3",
+                        "surface": "#131314",
+                        "secondary": "#4edea3",
+                        "on-primary": "#1000a9",
+                        "outline-variant": "#464554",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-tint": "#c0c1ff",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "tertiary-fixed": "#ffdad7",
+                        "secondary-container": "#00a572",
+                        "on-background": "#e5e2e3",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-highest": "#353436",
+                        "on-tertiary": "#68000a",
+                        "primary-fixed": "#e1e0ff",
+                        "outline": "#908fa0",
+                        "inverse-on-surface": "#313031",
+                        "inverse-primary": "#494bd6",
+                        "surface-dim": "#131314",
+                        "surface-bright": "#3a393a",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<aside class="bg-[#1C1B1C] shadow-[4px_0_24px_rgba(0,0,0,0.5)] h-screen sticky left-0 top-0 w-64 border-r-0 flex flex-col py-6 shrink-0 z-40">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-8 h-8 bg-gradient-to-br from-primary to-primary-container rounded"></div>
+<div>
+<h1 class="text-xl font-bold text-[#C0C1FF] tracking-tighter">CyberStrat</h1>
+<p class="font-['Space_Grotesk'] uppercase tracking-wider text-[10px] text-slate-500">Digital Architect</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active: Dashboard -->
+<a class="text-[#4EDE93] bg-[#353436] border-l-4 border-[#4EDE93] px-4 py-3 flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] hover:bg-[#353436] px-4 py-3 flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+                My Bots
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] hover:bg-[#353436] px-4 py-3 flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="swords">swords</span>
+                Arenas
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] hover:bg-[#353436] px-4 py-3 flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                History
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] hover:bg-[#353436] px-4 py-3 flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+                Leaderboard
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] hover:bg-[#353436] px-4 py-3 flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+                Wallet
+            </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] hover:bg-[#353436] px-4 py-3 flex items-center gap-4 font-['Space_Grotesk'] uppercase tracking-wider text-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+                Profile
+            </a>
+</nav>
+<div class="mt-auto px-6 py-4 border-t border-outline-variant/20 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary" data-icon="person">person</span>
+</div>
+<div class="overflow-hidden">
+<p class="text-sm font-medium truncate">ARCHITECT_01</p>
+<p class="text-[10px] text-secondary font-mono">STATUS: ONLINE</p>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col">
+<!-- TopAppBar (Shared Component) -->
+<header class="sticky top-0 z-50 w-full bg-[#131314]/80 backdrop-blur-md border-b border-[#353436]/50 flex justify-between items-center h-16 px-8 shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-6">
+<span class="text-slate-300 font-mono text-sm">Balance: 2,450 XP</span>
+<span class="text-slate-300 font-mono text-sm">Rank: Gold IV</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-slate-300 hover:opacity-80 transition-opacity" data-icon="notifications">notifications</button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary font-['Space_Grotesk'] font-bold tracking-tight px-6 py-2 rounded shadow-lg active:scale-95 duration-100 uppercase text-sm">
+                    BATTLE NOW
+                </button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/30">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="professional user profile portrait with futuristic neon lighting highlights on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzmLGoxO0CZ8Za6b2i4StkSUBNp7XQ81XQN53CZ3zy23MGsSC-loa9L3Dooo1gfpOj8i_MOr_cfksM3FcCdZlS-1r5JXK9LcLvG16rL31X18vuFljGaaqKdl1MZA9eO3geqW5ZR1U16_44bazU4FKdaxFVqE08aCsEZSk1Qt3FfHMqx8LUTMx71a6BqnxLoMcZF0jNJb8tEfcMW_VV448k1meld9cr5-OCfROI1-zNWE4Z2hxxqCVWl0YjAiUDMnjWw-2CNp6bt_Z-"/>
+</div>
+</div>
+</header>
+<!-- Main Dashboard Content -->
+<main class="p-8 space-y-8 max-w-7xl mx-auto w-full">
+<!-- Header Section -->
+<section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div>
+<p class="text-secondary font-mono tracking-widest text-xs uppercase mb-2">System // Operational</p>
+<h2 class="text-4xl font-bold font-headline tracking-tight text-on-surface">Command Center</h2>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2.5 bg-surface-container-high text-on-surface-variant font-headline text-sm font-medium rounded hover:bg-surface-container-highest transition-colors border border-outline-variant/10">
+                        GENERATE REPORT
+                    </button>
+<button class="px-5 py-2.5 bg-secondary/10 text-secondary font-headline text-sm font-bold rounded border border-secondary/20 hover:bg-secondary/20 transition-all">
+                        UPGRADE ACTIVE UNIT
+                    </button>
+</div>
+</section>
+<!-- Grid Content -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Primary Stats: XP & Rank (Bento Style) -->
+<div class="md:col-span-4 grid grid-rows-2 gap-6">
+<!-- XP Card -->
+<div class="bg-surface-container-low rounded-xl p-6 relative overflow-hidden group border border-outline-variant/5">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg" data-icon="bolt">bolt</span>
+<span class="text-primary font-mono text-xs">+12% vs last week</span>
+</div>
+<div>
+<h3 class="text-slate-400 font-label text-xs uppercase tracking-widest mb-1">Total Experience</h3>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-bold font-headline text-on-surface">2,450</span>
+<span class="text-primary font-headline text-xl">XP</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Rank Card -->
+<div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 flex items-center gap-6 relative overflow-hidden">
+<div class="w-24 h-24 bg-surface-container-highest rounded-lg flex items-center justify-center border-2 border-[#FFD700]/30 shadow-[0_0_30px_rgba(255,215,0,0.1)]">
+<span class="material-symbols-outlined text-[#FFD700] text-5xl" data-icon="military_tech" data-weight="fill">military_tech</span>
+</div>
+<div>
+<p class="text-slate-400 font-label text-xs uppercase tracking-widest mb-1">Current Standing</p>
+<h3 class="text-3xl font-bold font-headline text-[#FFD700]">Gold IV</h3>
+<div class="mt-2 w-32 h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-3/4 h-full bg-[#FFD700]"></div>
+</div>
+<p class="text-[10px] text-slate-500 mt-1 uppercase font-mono">250 XP to Gold III</p>
+</div>
+</div>
+</div>
+<!-- Active Bot Highlight: Vanguard v2.1 -->
+<div class="md:col-span-8 bg-surface-container-low rounded-xl p-8 border border-outline-variant/5 relative overflow-hidden flex flex-col md:flex-row gap-8">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50"></div>
+<div class="w-full md:w-1/3 aspect-square rounded-lg overflow-hidden border border-outline-variant/20 relative z-10">
+<img alt="Bot Vanguard v2.1" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" data-alt="close-up of a sophisticated robotic head with intricate mechanical parts and glowing teal optical sensors in a dark workshop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAv77xEggOy0qT2dMr7xTX8c1O6SacfD1SGA5Yv-Dz2Mr-zpl0k_n2uV5-BN2tJ407_LI8SoaA34MipuqzdHmcnElXsU_H_80YQeUoi04uKbWMsJouVhcQpkAgphmk4O9XoQ0wxtptRLhLC4nWIQCTdkwulc_K77lhNZEUAxC00huzRyzSUw6gaWrCJYaEhxS12m1mnv1OX0BDRPOHVICHKl-yJ1EGPiL0VFd6jMnE9zNOcfz3ToSCSI920EsR82NjoBADcjuHq7c9"/>
+<div class="absolute bottom-3 left-3 px-3 py-1 bg-secondary text-on-secondary text-[10px] font-bold uppercase rounded">Operational</div>
+</div>
+<div class="flex-1 relative z-10 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-3xl font-bold font-headline">Vanguard v2.1</h3>
+<p class="text-slate-400 font-mono text-sm italic">"Precision in Chaos"</p>
+</div>
+<div class="text-right">
+<span class="text-secondary font-headline text-3xl font-bold">64%</span>
+<p class="text-[10px] text-slate-500 uppercase font-label">Win Rate</p>
+</div>
+</div>
+<div class="space-y-4 mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="location_on">location_on</span>
+<span class="text-on-surface-variant text-sm">Active in <span class="text-on-surface font-semibold">Low Stakes Arena</span></span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="memory">memory</span>
+<span class="text-on-surface-variant text-sm">Hardware Load: <span class="text-on-surface font-semibold">42%</span></span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 py-3 bg-primary text-on-primary font-headline font-bold text-sm rounded shadow-lg shadow-primary/20 hover:translate-y-[-2px] transition-transform">
+                                EDIT ACTIVE BOT
+                            </button>
+<button class="p-3 border border-outline-variant/30 rounded text-slate-400 hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Recent Performance Graph (Placeholder for Chart) -->
+<div class="md:col-span-7 bg-surface-container-low rounded-xl p-6 border border-outline-variant/5">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="text-lg font-bold font-headline">Performance Trend</h3>
+<p class="text-xs text-slate-500 font-label uppercase">Last 7 Trading/Combat Days</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-[10px] text-slate-400 uppercase">Wins</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-[10px] text-slate-400 uppercase">Losses</span>
+</div>
+</div>
+</div>
+<!-- Visual Chart Placeholder using Gradients/Divs -->
+<div class="h-48 w-full relative flex items-end justify-between gap-2 px-2">
+<!-- Simulated Data Bars/Lines -->
+<div class="flex-1 h-3/4 bg-surface-container-high rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1/2 bg-secondary/20 group-hover:bg-secondary/40 transition-colors"></div>
+<div class="absolute bottom-0 w-full h-[2px] bg-secondary"></div>
+</div>
+<div class="flex-1 h-2/3 bg-surface-container-high rounded-t relative group">
+<div class="absolute bottom-0 w-full h-2/5 bg-secondary/20 group-hover:bg-secondary/40 transition-colors"></div>
+<div class="absolute bottom-0 w-full h-[2px] bg-secondary"></div>
+</div>
+<div class="flex-1 h-1/2 bg-surface-container-high rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1/3 bg-tertiary/20 group-hover:bg-tertiary/40 transition-colors"></div>
+<div class="absolute bottom-0 w-full h-[2px] bg-tertiary"></div>
+</div>
+<div class="flex-1 h-4/5 bg-surface-container-high rounded-t relative group">
+<div class="absolute bottom-0 w-full h-3/4 bg-secondary/20 group-hover:bg-secondary/40 transition-colors"></div>
+<div class="absolute bottom-0 w-full h-[2px] bg-secondary"></div>
+</div>
+<div class="flex-1 h-3/5 bg-surface-container-high rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1/2 bg-secondary/20 group-hover:bg-secondary/40 transition-colors"></div>
+<div class="absolute bottom-0 w-full h-[2px] bg-secondary"></div>
+</div>
+<div class="flex-1 h-5/6 bg-surface-container-high rounded-t relative group">
+<div class="absolute bottom-0 w-full h-4/5 bg-secondary/20 group-hover:bg-secondary/40 transition-colors"></div>
+<div class="absolute bottom-0 w-full h-[2px] bg-secondary"></div>
+</div>
+<div class="flex-1 h-2/3 bg-surface-container-high rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1/2 bg-secondary/20 group-hover:bg-secondary/40 transition-colors"></div>
+<div class="absolute bottom-0 w-full h-[2px] bg-secondary shadow-[0_0_10px_rgba(78,222,163,0.5)]"></div>
+</div>
+</div>
+<div class="flex justify-between mt-4 px-2">
+<span class="text-[10px] text-slate-500 font-mono">MON</span>
+<span class="text-[10px] text-slate-500 font-mono">TUE</span>
+<span class="text-[10px] text-slate-500 font-mono">WED</span>
+<span class="text-[10px] text-slate-500 font-mono">THU</span>
+<span class="text-[10px] text-slate-500 font-mono">FRI</span>
+<span class="text-[10px] text-slate-500 font-mono">SAT</span>
+<span class="text-[10px] text-secondary font-mono font-bold underline">SUN</span>
+</div>
+</div>
+<!-- Activity Feed -->
+<div class="md:col-span-5 bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold font-headline text-on-surface">Activity Log</h3>
+<span class="material-symbols-outlined text-slate-500 text-sm" data-icon="history">history</span>
+</div>
+<div class="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+<!-- Feed Item -->
+<div class="p-3 rounded bg-surface-container-high/40 flex items-center justify-between group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-xl" data-icon="sports_kabaddi">sports_kabaddi</span>
+</div>
+<div>
+<p class="text-sm font-medium">Match Won <span class="text-secondary font-mono">+50 XP</span></p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">Arena: Lower Deck • 2m ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-600 group-hover:text-primary transition-colors cursor-pointer" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Feed Item -->
+<div class="p-3 rounded bg-surface-container-high/40 flex items-center justify-between group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl" data-icon="trending_up">trending_up</span>
+</div>
+<div>
+<p class="text-sm font-medium">Bot Ranking Upgraded</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">Vanguard v2.1 reached Tier 3 • 1h ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-600 group-hover:text-primary transition-colors cursor-pointer" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Feed Item -->
+<div class="p-3 rounded bg-surface-container-high/40 flex items-center justify-between group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-xl" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<div>
+<p class="text-sm font-medium">Gas Fee Deducted</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">Mainnet Transaction • 4h ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-600 group-hover:text-primary transition-colors cursor-pointer" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Feed Item -->
+<div class="p-3 rounded bg-surface-container-high/40 flex items-center justify-between group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-xl" data-icon="military_tech">military_tech</span>
+</div>
+<div>
+<p class="text-sm font-medium">Rank Progression</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">Gold IV Status Maintained • 6h ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-600 group-hover:text-primary transition-colors cursor-pointer" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<button class="mt-4 text-center text-[10px] font-mono font-bold tracking-[0.2em] text-primary uppercase hover:opacity-80 transition-opacity pt-4 border-t border-outline-variant/10">
+                        View Detailed Audit Logs
+                    </button>
+</div>
+</div>
+<!-- Bottom Floating Actions (Mobile/Focused) -->
+<div class="md:hidden fixed bottom-6 right-6 z-50">
+<button class="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-[0_8px_32px_rgba(192,193,255,0.4)] flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl" data-icon="swords" data-weight="fill">swords</span>
+</button>
+</div>
+</main>
+</div>
+<!-- Responsive Sidebar Overlay for Mobile (Simulated) -->
+<div class="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 hidden" id="mobile-overlay"></div>
+</body></html>

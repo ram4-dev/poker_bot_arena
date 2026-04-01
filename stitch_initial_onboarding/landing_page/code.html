@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "surface-container": "#201f20",
+                        "surface-container-high": "#2a2a2b",
+                        "tertiary-container": "#ff5451",
+                        "on-primary-container": "#0d0096",
+                        "background": "#131314",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-container": "#8083ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-tertiary-fixed": "#410004",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-lowest": "#0e0e0f",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "inverse-surface": "#e5e2e3",
+                        "primary": "#c0c1ff",
+                        "surface-variant": "#353436",
+                        "tertiary": "#ffb3ad",
+                        "on-secondary-fixed": "#002113",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "on-surface": "#e5e2e3",
+                        "surface": "#131314",
+                        "secondary": "#4edea3",
+                        "on-primary": "#1000a9",
+                        "outline-variant": "#464554",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-tint": "#c0c1ff",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "tertiary-fixed": "#ffdad7",
+                        "secondary-container": "#00a572",
+                        "on-background": "#e5e2e3",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-highest": "#353436",
+                        "on-tertiary": "#68000a",
+                        "primary-fixed": "#e1e0ff",
+                        "outline": "#908fa0",
+                        "inverse-on-surface": "#313031",
+                        "inverse-primary": "#494bd6",
+                        "surface-dim": "#131314",
+                        "surface-bright": "#3a393a",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #131314;
+            color: #e5e2e3;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(53, 52, 54, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .cta-gradient {
+            background: linear-gradient(135deg, #c0c1ff 0%, #8083ff 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary/30">
+<!-- TopAppBar from JSON -->
+<header class="sticky top-0 z-50 w-full bg-[#131314]/80 backdrop-blur-md border-b border-[#353436]/50">
+<div class="flex justify-between items-center h-16 px-8 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-headline font-bold text-primary tracking-tighter">CyberStrat</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-300 font-mono font-['Inter'] text-sm hover:text-primary transition-colors" href="#">Balance: 2,450 XP</a>
+<a class="text-slate-300 font-mono font-['Inter'] text-sm hover:text-primary transition-colors" href="#">Rank: Gold IV</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="bg-primary text-on-primary px-5 py-1.5 font-headline font-bold text-sm tracking-tight hover:opacity-90 active:scale-95 transition-all">BATTLE NOW</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Avatar" data-alt="Close-up portrait of a digital architect avatar with neon highlights and cybernetic elements in high detail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK9Mc9I9TfycH18yXlZYaRjiB5vL4WXrkeit_IxxeYjBBF9TNksv7j8mVT3cEFqLKRNQeOAHhI5u8JuzTZynxMA1ZLV7ubg-sHqS9mr7qX6zgM7oofLTzZcSzhCy6zcbWR2pacmLQazsZOvEhsnXPqz50HIHk9TA5ZfcQGZ625kjyC2wEDuJZH9-QuhbIz8NDGnLD_yAuy3POaHXeKPpKmiszZRdjbm5ewdB7uJ_XU-FfHtJAKlowQqTS-ukUbMS31q7Jw8NYeE117"/>
+</div>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative pt-24 pb-32 px-8 overflow-hidden">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px]"></div>
+</div>
+<div class="relative z-10 max-w-7xl mx-auto text-center">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30 mb-8">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-xs font-label uppercase tracking-widest text-on-surface-variant">V2.4 Protocol Online</span>
+</div>
+<h1 class="font-headline text-5xl md:text-7xl font-bold tracking-tight mb-6 max-w-4xl mx-auto leading-tight">
+                    The Future of Competitive <span class="text-primary italic">Bot Engineering</span>
+</h1>
+<p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+                    Architect superior logic, deploy autonomous tactical units, and dominate global arenas in the world's first high-fidelity engineering simulation.
+                </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<button class="cta-gradient text-on-primary px-8 py-4 font-headline font-bold text-lg tracking-tight rounded-lg w-full sm:w-auto hover:shadow-[0_0_20px_rgba(192,193,255,0.4)] transition-all">Create Account</button>
+<button class="bg-surface-container-high border border-outline-variant/50 text-on-surface px-8 py-4 font-headline font-bold text-lg tracking-tight rounded-lg w-full sm:w-auto hover:bg-surface-container-highest transition-colors">How It Works</button>
+</div>
+</div>
+</section>
+<!-- Dashboard Preview (Asymmetric Layering) -->
+<section class="px-8 pb-32">
+<div class="max-w-7xl mx-auto">
+<div class="relative group">
+<!-- Decorative back layers -->
+<div class="absolute -top-6 -right-6 w-full h-full bg-surface-container-low border border-outline-variant/10 rounded-xl -z-10 group-hover:-translate-y-2 transition-transform duration-500"></div>
+<!-- Main Preview Canvas -->
+<div class="glass-panel border border-outline-variant/20 rounded-xl overflow-hidden shadow-2xl">
+<div class="flex items-center gap-2 px-6 py-3 border-b border-outline-variant/10 bg-surface-container-lowest/50">
+<div class="flex gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-tertiary/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-primary/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-secondary/40"></div>
+</div>
+<span class="text-[10px] font-mono text-outline uppercase ml-4 tracking-[0.2em]">TACTICAL_INTERFACE_v4.0.0</span>
+</div>
+<div class="grid grid-cols-12 h-[500px]">
+<!-- Mock Sidebar -->
+<div class="col-span-3 border-r border-outline-variant/10 p-6 flex flex-col gap-8 bg-surface-container-low/30">
+<div class="space-y-4">
+<div class="h-2 w-16 bg-outline-variant/40 rounded"></div>
+<div class="h-10 w-full bg-primary/10 border-l-2 border-primary rounded-r"></div>
+<div class="h-10 w-full bg-surface-container-highest/20 rounded"></div>
+<div class="h-10 w-full bg-surface-container-highest/20 rounded"></div>
+</div>
+<div class="mt-auto space-y-2">
+<div class="h-1 w-full bg-outline-variant/20 rounded-full">
+<div class="h-full w-2/3 bg-secondary rounded-full"></div>
+</div>
+<div class="flex justify-between text-[9px] font-mono text-outline">
+<span>SYSTEM LOAD</span>
+<span>68%</span>
+</div>
+</div>
+</div>
+<!-- Mock Content -->
+<div class="col-span-9 p-8">
+<div class="grid grid-cols-3 gap-6 mb-8">
+<div class="bg-surface-container-highest/40 p-4 rounded border border-outline-variant/10">
+<span class="block text-[10px] text-outline font-mono mb-1">WIN_RATE</span>
+<span class="text-2xl font-headline font-bold text-secondary">78.4%</span>
+</div>
+<div class="bg-surface-container-highest/40 p-4 rounded border border-outline-variant/10">
+<span class="block text-[10px] text-outline font-mono mb-1">TOTAL_XP</span>
+<span class="text-2xl font-headline font-bold text-primary">142,040</span>
+</div>
+<div class="bg-surface-container-highest/40 p-4 rounded border border-outline-variant/10">
+<span class="block text-[10px] text-outline font-mono mb-1">RANKING</span>
+<span class="text-2xl font-headline font-bold text-on-surface">#422</span>
+</div>
+</div>
+<div class="relative w-full h-56 bg-surface-container-lowest border border-outline-variant/20 rounded-lg overflow-hidden">
+<img alt="Bot Battle View" class="w-full h-full object-cover opacity-60" data-alt="Abstract 3D blueprint visualization of a complex robotic arena with glowing data streams and neon geometric structures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGBFjZPVEaKXZ0pBeF64FcbpnqoeVyY_tDtAL85A6YchEDWkuRLy_XfmKth2v4q4AW9vNy8QZPSM-FY74_Spfhm3sAkVbHJrn4oSdEnZtQ5xDXY--j9TcWqQtssiWGi3rW24yvPFKEQdQC-D6idWA4RmQgoCLJVmh92dyeTMG7zp6ElJTATJN_O8Ea92rFuZIzfMAdolwROTxbtW0-46oJdhGfYwsO6C07nilscV1ERk_jUqfUBoFJHt8Wt99hPKCrLgdUVan1yL9d"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent"></div>
+<div class="absolute bottom-4 left-4 flex gap-2">
+<span class="px-2 py-1 bg-secondary/20 text-secondary text-[10px] font-bold rounded border border-secondary/30">ACTIVE</span>
+<span class="px-2 py-1 bg-surface-container-highest/80 text-on-surface text-[10px] font-mono rounded">ARENA_09</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3-Step Process -->
+<section class="bg-surface-container-low py-32 px-8">
+<div class="max-w-7xl mx-auto">
+<div class="mb-20">
+<h2 class="font-headline text-sm uppercase tracking-[0.3em] text-secondary mb-4">The Workflow</h2>
+<h3 class="font-headline text-4xl font-bold">From Design to Dominance</h3>
+</div>
+<div class="grid md:grid-cols-3 gap-12">
+<!-- Step 1 -->
+<div class="group">
+<div class="w-16 h-16 bg-surface-container-highest flex items-center justify-center rounded-lg border border-outline-variant/30 mb-8 group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-3xl text-primary">architecture</span>
+</div>
+<h4 class="font-headline text-xl font-bold mb-4">1. Build Tactics</h4>
+<p class="text-on-surface-variant font-light leading-relaxed">
+                            Utilize our node-based logic engine to script complex bot behaviors without writing a single line of code. Precision is your primary weapon.
+                        </p>
+</div>
+<!-- Step 2 -->
+<div class="group">
+<div class="w-16 h-16 bg-surface-container-highest flex items-center justify-center rounded-lg border border-outline-variant/30 mb-8 group-hover:border-secondary/50 transition-colors">
+<span class="material-symbols-outlined text-3xl text-secondary">rocket_launch</span>
+</div>
+<h4 class="font-headline text-xl font-bold mb-4">2. Deploy to Arenas</h4>
+<p class="text-on-surface-variant font-light leading-relaxed">
+                            Launch your creations into persistent global arenas. Watch them compete in real-time against hundreds of other tactical agents simultaneously.
+                        </p>
+</div>
+<!-- Step 3 -->
+<div class="group">
+<div class="w-16 h-16 bg-surface-container-highest flex items-center justify-center rounded-lg border border-outline-variant/30 mb-8 group-hover:border-tertiary/50 transition-colors">
+<span class="material-symbols-outlined text-3xl text-tertiary">query_stats</span>
+</div>
+<h4 class="font-headline text-xl font-bold mb-4">3. Analyze &amp; Adapt</h4>
+<p class="text-on-surface-variant font-light leading-relaxed">
+                            Review deep-dive logs and heatmaps of every match. Refine your bot's decision trees and climb the ladder with data-driven iteration.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="py-32 px-8">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="font-headline text-4xl font-bold mb-4">Engineered for Performance</h2>
+<p class="text-on-surface-variant max-w-xl mx-auto">Built by architects, for architects. Our infrastructure ensures every millisecond of logic counts.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[600px]">
+<!-- Large Feature -->
+<div class="md:col-span-8 bg-surface-container-low rounded-xl p-10 border border-outline-variant/10 relative overflow-hidden flex flex-col justify-end group">
+<div class="absolute top-0 right-0 w-2/3 h-2/3 opacity-30 group-hover:opacity-50 transition-opacity">
+<img alt="Stats Visualization" class="w-full h-full object-cover" data-alt="Futuristic data visualization dashboard with glowing neon lines, high-density charts, and holographic interface elements on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAZqzifO00TPPORacUk2ToXIeOS4_9ntvIEeJXtswSzrWAOZlzEfo3S_ot4xbcPHwB4k4hT379F7U-jb2k0FBpAUqjkmnTYDKLjxLjf34xsCx1UgAJbOqY8rbu07QAYHKqfZkRnHDdFIVqw1KJZzATkHGuNqAGHtdFMIRQxZjZsiZa3VVlqprsaHknvPck3vA9CKrgMcjsoKmFa_6W-n5uiwTrI11iWSww_rBEl4xqPFWRzepRKGkOq3ty7aQQGmCWBkMaa1NB-U16"/>
+</div>
+<div class="relative z-10">
+<div class="px-2 py-1 bg-primary/20 text-primary text-[10px] font-bold rounded inline-block mb-4 border border-primary/30 uppercase tracking-widest">Enterprise Core</div>
+<h4 class="font-headline text-3xl font-bold mb-4">High-Performance Stats</h4>
+<p class="text-on-surface-variant max-w-md">Every decision tracked at 60Hz. Get millisecond-perfect telemetry on bot positioning, energy usage, and tactical efficacy.</p>
+</div>
+</div>
+<!-- Small Feature 1 -->
+<div class="md:col-span-4 bg-surface-container-highest/30 rounded-xl p-8 border border-outline-variant/10 flex flex-col group">
+<div class="mb-auto">
+<span class="material-symbols-outlined text-4xl text-secondary mb-4">leaderboard</span>
+</div>
+<h4 class="font-headline text-xl font-bold mb-2">Global Leaderboard</h4>
+<p class="text-on-surface-variant text-sm font-light">Competing against the best engineers in the world. Prove your architectural superiority.</p>
+<div class="mt-6 pt-6 border-t border-outline-variant/10">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-6 h-6 rounded bg-primary/20"></div>
+<div class="h-2 w-24 bg-outline-variant/30 rounded"></div>
+<div class="ml-auto h-2 w-8 bg-secondary/40 rounded"></div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded bg-primary/20"></div>
+<div class="h-2 w-32 bg-outline-variant/30 rounded"></div>
+<div class="ml-auto h-2 w-6 bg-secondary/40 rounded"></div>
+</div>
+</div>
+</div>
+<!-- Small Feature 2 -->
+<div class="md:col-span-4 bg-surface-container-highest/30 rounded-xl p-8 border border-outline-variant/10 flex flex-col">
+<div class="mb-auto">
+<span class="material-symbols-outlined text-4xl text-tertiary mb-4">automation</span>
+</div>
+<h4 class="font-headline text-xl font-bold mb-2">Automated Matches</h4>
+<p class="text-on-surface-variant text-sm font-light">Your bots battle while you sleep. Set and forget, then analyze the results when you return.</p>
+</div>
+<!-- Medium Feature -->
+<div class="md:col-span-8 bg-surface-container-low rounded-xl p-10 border border-outline-variant/10 flex items-center gap-10 overflow-hidden group">
+<div class="w-1/2">
+<h4 class="font-headline text-2xl font-bold mb-4">Tactical Visualization</h4>
+<p class="text-on-surface-variant text-sm font-light leading-relaxed">Experience battles through our high-fidelity 3D observer mode. Switch between strategic overhead views and direct first-person bot feeds.</p>
+</div>
+<div class="w-1/2 h-full translate-y-12 translate-x-12 group-hover:translate-y-8 transition-transform duration-700">
+<div class="w-[300px] h-[300px] bg-gradient-to-br from-primary/30 to-secondary/30 rounded-full blur-[60px] absolute -z-10"></div>
+<img alt="Bot Design" class="w-full h-full object-contain drop-shadow-2xl" data-alt="Close-up 3D render of a sleek metallic combat drone with glowing indigo sensors and matte black chassis, cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTcWJ8kfPe9afa__oSDrT1MPmZ4mM1NaJUFAHroGq2pWZ_ohvP_6NnJB3hL-7081aHngcN-M7aJ6d78Lj5UJrdYovpbXDzqd3AsLLFQniLOCqTSBy9MiZm3JtjJ0zT5fIvz6yTxD_i1KUKU3ODMBYLjQbI2KZwDfR_pgUu7IgzAehyQGThZaiy3O0u8oW9i5WzmMbZLC7L9ODRMvs4NbkoeY7Ic8GMxDsdUeWxXqa4MaO5FKkuVjphQkeAJJNl6dofoZfqyDvhqa14"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 px-8">
+<div class="max-w-4xl mx-auto bg-primary text-on-primary rounded-xl p-12 text-center relative overflow-hidden shadow-[0_0_60px_rgba(192,193,255,0.2)]">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+<h2 class="font-headline text-4xl font-bold mb-6 relative z-10">Ready to Architect Your Victory?</h2>
+<p class="text-on-primary/80 text-lg mb-10 max-w-xl mx-auto relative z-10">Join 5,000+ engineers already deploying tactical bots to the global grid.</p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
+<button class="bg-surface text-on-surface px-10 py-4 font-headline font-bold rounded-lg hover:scale-105 transition-transform">Initialize Account</button>
+<button class="bg-transparent border border-on-primary/30 text-on-primary px-10 py-4 font-headline font-bold rounded-lg hover:bg-on-primary/10 transition-colors">Contact Sales</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Minimal Footer -->
+<footer class="py-12 px-8 border-t border-outline-variant/10">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="text-lg font-headline font-bold text-primary tracking-tighter">CyberStrat</span>
+<span class="text-[10px] font-mono text-outline uppercase tracking-widest">© 2024 DECRYPTED SYSTEMS LTD.</span>
+</div>
+<div class="flex gap-8">
+<a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Docs</a>
+<a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Changelog</a>
+<a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Status</a>
+</div>
+<div class="flex gap-4">
+<a class="w-8 h-8 flex items-center justify-center rounded bg-surface-container-highest hover:bg-primary/20 transition-colors" href="#">
+<img alt="Social" data-alt="Abstract minimalist icon for X social media platform in white on transparent background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDETxcuy3gYpr_5Zs4TzmuH9LPWp0Nb4RxOW98y9VJxD7j4mTOlW0P2SWE5_wV6TwuvadbxU2wCLIyMpN7nKPzxrWO-j4XZL8UJAnAl00-KxqxrzdVCjaLYripYkMJox6KC6d8y9w-wLpqKSx7JB0H_hi0rrZU1yo7HJ4QbHP-RicFa1sHdAO99manpHe94XIENTzGz6xaVp9oK4mHUQUk3T8VuJcgq4gnC1RTwZDYVzIxDhrT8f9fi-pjbIBjiZPVesOwinNl7HVLu"/>
+</a>
+<a class="w-8 h-8 flex items-center justify-center rounded bg-surface-container-highest hover:bg-primary/20 transition-colors" href="#">
+<img alt="Social" data-alt="Discord gaming platform logo simplified for dark UI theme" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJhX3EYvkDRayKXuLLj1GbsH2eoS6g1I0KYhnFDDOqa6kKo-3rroVRlADIQPWd881mIO4cyZuf134n6AtNqERx9rBdOGa2xFKcnCis3GdrBpiG9y7xUbUt3s8aZ8WucrWrNxsFUi84KetvldwVemQPzeLcey-IDVYbLx3BpP8Apzlt0UOxBWpO_Aoy6VPMyTYvqSqKjjZHvXTMoJVXlBy7QC4S4_r2WKT6JdEjRwIND2KaPkzbVTacDCqiBW15Gdr7Of0JVnDjXYwA"/>
+</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,6 +1,6 @@
 # Spec Funcional: Leaderboard & Ranking
 
-**Feature**: leaderboard-ranking | **Status**: Draft | **Lang**: es
+**Feature**: leaderboard-ranking | **Status**: Approved | **Lang**: es
 
 ---
 

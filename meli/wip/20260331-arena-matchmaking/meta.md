@@ -7,8 +7,8 @@
 **Platform**: backend
 **User Profile**: non-technical
 **Created**: 2026-03-31
-**Last Updated**: 2026-03-31
-**Current Stage**: functional
+**Last Updated**: 2026-04-01
+**Current Stage**: technical
 
 ---
 
@@ -18,11 +18,17 @@
 stages:
   functional:
     started: 2026-03-31
-    status: in-progress
+    completed: 2026-04-01
+    status: approved
+    owner: ramiro-carnicer
+    approved_by: Ramiro Carnicer
+    approved_at: 2026-04-01T01:46:22Z
   technical:
-    status: pending
+    started: 2026-04-01
+    status: in-progress
   tasks:
     status: pending
   implementation:
     status: pending
 ```
+technical_approved_at: 2026-04-01T02:13:14Z

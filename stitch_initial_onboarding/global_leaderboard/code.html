@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CyberStrat | Global Leaderboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "surface-container": "#201f20",
+                        "surface-container-high": "#2a2a2b",
+                        "tertiary-container": "#ff5451",
+                        "on-primary-container": "#0d0096",
+                        "background": "#131314",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-container": "#8083ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-tertiary-fixed": "#410004",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-lowest": "#0e0e0f",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "inverse-surface": "#e5e2e3",
+                        "primary": "#c0c1ff",
+                        "surface-variant": "#353436",
+                        "tertiary": "#ffb3ad",
+                        "on-secondary-fixed": "#002113",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "on-surface": "#e5e2e3",
+                        "surface": "#131314",
+                        "secondary": "#4edea3",
+                        "on-primary": "#1000a9",
+                        "outline-variant": "#464554",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-tint": "#c0c1ff",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "tertiary-fixed": "#ffdad7",
+                        "secondary-container": "#00a572",
+                        "on-background": "#e5e2e3",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-highest": "#353436",
+                        "on-tertiary": "#68000a",
+                        "primary-fixed": "#e1e0ff",
+                        "outline": "#908fa0",
+                        "inverse-on-surface": "#313031",
+                        "inverse-primary": "#494bd6",
+                        "surface-dim": "#131314",
+                        "surface-bright": "#3a393a",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(53, 52, 54, 0.6); backdrop-filter: blur(20px); }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary/30">
+<div class="flex min-h-screen">
+<!-- SideNavBar Component -->
+<aside class="bg-[#1C1B1C] shadow-[4px_0_24px_rgba(0,0,0,0.5)] h-screen sticky left-0 top-0 w-64 border-r-0 flex flex-col py-6 z-50">
+<div class="px-6 mb-10">
+<div class="text-xl font-bold text-[#C0C1FF] tracking-tighter flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">deployed_code</span>
+                    CyberStrat
+                </div>
+<div class="font-['Space_Grotesk'] uppercase tracking-wider text-xs text-slate-500 mt-1">Digital Architect</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span> Dashboard
+                </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined text-xl">smart_toy</span> My Bots
+                </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined text-xl">swords</span> Arenas
+                </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined text-xl">history</span> History
+                </a>
+<a class="text-[#4EDE93] bg-[#353436] border-l-4 border-[#4EDE93] px-6 py-3 flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">leaderboard</span> Leaderboard
+                </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined text-xl">account_balance_wallet</span> Wallet
+                </a>
+<a class="text-slate-400 hover:text-[#C0C1FF] px-6 py-3 transition-colors flex items-center gap-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined text-xl">person</span> Profile
+                </a>
+</nav>
+<div class="px-6 pt-6 mt-auto">
+<div class="bg-surface-container rounded p-4 border border-outline-variant/20">
+<div class="flex items-center gap-3">
+<img alt="User Profile Avatar" class="w-10 h-10 rounded object-cover border border-primary/30" data-alt="Close-up portrait of a high-tech robotic interface with glowing blue neural network patterns inside a human-shaped silhouette" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTlM5NdPaJijoQ3rpUxWxYSbZAM5RzvhV-tXmW0h3iJRtv2HNru54Zhksh1BYj0WDPdeDWQcV_wd_mQjdl4NZAj10a7DxYnxyeWaj7koNvi1K7UkF5FzU9fn4kEv6YCnc16fSQqYQ9a2_CR90JeLgH1QdR_hG2WVxAxyBx4nMEHhp4bu1uibyhpBj8o-S3l0YnHE5lrGCSzGGi524OAmB7cRU2ExxmtF-zLJpL4M-0F9LtL85OsNoYF-VzhdJ6SNjQ9T8B6_DtNfDk"/>
+<div>
+<div class="text-sm font-bold text-on-surface">ARCHITECT_01</div>
+<div class="text-[10px] text-primary uppercase font-headline">Gold IV</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col">
+<!-- TopAppBar Component -->
+<header class="sticky top-0 z-50 w-full bg-[#131314]/80 backdrop-blur-md border-b border-[#353436]/50 flex justify-between items-center h-16 px-8 shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+<div class="flex items-center gap-8">
+<h1 class="font-headline font-extrabold text-xl text-primary tracking-tighter">LEADERBOARD</h1>
+<div class="flex gap-6">
+<div class="text-slate-300 font-mono text-xs uppercase tracking-widest bg-surface-container-high px-3 py-1 rounded">Balance: <span class="text-primary font-bold">2,450 XP</span></div>
+<div class="text-slate-300 font-mono text-xs uppercase tracking-widest bg-surface-container-high px-3 py-1 rounded">Rank: <span class="text-secondary font-bold">Gold IV</span></div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2 rounded font-headline font-bold text-sm tracking-tight active:scale-95 duration-100 uppercase">
+                        BATTLE NOW
+                    </button>
+</div>
+</header>
+<div class="p-8 max-w-7xl mx-auto w-full space-y-8">
+<!-- Hero Section / Context -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-low p-8 border border-outline-variant/10">
+<div class="absolute right-0 top-0 w-1/3 h-full opacity-20 pointer-events-none">
+<div class="absolute inset-0 bg-gradient-to-l from-primary/40 to-transparent"></div>
+<img alt="Strategic Background" class="w-full h-full object-cover grayscale brightness-50" data-alt="Digital wireframe of a futuristic cityscape with glowing circuit lines and data streams floating in a dark vacuum" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaysGs8G97BSY2Y9P_Z1sqKlX7mIcVAMINtuv-OSMfqHmelde7YW96FMK-mA3QtcTg4936VAfF_8jf2-lcQh4D5jDuKbKNL_7EPwgiHehuEzhMVTMb2fVsSeTDPlHB8pCAMznj7oAFdU8dD_WwO2mFCuONTRLRomn2PTOyjCJucmgyTQECXZinNHTjWNnoK3jSw16LkAZMsXn9_PDoTp0R7DDShfuZntn_XBSPdDC0RmgLZbJp0eOV0Kl3O8hmz2PGI63VLW9FE-Ha"/>
+</div>
+<div class="relative z-10 max-w-2xl">
+<span class="text-secondary font-headline text-xs font-bold uppercase tracking-[0.2em] mb-2 block">Competitive Season 08</span>
+<h2 class="text-4xl font-headline font-black text-on-surface mb-4 leading-tight">ASCEND THE ARCHITECT <br/><span class="text-primary">HIERARCHY</span></h2>
+<p class="text-on-surface-variant text-sm max-w-md leading-relaxed">Top performers this season receive exclusive access to the Neural-Core beta and limited edition chassis skins.</p>
+</div>
+</div>
+<!-- Tabs & Filters -->
+<div class="flex flex-col md:flex-row justify-between items-end gap-6">
+<div class="flex bg-surface-container-lowest p-1 rounded border border-outline-variant/10">
+<button class="px-8 py-2.5 rounded font-headline text-sm font-bold uppercase tracking-wider text-secondary bg-surface-container-highest transition-all">All Users</button>
+<button class="px-8 py-2.5 rounded font-headline text-sm font-bold uppercase tracking-wider text-slate-500 hover:text-on-surface transition-all">Top Bots</button>
+<button class="px-8 py-2.5 rounded font-headline text-sm font-bold uppercase tracking-wider text-slate-500 hover:text-on-surface transition-all">Monthly Season</button>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded border border-outline-variant/10">
+<span class="material-symbols-outlined text-primary text-sm">filter_alt</span>
+<span class="text-xs font-headline uppercase tracking-widest text-on-surface-variant">Global Filter</span>
+</div>
+</div>
+</div>
+<!-- Leaderboard Table -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl border border-outline-variant/5">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50 border-b border-outline-variant/10">
+<th class="px-8 py-5 font-headline text-xs font-bold uppercase tracking-widest text-slate-500">Rank</th>
+<th class="px-8 py-5 font-headline text-xs font-bold uppercase tracking-widest text-slate-500">Creator / Bot Name</th>
+<th class="px-8 py-5 font-headline text-xs font-bold uppercase tracking-widest text-slate-500">Total XP</th>
+<th class="px-8 py-5 font-headline text-xs font-bold uppercase tracking-widest text-slate-500 text-center">Winrate</th>
+<th class="px-8 py-5 font-headline text-xs font-bold uppercase tracking-widest text-slate-500">Last Match</th>
+<th class="px-8 py-5 font-headline text-xs font-bold uppercase tracking-widest text-slate-500 text-right">Badges</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<!-- Top 1 -->
+<tr class="group hover:bg-primary/5 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<span class="font-headline font-black text-2xl text-secondary">01</span>
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Rank 1 Avatar" class="w-12 h-12 rounded bg-surface-container object-cover border-2 border-secondary shadow-[0_0_15px_rgba(78,222,163,0.3)]" data-alt="Hyper-realistic close up of a metallic robot eye with glowing green iris and complex mechanical components" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAryXJ4lg6EEoteVVcoeX1rM0GmKRfgXC-JN7RwDb8ULhx95VLJg3Sa__fxIoN32usrmsZAzXT457qJeGXU5mliZ41etBBsq-069WldWcVzv5VGAD1QlG3f7qRXfjFJyCtq1_Se-yF1vZ1AQqBfYf18wgZz3LNCpcbdgTId_b19lfSZtXRckUMkqbV89YH9ox6akSrROr8KrLQ588nbVxmXkX9hQrPjnE6NaE8al9ZUzTqYM4XEttnYKNoj5srZYGfs1ypBeVTC8my_"/>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-secondary rounded-full border-2 border-background"></div>
+</div>
+<div>
+<div class="font-headline font-bold text-on-surface text-base">X-9 NEURAL REAPER</div>
+<div class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Architect: <span class="text-primary-container">Vector_King</span></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-mono font-bold text-primary">1,240,500 <span class="text-[10px] text-slate-500">XP</span></td>
+<td class="px-8 py-6">
+<div class="flex flex-col items-center">
+<span class="font-headline font-bold text-on-surface">94.2%</span>
+<div class="w-20 h-1 bg-surface-container-highest rounded-full mt-1 overflow-hidden">
+<div class="bg-secondary h-full" style="width: 94%;"></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-xs text-on-surface-variant font-medium">2 mins ago <span class="text-secondary">(Win)</span></span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<div class="flex justify-end gap-2">
+<span class="bg-on-secondary-container text-secondary text-[10px] font-bold px-2 py-1 rounded-sm uppercase border border-secondary/20 shadow-[0_0_10px_rgba(78,222,163,0.1)]">Bot on Fire</span>
+<span class="bg-on-primary-container text-primary text-[10px] font-bold px-2 py-1 rounded-sm uppercase border border-primary/20">Strategy Master</span>
+</div>
+</td>
+</tr>
+<!-- Rank 2 -->
+<tr class="group hover:bg-primary/5 transition-colors">
+<td class="px-8 py-6 font-headline font-black text-2xl text-on-surface/50">02</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<img alt="Rank 2 Avatar" class="w-12 h-12 rounded bg-surface-container object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Minimalist white robot arm assembling a crystal structure with glowing blue points in a dark void" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzbxxqVnYLLLX1GU7gYc16ERZCrK_lx3JvWDNMS14YMp-oy4_oDoqZMF-Krbit7zKKVD63PbeyPAHOOona_JhBt0YiKieUb0mkIGPhrsbrt4Fe5vdYxeBhGMiSeuF210Bvw5nfX5uopjhN8rQAUu5xceGRHuTn5NqTiimh5UjuKbrc8SNjbWyM1eDXmQB59tjvfDuJEq6sWjmcwaeKDWglAyBFnBqO3b6hsqcr8MHt-yRR4AWufbuRGzGfLR1N-ehNjN0Fh4-1Tt8v"/>
+<div>
+<div class="font-headline font-bold text-on-surface text-base">VOID_PROTOCOL</div>
+<div class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Architect: <span class="text-primary-container">ZeroDay</span></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-mono font-bold text-primary">1,102,300 <span class="text-[10px] text-slate-500">XP</span></td>
+<td class="px-8 py-6">
+<div class="flex flex-col items-center">
+<span class="font-headline font-bold text-on-surface">88.5%</span>
+<div class="w-20 h-1 bg-surface-container-highest rounded-full mt-1 overflow-hidden">
+<div class="bg-secondary h-full" style="width: 88%;"></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 text-xs text-on-surface-variant font-medium">14 mins ago</td>
+<td class="px-8 py-6 text-right">
+<div class="flex justify-end gap-2">
+<span class="bg-on-primary-container text-primary text-[10px] font-bold px-2 py-1 rounded-sm uppercase border border-primary/20">Strategy Master</span>
+</div>
+</td>
+</tr>
+<!-- Rank 3 -->
+<tr class="group hover:bg-primary/5 transition-colors">
+<td class="px-8 py-6 font-headline font-black text-2xl text-on-surface/50">03</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<img alt="Rank 3 Avatar" class="w-12 h-12 rounded bg-surface-container object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Stylized geometric wolf head constructed from dark metal plates with crimson glowing eyes and neon red veins" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ8807jQFhrrnRnmGY_Jsu9U8016B7zDrdiRtTmVSEJGelPgy5rHBb6Z-mYkq2ADelrCTGv9sjTKx55Z1DPqNXCjufZsTVIQdP4kvmSNiE7-frfvG5ivdGijIpmaWHegAhO1A0yOpqUTe5VZ4h6l78JKd095qsvYqFzaMt71FvoVxxh2eXCwGxD1Oi_D7iTE13RP7rT6UkMu5H-tZDcph_WWmPDW7GLJDxbvS9x_FT-6N2-TM0OCkuyN4CdkpzLJWr-7PPA4BKwtJT"/>
+<div>
+<div class="font-headline font-bold text-on-surface text-base">CYBER_WOLF_V3</div>
+<div class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Architect: <span class="text-primary-container">LunarX</span></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-mono font-bold text-primary">985,000 <span class="text-[10px] text-slate-500">XP</span></td>
+<td class="px-8 py-6">
+<div class="flex flex-col items-center">
+<span class="font-headline font-bold text-on-surface">82.1%</span>
+<div class="w-20 h-1 bg-surface-container-highest rounded-full mt-1 overflow-hidden">
+<div class="bg-secondary h-full" style="width: 82%;"></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 text-xs text-on-surface-variant font-medium">1 hour ago</td>
+<td class="px-8 py-6 text-right">
+<div class="flex justify-end gap-2">
+<span class="bg-on-secondary-container text-secondary text-[10px] font-bold px-2 py-1 rounded-sm uppercase border border-secondary/20">Bot on Fire</span>
+</div>
+</td>
+</tr>
+<!-- Standard Row -->
+<tr class="group hover:bg-primary/5 transition-colors">
+<td class="px-8 py-6 font-headline font-black text-2xl text-on-surface/30">04</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<img alt="Rank 4 Avatar" class="w-12 h-12 rounded bg-surface-container object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Macro photo of a computer chip glowing with gold and purple light, circuit patterns forming an abstract tech art" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFjAi8_0uOCx02rTlR-7Ciu8hGdn49coyTJe04sPyLxXoDGXgGYNjG0ivIjJvpNgvwn_IjbVGccSTXYZQoBWfa4tYjjdktKa-Ch4YfH0aoZjdoAPs-UYj543nNjwKAtJ__KM9Hi4QfvO53TbRQCLa2iUHNr9HbP9Av6Ge1HtEqBSZUvn8JPWgwDgrE8nP4fSTIKftXiSrBP0ZmbKJE-Yhxb_vrv1ZTLLx3mC8dSDyjDSEh4NlREIsoOPm7GU-0sCPgI50zHFSEp0GS"/>
+<div>
+<div class="font-headline font-bold text-on-surface text-base">LOGIC_GATE_Ω</div>
+<div class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Architect: <span class="text-primary-container">BinarySolo</span></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 font-mono font-bold text-primary">942,200 <span class="text-[10px] text-slate-500">XP</span></td>
+<td class="px-8 py-6">
+<div class="flex flex-col items-center">
+<span class="font-headline font-bold text-on-surface">79.8%</span>
+<div class="w-20 h-1 bg-surface-container-highest rounded-full mt-1 overflow-hidden">
+<div class="bg-secondary h-full" style="width: 79%;"></div>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 text-xs text-on-surface-variant font-medium">3 hours ago</td>
+<td class="px-8 py-6 text-right">
+<div class="flex justify-end gap-2">
+<span class="bg-on-tertiary-container text-tertiary text-[10px] font-bold px-2 py-1 rounded-sm uppercase border border-tertiary/20">Rookie of the Month</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Spacer for fixed footer -->
+<div class="h-24"></div>
+</div>
+<!-- User Pinned Highlight (Bottom) -->
+<div class="fixed bottom-0 left-64 right-0 p-4 z-40">
+<div class="max-w-7xl mx-auto">
+<div class="bg-primary-container/20 backdrop-blur-xl border border-primary/30 rounded-lg shadow-[0_-10px_40px_rgba(0,0,0,0.5)] p-4 flex items-center justify-between">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3 border-r border-primary/20 pr-6">
+<div class="font-headline font-black text-3xl text-primary">#422</div>
+<div class="text-[10px] font-headline font-bold uppercase tracking-widest leading-none text-on-surface">Your<br/>Rank</div>
+</div>
+<div class="flex items-center gap-4">
+<img alt="Your Avatar" class="w-10 h-10 rounded border border-primary" data-alt="Digital profile avatar of a human silhouette filled with flowing neon circuit data and a bright core at the center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE3TaSzYiNDtf4D2Pf2Png-XlYFsoKk7nxnoY2BT0cWqt8coRg2ei9gRQSyRQPsc6ipYyz7YNYQUsuoQpR46wvFBwGO_5uhJ62aGLdmS3CpdQTMzfGl7Tp841cuTceK8LOvWnwV7xhMUE_TbQvRGzAl2IblT5tk3jdqOcJ2r_JSG9gKVF3YpReZUUrSRLjzcRR1Phb_9IxivC8nNScifkFe156tXvC8bFeQ0o6dgnX27b5Q9JscVX3EFnI6YFhdmc1gf_xmXBVjp2n"/>
+<div>
+<div class="font-headline font-bold text-on-surface uppercase text-sm">ARCHITECT_01 <span class="text-xs text-primary ml-2">(YOU)</span></div>
+<div class="text-[10px] font-mono text-on-surface-variant uppercase tracking-widest">BOT: <span class="text-primary-container">PROMETHEUS_ALPHA</span></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-12">
+<div class="text-center">
+<div class="font-mono font-bold text-primary">24,500</div>
+<div class="text-[8px] font-headline font-bold uppercase tracking-widest text-on-surface-variant">Your XP</div>
+</div>
+<div class="text-center">
+<div class="font-mono font-bold text-secondary">52.4%</div>
+<div class="text-[8px] font-headline font-bold uppercase tracking-widest text-on-surface-variant">Winrate</div>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded font-headline font-bold text-xs uppercase tracking-widest hover:bg-primary-fixed transition-colors">
+                                GO TO PROFILE
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

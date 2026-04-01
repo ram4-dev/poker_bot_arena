@@ -1,6 +1,6 @@
 # Spec Funcional: Auth & Onboarding
 
-**Feature**: auth-onboarding | **Status**: Draft | **Lang**: es
+**Feature**: auth-onboarding | **Status**: Approved | **Lang**: es
 
 ---
 

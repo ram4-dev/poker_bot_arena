@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CyberStrat | Arena Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed-variant": "#2f2ebe",
+              "surface-container": "#201f20",
+              "surface-container-high": "#2a2a2b",
+              "tertiary-container": "#ff5451",
+              "on-primary-container": "#0d0096",
+              "background": "#131314",
+              "tertiary-fixed-dim": "#ffb3ad",
+              "on-secondary-fixed-variant": "#005236",
+              "primary-container": "#8083ff",
+              "on-surface-variant": "#c7c4d7",
+              "on-tertiary-fixed": "#410004",
+              "on-primary-fixed": "#07006c",
+              "surface-container-lowest": "#0e0e0f",
+              "on-tertiary-fixed-variant": "#930013",
+              "inverse-surface": "#e5e2e3",
+              "primary": "#c0c1ff",
+              "surface-variant": "#353436",
+              "tertiary": "#ffb3ad",
+              "on-secondary-fixed": "#002113",
+              "on-secondary-container": "#00311f",
+              "on-secondary": "#003824",
+              "on-surface": "#e5e2e3",
+              "surface": "#131314",
+              "secondary": "#4edea3",
+              "on-primary": "#1000a9",
+              "outline-variant": "#464554",
+              "surface-container-low": "#1c1b1c",
+              "on-error-container": "#ffdad6",
+              "secondary-fixed-dim": "#4edea3",
+              "primary-fixed-dim": "#c0c1ff",
+              "surface-tint": "#c0c1ff",
+              "error-container": "#93000a",
+              "secondary-fixed": "#6ffbbe",
+              "tertiary-fixed": "#ffdad7",
+              "secondary-container": "#00a572",
+              "on-background": "#e5e2e3",
+              "on-tertiary-container": "#5c0008",
+              "surface-container-highest": "#353436",
+              "on-tertiary": "#68000a",
+              "primary-fixed": "#e1e0ff",
+              "outline": "#908fa0",
+              "inverse-on-surface": "#313031",
+              "inverse-primary": "#494bd6",
+              "surface-dim": "#131314",
+              "surface-bright": "#3a393a",
+              "error": "#ffb4ab",
+              "on-error": "#690005"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #131314; color: #e5e2e3; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(53, 52, 54, 0.6); backdrop-filter: blur(20px); }
+        .cta-gradient { background: linear-gradient(135deg, #c0c1ff 0%, #8083ff 100%); }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar (JSON Derived) -->
+<aside class="h-screen sticky left-0 top-0 w-64 border-r-0 bg-[#1C1B1C] shadow-[4px_0_24px_rgba(0,0,0,0.5)] flex flex-col py-6 shrink-0">
+<div class="px-6 mb-10">
+<h1 class="text-xl font-bold text-[#C0C1FF] tracking-tighter font-headline">CyberStrat</h1>
+<p class="text-[10px] font-headline uppercase tracking-wider text-slate-500">Digital Architect</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-headline uppercase tracking-wider text-sm" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-headline uppercase tracking-wider text-sm" href="#">
+<span class="material-symbols-outlined">smart_toy</span> My Bots
+            </a>
+<a class="flex items-center gap-3 text-[#4EDE93] bg-[#353436] rounded-r-none border-l-4 border-[#4EDE93] px-4 py-3 font-headline uppercase tracking-wider text-sm" href="#">
+<span class="material-symbols-outlined">swords</span> Arenas
+            </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-headline uppercase tracking-wider text-sm" href="#">
+<span class="material-symbols-outlined">history</span> History
+            </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-headline uppercase tracking-wider text-sm" href="#">
+<span class="material-symbols-outlined">leaderboard</span> Leaderboard
+            </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-headline uppercase tracking-wider text-sm" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span> Wallet
+            </a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-headline uppercase tracking-wider text-sm" href="#">
+<span class="material-symbols-outlined">person</span> Profile
+            </a>
+</nav>
+<div class="mt-auto px-6 py-4 border-t border-outline-variant/20">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden">
+<img alt="User Profile Avatar" data-alt="close-up portrait of a stylized digital avatar with neon accents and sleek futuristic apparel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1Ns2YSbxJlkS8z57lGWMlY36qnnrzHl6jZ4xPIM3bMguZWfsFEzofaH7x-Op3iNqPRA4pSjkpr2vXQU_Md48LYEQykbcbuVCs0dF3tevU_YykTCQEFTVYwmm49nEmpk9V81snyhXkAtgfr3NBOcmAqga43jgEBax9nJ6sESJ2hNgknfVEtkxh6yxImjbbl5asS2qY1HEMxldnemWQ8ga0e36m3ndBw9gtwIUlTVkbV_wQrcxm5KgqgaLx_gU_2swdY1WBBXtfy7Rj"/>
+</div>
+<div>
+<p class="text-sm font-bold font-headline">DE-ARCHITECT</p>
+<p class="text-[10px] text-secondary">LVL 42 PREMIUM</p>
+</div>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col">
+<!-- TopAppBar (JSON Derived) -->
+<header class="sticky top-0 z-50 w-full bg-[#131314]/80 backdrop-blur-md flex justify-between items-center h-16 px-8 border-b border-[#353436]/50">
+<div class="flex items-center gap-6">
+<span class="text-slate-300 font-mono text-xs uppercase tracking-widest">Balance: 2,450 XP</span>
+<span class="text-slate-300 font-mono text-xs uppercase tracking-widest">Rank: Gold IV</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-slate-300 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="cta-gradient text-on-primary font-headline font-bold px-6 py-2 rounded-sm text-sm tracking-tight active:scale-95 duration-100 uppercase">
+                    BATTLE NOW
+                </button>
+</div>
+</header>
+<main class="p-10 flex gap-8">
+<div class="flex-1">
+<header class="mb-12">
+<h2 class="text-4xl font-headline font-bold tracking-tighter text-primary">SELECT ARENA</h2>
+<p class="text-on-surface-variant font-body max-w-xl mt-2">Engage your tactical units in optimized combat zones. Risk level correlates directly with algorithmic volatility and XP dividends.</p>
+</header>
+<!-- Bento-ish Grid for Arenas -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Low Stakes Arena -->
+<div class="group relative flex flex-col bg-surface-container-low p-6 border-l-2 border-secondary/30 hover:border-secondary transition-all">
+<div class="absolute top-0 right-0 p-4">
+<span class="text-[10px] font-mono text-secondary bg-on-secondary-container px-2 py-1 uppercase">Safe Zone</span>
+</div>
+<h3 class="text-2xl font-headline font-semibold mb-1">Low Stakes</h3>
+<div class="flex items-center gap-2 mb-6">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-xs text-secondary font-mono uppercase">Risk: Low</span>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<span class="text-[10px] text-on-surface-variant uppercase font-headline tracking-widest">Entry Fee</span>
+<span class="text-lg font-mono font-bold">10 XP</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<span class="text-[10px] text-on-surface-variant uppercase font-headline tracking-widest">Active Bots</span>
+<span class="text-lg font-mono font-bold">240</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<span class="text-[10px] text-on-surface-variant uppercase font-headline tracking-widest">Est. Reward</span>
+<span class="text-lg font-mono font-bold text-secondary">~25 XP</span>
+</div>
+</div>
+<button class="w-full py-4 border border-secondary/50 text-secondary font-headline uppercase tracking-widest text-xs hover:bg-secondary hover:text-on-secondary transition-all">
+                            Select Arena
+                        </button>
+</div>
+<!-- Mid Stakes Arena (Highlighted) -->
+<div class="group relative flex flex-col bg-surface-container-high p-6 border-l-2 border-primary/30 hover:border-primary transition-all scale-105 shadow-[0_20px_40px_rgba(0,0,0,0.4)] z-10">
+<div class="absolute top-0 right-0 p-4">
+<span class="text-[10px] font-mono text-primary bg-on-primary-container px-2 py-1 uppercase">Tactical Range</span>
+</div>
+<h3 class="text-2xl font-headline font-semibold mb-1">Mid Stakes</h3>
+<div class="flex items-center gap-2 mb-6">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-xs text-primary font-mono uppercase">Risk: Med</span>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<span class="text-[10px] text-on-surface-variant uppercase font-headline tracking-widest">Entry Fee</span>
+<span class="text-lg font-mono font-bold">50 XP</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<span class="text-[10px] text-on-surface-variant uppercase font-headline tracking-widest">Active Bots</span>
+<span class="text-lg font-mono font-bold">120</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<span class="text-[10px] text-on-surface-variant uppercase font-headline tracking-widest">Est. Reward</span>
+<span class="text-lg font-mono font-bold text-primary">~150 XP</span>
+</div>
+</div>
+<button class="w-full py-4 cta-gradient text-on-primary font-headline uppercase tracking-widest text-xs font-bold transition-all shadow-lg">
+                            Select Arena
+                        </button>
+</div>
+<!-- High Stakes Arena -->
+<div class="group relative flex flex-col bg-surface-container-low p-6 border-l-2 border-tertiary/30 hover:border-tertiary transition-all">
+<div class="absolute top-0 right-0 p-4">
+<span class="text-[10px] font-mono text-tertiary bg-on-tertiary-container px-2 py-1 uppercase">Volatile</span>
+</div>
+<h3 class="text-2xl font-headline font-semibold mb-1">High Stakes</h3>
+<div class="flex items-center gap-2 mb-6">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-xs text-tertiary font-mono uppercase">Risk: High</span>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<span class="text-[10px] text-on-surface-variant uppercase font-headline tracking-widest">Entry Fee</span>
+<span class="text-lg font-mono font-bold text-tertiary">200 XP</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<span class="text-[10px] text-on-surface-variant uppercase font-headline tracking-widest">Active Bots</span>
+<span class="text-lg font-mono font-bold">45</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<span class="text-[10px] text-on-surface-variant uppercase font-headline tracking-widest">Est. Reward</span>
+<span class="text-lg font-mono font-bold text-tertiary">~750 XP</span>
+</div>
+</div>
+<button class="w-full py-4 border border-tertiary/50 text-tertiary font-headline uppercase tracking-widest text-xs hover:bg-tertiary hover:text-on-tertiary transition-all">
+                            Select Arena
+                        </button>
+</div>
+</div>
+<section class="mt-16 bg-surface-container-lowest p-8 border border-outline-variant/10">
+<div class="flex items-center gap-4 mb-6">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<h4 class="font-headline font-bold uppercase tracking-widest text-sm">Arena Analytics Dashboard</h4>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase mb-1">Total Pool</p>
+<p class="text-xl font-mono">1.2M XP</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase mb-1">Server Latency</p>
+<p class="text-xl font-mono text-secondary">14MS</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase mb-1">Winning Rate</p>
+<p class="text-xl font-mono">54.2%</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase mb-1">Next Flush</p>
+<p class="text-xl font-mono">04:12:01</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Sidebar: Selected Bot Summary -->
+<aside class="w-80 flex flex-col gap-6 shrink-0">
+<div class="bg-surface-container-high p-6 border border-outline-variant/10">
+<h5 class="font-headline font-bold uppercase text-[10px] tracking-[0.2em] text-on-surface-variant mb-6 flex items-center justify-between">
+                        Deployment Unit
+                        <span class="material-symbols-outlined text-sm">settings</span>
+</h5>
+<div class="relative w-full aspect-square mb-6 bg-surface-container-highest overflow-hidden">
+<img alt="Bot Preview" class="w-full h-full scale-110" data-alt="high-detail 3D render of a tactical combat robot with matte black plating and glowing electric indigo optical sensors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDElQNOS6HT2zwzBklXIVugqtZg2uBBs141X4NWg6_Fb4nIZt0wpUF0Gb0DhTmI_6_rDMgrZ2Y_fJmeDpQWgKBqvZkHknAG_EAyxMV0Ib5WCePwUAiv4P5xOvAdMRTkzSUCwDG_7O5D-smCy6bBCY4NxeQoAPRAiGL3_6W3u_RtRt1QneuEi6Oywa6XenYiim3hOmEzmw4W54z5YX5JuAbQg42MbmWUDXNgb-MHCZ9moZwIOeCKj482iHNLLhF81A_2Yh6lLrH_rlMf"/>
+<div class="absolute bottom-4 left-4 right-4 glass-panel p-3 border border-primary/20">
+<p class="text-xs font-headline font-bold uppercase tracking-widest">AEGIS-7 UNIT</p>
+<p class="text-[9px] font-mono text-primary">SERIAL: CS-0941-X</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant uppercase">STRATEGY</span>
+<span class="font-mono text-primary">AGR-OFFENSIVE</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest">
+<div class="h-full bg-primary w-[78%]"></div>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant uppercase">EFFICIENCY</span>
+<span class="font-mono text-secondary">MAX-OPT</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest">
+<div class="h-full bg-secondary w-[92%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-high p-6 border border-outline-variant/10">
+<h5 class="font-headline font-bold uppercase text-[10px] tracking-[0.2em] text-on-surface-variant mb-4">Account Assets</h5>
+<div class="bg-surface-container-lowest p-4 mb-4">
+<p class="text-[10px] text-on-surface-variant uppercase font-headline">Total Balance</p>
+<p class="text-3xl font-headline font-bold tracking-tighter">2,450 XP</p>
+</div>
+<button class="w-full py-3 bg-surface-container-highest hover:bg-surface-variant border border-outline-variant/30 text-on-surface text-[10px] font-headline uppercase tracking-widest transition-all">
+                        Buy XP Credits
+                    </button>
+</div>
+<div class="mt-auto border-l-2 border-tertiary/20 p-4 bg-tertiary/5">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-tertiary text-lg">warning</span>
+<p class="text-[10px] font-bold text-tertiary uppercase font-headline">Strategic Alert</p>
+</div>
+<p class="text-[11px] text-on-surface-variant leading-relaxed">High Stakes arena currently showing 400% volatility. Defensive subroutines are recommended before deployment.</p>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

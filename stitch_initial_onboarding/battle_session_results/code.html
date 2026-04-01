@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CyberStrat | Battle Session Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "surface-container": "#201f20",
+                        "surface-container-high": "#2a2a2b",
+                        "tertiary-container": "#ff5451",
+                        "on-primary-container": "#0d0096",
+                        "background": "#131314",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-container": "#8083ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-tertiary-fixed": "#410004",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-lowest": "#0e0e0f",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "inverse-surface": "#e5e2e3",
+                        "primary": "#c0c1ff",
+                        "surface-variant": "#353436",
+                        "tertiary": "#ffb3ad",
+                        "on-secondary-fixed": "#002113",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "on-surface": "#e5e2e3",
+                        "surface": "#131314",
+                        "secondary": "#4edea3",
+                        "on-primary": "#1000a9",
+                        "outline-variant": "#464554",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-tint": "#c0c1ff",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "tertiary-fixed": "#ffdad7",
+                        "secondary-container": "#00a572",
+                        "on-background": "#e5e2e3",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-highest": "#353436",
+                        "on-tertiary": "#68000a",
+                        "primary-fixed": "#e1e0ff",
+                        "outline": "#908fa0",
+                        "inverse-on-surface": "#313031",
+                        "inverse-primary": "#494bd6",
+                        "surface-dim": "#131314",
+                        "surface-bright": "#3a393a",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #131314;
+            color: #e5e2e3;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar (Execution from JSON) -->
+<aside class="hidden md:flex flex-col h-full py-6 bg-[#1C1B1C] dark:bg-[#1C1B1C] h-screen sticky left-0 top-0 w-64 border-r-0 shadow-[4px_0_24px_rgba(0,0,0,0.5)] z-40">
+<div class="px-6 mb-10">
+<h1 class="text-xl font-bold text-[#C0C1FF] tracking-tighter font-['Space_Grotesk']">CyberStrat</h1>
+<p class="text-[10px] text-slate-500 font-['Space_Grotesk'] uppercase tracking-widest mt-1">Digital Architect</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span>My Bots</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="swords">swords</span>
+<span>Arenas</span>
+</a>
+<a class="flex items-center gap-3 text-[#4EDE93] bg-[#353436] rounded-r-none border-l-4 border-[#4EDE93] px-4 py-3 font-['Space_Grotesk'] uppercase tracking-wider text-sm translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span>Leaderboard</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Wallet</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 hover:text-[#C0C1FF] px-4 py-3 transition-colors font-['Space_Grotesk'] uppercase tracking-wider text-sm hover:bg-[#353436]" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span>Profile</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-highest/30">
+<img alt="User Profile Avatar" class="w-8 h-8 rounded-full border border-primary/20" data-alt="minimalist 3d avatar of a digital architect with neon blue accents and sleek tech visor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-7Qb1N9PjQ92qS8vu8T22xkAPZatQ7xQLWTc1DGAT7wtWOj-gQ152tin5MoOMIfGeiOZnl5FLZUQWtqd-Y85St3Kf_H_vMno1A_9R9VEPlV24dRntDerdnQR_9ZbbNdbPRR5XYY4mUyDWPHw_Ipri_P5roD2LJX6-ulZ36iRrSGxQE0c-mAmX1lH70h4dcjoSSyV_9srU-Dmv1r1YZuKf7LlVVnrAiWp88UjKOLUWQ5Hkk5Y_oJBpPCC-SJ8zJj8LwlKSDQkpHITq"/>
+<div>
+<p class="text-xs font-bold text-on-surface">FELIX_ARCH</p>
+<p class="text-[10px] text-primary/60">Rank: Gold IV</p>
+</div>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0 bg-surface">
+<!-- TopAppBar (Execution from JSON) -->
+<header class="sticky top-0 z-50 w-full bg-[#131314]/80 backdrop-blur-md flex justify-between items-center h-16 px-8 w-full border-b border-[#353436]/50 shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+<div class="flex items-center gap-6">
+<span class="text-slate-300 font-mono text-xs font-medium tracking-tight">Balance: 2,450 XP</span>
+<span class="text-slate-300 font-mono text-xs font-medium tracking-tight">Rank: Gold IV</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 hover:opacity-80 transition-opacity active:scale-95 duration-100">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary font-['Space_Grotesk'] font-bold text-xs px-6 py-2 rounded-[4px] tracking-tight hover:opacity-90 transition-all">
+                    BATTLE NOW
+                </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full">
+<!-- Header Summary Section (Asymmetric) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end mb-12">
+<div class="lg:col-span-8">
+<div class="flex items-center gap-3 mb-4">
+<span class="bg-secondary-container/20 text-secondary text-[10px] font-bold px-2 py-1 rounded-[4px] tracking-widest uppercase">Batch Execution: Complete</span>
+<span class="text-on-surface-variant text-xs font-mono">ID: 8842-X-SYNTH</span>
+</div>
+<h2 class="text-5xl md:text-6xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-4">
+                        SESSION <span class="text-primary">SUCCESS</span>
+</h2>
+<p class="text-on-surface-variant font-body max-w-xl text-lg leading-relaxed">
+                        Batch results for <span class="text-on-surface font-semibold">T-900 Arbiter (v2.4)</span>. Performance targets exceeded in 70% of scenarios. Net progression confirmed.
+                    </p>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-4">
+<div class="bg-surface-container-high p-4 rounded-lg flex items-center justify-between">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-label font-bold">Session Outcome</p>
+<p class="text-2xl font-headline font-bold text-secondary">VICTORY</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20">
+<span class="material-symbols-outlined text-secondary" data-icon="military_tech">military_tech</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Grid Stats -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<!-- XP Card -->
+<div class="bg-surface-container-low p-6 border-l-4 border-primary shadow-lg">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="trending_up">trending_up</span>
+<span class="text-[10px] text-primary/60 font-mono">+14.2%</span>
+</div>
+<p class="text-3xl font-headline font-bold text-on-surface">+350 XP</p>
+<p class="text-xs text-on-surface-variant font-label uppercase tracking-wider mt-1">Net Experience Gained</p>
+</div>
+<!-- Winrate Card -->
+<div class="bg-surface-container-low p-6 border-l-4 border-secondary shadow-lg">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary" data-icon="bolt">bolt</span>
+<span class="text-[10px] text-secondary/60 font-mono">B-BATCH</span>
+</div>
+<p class="text-3xl font-headline font-bold text-on-surface">7 / 10</p>
+<p class="text-xs text-on-surface-variant font-label uppercase tracking-wider mt-1">Batch Win Rate</p>
+</div>
+<!-- Ranking Card -->
+<div class="bg-surface-container-low p-6 border-l-4 border-on-secondary-container shadow-lg">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary" data-icon="equalizer">equalizer</span>
+<span class="text-[10px] text-secondary/60 font-mono">GOLD IV</span>
+</div>
+<p class="text-3xl font-headline font-bold text-on-surface">+12 PTS</p>
+<p class="text-xs text-on-surface-variant font-label uppercase tracking-wider mt-1">Ranking Progression</p>
+</div>
+<!-- Duration Card -->
+<div class="bg-surface-container-low p-6 border-l-4 border-outline shadow-lg">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-outline" data-icon="timer">timer</span>
+<span class="text-[10px] text-outline/60 font-mono">12.4ms LATENCY</span>
+</div>
+<p class="text-3xl font-headline font-bold text-on-surface">14m 22s</p>
+<p class="text-xs text-on-surface-variant font-label uppercase tracking-wider mt-1">Total Battle Duration</p>
+</div>
+</div>
+<!-- Performance Breakdown & Insights -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+<!-- Visual Chart Simulation -->
+<div class="lg:col-span-2 bg-surface-container-low p-8 rounded-xl">
+<div class="flex justify-between items-center mb-10">
+<h3 class="font-headline font-bold text-lg uppercase tracking-tight">Performance Breakdown</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 bg-secondary rounded-sm"></span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">Win</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 bg-tertiary rounded-sm"></span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">Loss</span>
+</div>
+</div>
+</div>
+<div class="flex items-end justify-between h-48 gap-2">
+<!-- Match Bars -->
+<div class="flex-1 bg-secondary hover:brightness-110 transition-all cursor-pointer h-full rounded-t-[4px]" title="Match 1: Win"></div>
+<div class="flex-1 bg-secondary hover:brightness-110 transition-all cursor-pointer h-[85%] rounded-t-[4px]" title="Match 2: Win"></div>
+<div class="flex-1 bg-tertiary hover:brightness-110 transition-all cursor-pointer h-[40%] rounded-t-[4px]" title="Match 3: Loss"></div>
+<div class="flex-1 bg-secondary hover:brightness-110 transition-all cursor-pointer h-[95%] rounded-t-[4px]" title="Match 4: Win"></div>
+<div class="flex-1 bg-secondary hover:brightness-110 transition-all cursor-pointer h-[70%] rounded-t-[4px]" title="Match 5: Win"></div>
+<div class="flex-1 bg-tertiary hover:brightness-110 transition-all cursor-pointer h-[55%] rounded-t-[4px]" title="Match 6: Loss"></div>
+<div class="flex-1 bg-secondary hover:brightness-110 transition-all cursor-pointer h-[90%] rounded-t-[4px]" title="Match 7: Win"></div>
+<div class="flex-1 bg-secondary hover:brightness-110 transition-all cursor-pointer h-[80%] rounded-t-[4px]" title="Match 8: Win"></div>
+<div class="flex-1 bg-tertiary hover:brightness-110 transition-all cursor-pointer h-[35%] rounded-t-[4px]" title="Match 9: Loss"></div>
+<div class="flex-1 bg-secondary hover:brightness-110 transition-all cursor-pointer h-[100%] rounded-t-[4px]" title="Match 10: Win"></div>
+</div>
+<div class="flex justify-between mt-4 border-t border-outline-variant/30 pt-4">
+<span class="text-[10px] font-mono text-on-surface-variant">M_01</span>
+<span class="text-[10px] font-mono text-on-surface-variant">M_05</span>
+<span class="text-[10px] font-mono text-on-surface-variant">M_10</span>
+</div>
+</div>
+<!-- Architect Insights -->
+<div class="bg-surface-container-highest/40 p-8 rounded-xl border border-outline-variant/10 backdrop-blur-sm">
+<h3 class="font-headline font-bold text-lg uppercase tracking-tight mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="psychology">psychology</span>
+                        Architect Insights
+                    </h3>
+<div class="space-y-6">
+<div class="relative pl-6 border-l-2 border-secondary">
+<p class="text-xs font-bold text-secondary uppercase tracking-widest mb-1">STRENGTH</p>
+<p class="text-sm text-on-surface-variant font-body italic leading-relaxed">
+                                "Bot performed optimally in opening rounds, leveraging aggressive resource allocation to secure early dominance."
+                            </p>
+</div>
+<div class="relative pl-6 border-l-2 border-tertiary">
+<p class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1">VULNERABILITY</p>
+<p class="text-sm text-on-surface-variant font-body italic leading-relaxed">
+                                "Struggled vs Defensive strategies. Heuristic engine failed to pivot efficiently during late-game attrition phases."
+                            </p>
+</div>
+<div class="pt-4 border-t border-outline-variant/20">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-2">ADVISORY</p>
+<p class="text-xs text-primary font-mono leading-tight">RECOMMEND: ADJUST ENTROPY THRESHOLD TO 0.45 FOR DEFENSIVE MATCHUPS.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Rivals & History -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+<div class="lg:col-span-2">
+<h3 class="font-headline font-bold text-lg uppercase tracking-tight mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="group">group</span>
+                        Top Rivals Faced
+                    </h3>
+<div class="bg-surface-container-low rounded-xl overflow-hidden">
+<div class="grid grid-cols-3 p-4 bg-surface-container-high/50 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
+<span>Bot Designation</span>
+<span>Architect</span>
+<span class="text-right">Outcome</span>
+</div>
+<div class="divide-y divide-outline-variant/10">
+<div class="grid grid-cols-3 p-4 items-center hover:bg-surface-container-highest/20 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container-highest rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="precision_manufacturing">precision_manufacturing</span>
+</div>
+<span class="text-sm font-semibold">NEON_REAPER</span>
+</div>
+<span class="text-xs text-on-surface-variant">Arch_Zane</span>
+<div class="text-right">
+<span class="text-[10px] font-bold text-secondary bg-secondary/10 px-2 py-1 rounded-full uppercase">WIN</span>
+</div>
+</div>
+<div class="grid grid-cols-3 p-4 items-center hover:bg-surface-container-highest/20 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container-highest rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="memory">memory</span>
+</div>
+<span class="text-sm font-semibold">COBALT_WALL</span>
+</div>
+<span class="text-xs text-on-surface-variant">NullPointer_0</span>
+<div class="text-right">
+<span class="text-[10px] font-bold text-tertiary bg-tertiary/10 px-2 py-1 rounded-full uppercase">LOSS</span>
+</div>
+</div>
+<div class="grid grid-cols-3 p-4 items-center hover:bg-surface-container-highest/20 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container-highest rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="microchip">location_chip</span>
+</div>
+<span class="text-sm font-semibold">VOID_RUNNER</span>
+</div>
+<span class="text-xs text-on-surface-variant">Sector_99</span>
+<div class="text-right">
+<span class="text-[10px] font-bold text-secondary bg-secondary/10 px-2 py-1 rounded-full uppercase">WIN</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bot Visual Section -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden relative group">
+<img alt="Cybernetic Bot Detail" class="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" data-alt="detailed macro shot of futuristic robot circuitry with glowing green and blue lights and high-tech metallic textures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANHFZ33h8PNL4TJ4aaOk2NCiuB3QtYqG5JvXyzVQna6SfQeamgZvzgVKEzM5Hh25GzgW1B0DG8VjuriyJuG-x4At9Nxd--CnX8edoiuXh6YW65gFZ0Ous3bgjR_EFBX0xRl3ROgTjEndDlz09vEVFw4x-o4qp3hPrOKsa7A3I74hT5PORMC8z2WNV28YiGQn-oEm1Y7CfErIk9jMfbW3wFEsF0PfpChkDFDcAMBkrGk2475TyhQGQyUFx0YoTjiJXYSMg-JLosMvid"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background to-transparent flex flex-col justify-end p-8">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-2">Active Core</p>
+<h4 class="text-xl font-headline font-bold mb-4">T-900 ARBITER <span class="text-on-surface-variant text-sm font-mono font-normal">v2.4</span></h4>
+<div class="flex gap-2">
+<div class="flex-1 h-1 bg-secondary rounded-full"></div>
+<div class="flex-1 h-1 bg-secondary rounded-full"></div>
+<div class="flex-1 h-1 bg-secondary rounded-full"></div>
+<div class="flex-1 h-1 bg-outline-variant rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="flex flex-col md:flex-row gap-4 justify-center items-center py-10 border-t border-outline-variant/20">
+<button class="w-full md:w-auto px-10 py-4 font-headline font-bold text-sm tracking-widest uppercase border border-outline-variant hover:bg-surface-container-highest transition-all rounded-[4px] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="grid_view">grid_view</span>
+                    Go to Dashboard
+                </button>
+<button class="w-full md:w-auto px-10 py-4 font-headline font-bold text-sm tracking-widest uppercase border border-primary text-primary hover:bg-primary/5 transition-all rounded-[4px] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
+                    Tweak Bot (v2.5)
+                </button>
+<button class="w-full md:w-auto px-12 py-4 font-headline font-bold text-sm tracking-widest uppercase bg-gradient-to-br from-primary to-primary-container text-on-primary hover:opacity-90 transition-all rounded-[4px] flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(192,193,255,0.3)]">
+<span class="material-symbols-outlined text-sm" data-icon="swords">swords</span>
+                    Battle Again
+                </button>
+</div>
+</main>
+<footer class="mt-auto py-8 px-10 border-t border-outline-variant/10 text-center text-[10px] text-on-surface-variant font-mono uppercase tracking-[0.2em]">
+            SYSTEM_STATUS: OPERATIONAL // CONNECTION: ENCRYPTED_SYNTH_NET // 2024 CYBERSTRAT_CORE
+        </footer>
+</div>
+</body></html>
