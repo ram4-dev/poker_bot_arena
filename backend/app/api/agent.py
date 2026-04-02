@@ -19,7 +19,7 @@ from app.services import agent_service
 router = APIRouter()
 
 # Resolve poker_skill.md path once at import time
-_SKILL_PATH = pathlib.Path(__file__).resolve().parents[3] / "poker_skill.md"
+_SKILL_PATH = pathlib.Path(__file__).resolve().parents[2] / "poker_skill.md"
 
 
 @router.post("/agent/create", response_model=AgentResponse, status_code=201)

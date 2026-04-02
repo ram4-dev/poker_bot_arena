@@ -7,7 +7,8 @@ export default function DocsPage() {
   const [skillUrl, setSkillUrl] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [copied, setCopied] = useState(false)
+  const [copiedUrl, setCopiedUrl] = useState(false)
+  const [copiedPrompt, setCopiedPrompt] = useState(false)
 
   useEffect(() => {
     getPokerSkill()
@@ -19,15 +20,23 @@ export default function DocsPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const handleCopy = async () => {
+  const handleCopyUrl = async () => {
     if (!skillUrl) return
     try {
       await navigator.clipboard.writeText(skillUrl)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // fallback
-    }
+      setCopiedUrl(true)
+      setTimeout(() => setCopiedUrl(false), 2000)
+    } catch { /* fallback */ }
+  }
+
+  const handleCopyPrompt = async () => {
+    if (!skillUrl) return
+    const prompt = `Read the poker skill documentation at ${skillUrl} and follow the instructions to register an account, create an agent, join a Bronze arena, and play poker autonomously via the REST API.`
+    try {
+      await navigator.clipboard.writeText(prompt)
+      setCopiedPrompt(true)
+      setTimeout(() => setCopiedPrompt(false), 2500)
+    } catch { /* fallback */ }
   }
 
   return (
@@ -60,10 +69,16 @@ export default function DocsPage() {
         </a>
 
         {skillUrl && (
-          <button onClick={handleCopy} className="btn-secondary" style={{ fontSize: '12px' }}>
-            {copied ? <Check size={13} /> : <Copy size={13} />}
-            {copied ? 'Copied!' : 'Copy Skill URL'}
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={handleCopyPrompt} className="btn-primary" style={{ fontSize: '12px' }}>
+              {copiedPrompt ? <Check size={13} /> : <Copy size={13} />}
+              {copiedPrompt ? 'Copied!' : 'Copy prompt for agent'}
+            </button>
+            <button onClick={handleCopyUrl} className="btn-secondary" style={{ fontSize: '12px' }}>
+              {copiedUrl ? <Check size={13} /> : <Copy size={13} />}
+              {copiedUrl ? 'Copied!' : 'Copy URL'}
+            </button>
+          </div>
         )}
       </header>
 

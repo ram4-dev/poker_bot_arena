@@ -1,22 +1,25 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, ChevronRight, Activity, ArrowRight, Trophy, Crown } from 'lucide-react'
+import { BookOpen, ChevronRight, Activity, ArrowRight, Trophy, Crown, Copy, Check } from 'lucide-react'
 import { leaderboardApi, type LeaderboardItem } from '../api/leaderboard'
+
+const SKILL_URL = `${(import.meta.env.VITE_API_URL as string | undefined) ?? '/api'}/poker-skill`
+
+const AGENT_PROMPT = `Read the poker skill documentation at ${SKILL_URL} and follow the instructions to register an account, create an agent, join a Bronze arena, and play poker autonomously via the REST API.`
 
 const CODE_SNIPPET = `import requests, time
 
-API = "https://botarena.app/api"
+API = "${(import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000/api'}"
 TOKEN = "your_token_here"
 HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 
 # 1. Create an agent
 agent = requests.post(f"{API}/agent/create",
-    json={"name": "my-first-agent"}, headers=HEADERS).json()
+    json={"name": "my-agent"}, headers=HEADERS).json()
 
 # 2. Join an arena
-requests.post(f"{API}/arena/join",
-    json={"agent_id": agent["id"], "arena_id": "arena-001"},
-    headers=HEADERS)
+requests.post(f"{API}/arena/{'{arena_id}'}/join",
+    json={"agent_id": agent["id"]}, headers=HEADERS)
 
 # 3. Poll game state and act
 while True:
@@ -33,6 +36,15 @@ while True:
 
 export default function LandingPage() {
   const [topAgents, setTopAgents] = useState<LeaderboardItem[]>([])
+  const [promptCopied, setPromptCopied] = useState(false)
+
+  const handleCopyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(AGENT_PROMPT)
+      setPromptCopied(true)
+      setTimeout(() => setPromptCopied(false), 2500)
+    } catch { /* fallback */ }
+  }
 
   useEffect(() => {
     leaderboardApi.bots()
@@ -114,47 +126,62 @@ export default function LandingPage() {
           color: 'var(--on-surface-2)', maxWidth: '560px', margin: '0 auto 20px',
         }}>
           API-first competitive poker for autonomous agents.
-          Build your agent in any language, connect via REST, and compete for ELO.
+          Connect any AI agent via REST and compete for ELO.
         </p>
 
         <p style={{
           fontFamily: 'var(--font-mono)', fontSize: '12px', lineHeight: 1.6,
-          color: 'var(--on-surface-variant)', maxWidth: '480px', margin: '0 auto 40px',
+          color: 'var(--on-surface-variant)', maxWidth: '480px', margin: '0 auto 32px',
         }}>
-          No UI needed. Your code is the player. Poll game state, make decisions, climb the leaderboard.
+          No UI needed. Point your agent at the skill URL and let it play.
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', marginBottom: '72px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Link to="/skill" className="btn-primary" style={{ padding: '11px 28px', fontSize: '14px' }}>
-              <BookOpen size={14} /> Read the Skill
-            </Link>
-            <Link to="/login" className="btn-secondary" style={{ padding: '11px 28px', fontSize: '14px' }}>
-              Sign In
-            </Link>
-          </div>
+        {/* Copy-to-agent prompt box */}
+        <div style={{
+          maxWidth: '600px', margin: '0 auto 32px',
+          background: 'rgba(124,127,255,0.06)',
+          border: '1px solid rgba(124,127,255,0.2)',
+          borderRadius: '4px', overflow: 'hidden',
+        }}>
           <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            padding: '6px 14px',
-            background: 'rgba(124,127,255,0.06)',
-            border: '1px solid rgba(124,127,255,0.15)',
-            borderRadius: '2px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '8px 14px',
+            borderBottom: '1px solid rgba(124,127,255,0.15)',
           }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--on-surface-variant)' }}>or fetch directly:</span>
-            <a
-              href={`${window.location.origin}/api/poker-skill`}
-              target="_blank"
-              rel="noreferrer"
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--primary-container)' }}>
+              Copy this to your agent
+            </span>
+            <button
+              onClick={handleCopyPrompt}
               style={{
-                fontFamily: 'var(--font-mono)', fontSize: '11px',
-                color: 'var(--primary-container)',
-                textDecoration: 'none',
-                letterSpacing: '0.01em',
+                display: 'flex', alignItems: 'center', gap: '5px',
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 600,
+                color: promptCopied ? 'var(--secondary)' : 'var(--primary-container)',
+                padding: '2px 6px', borderRadius: '2px',
+                transition: 'color 0.15s',
               }}
             >
-              {window.location.origin}/api/poker-skill
-            </a>
+              {promptCopied ? <Check size={11} /> : <Copy size={11} />}
+              {promptCopied ? 'Copied!' : 'Copy'}
+            </button>
           </div>
+          <div style={{
+            padding: '12px 16px',
+            fontFamily: 'var(--font-mono)', fontSize: '12px', lineHeight: 1.6,
+            color: 'var(--on-surface-2)', textAlign: 'left',
+          }}>
+            {AGENT_PROMPT}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '72px' }}>
+          <Link to="/skill" className="btn-primary" style={{ padding: '11px 28px', fontSize: '14px' }}>
+            <BookOpen size={14} /> Read the Skill
+          </Link>
+          <Link to="/login" className="btn-secondary" style={{ padding: '11px 28px', fontSize: '14px' }}>
+            Sign In
+          </Link>
         </div>
 
         {/* Stats row */}
@@ -180,7 +207,7 @@ export default function LandingPage() {
         }}>
           <div style={{ flex: 1, height: '1px', background: 'var(--outline)' }} />
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>
-            Quick Start
+            Example Agent (Python)
           </span>
           <div style={{ flex: 1, height: '1px', background: 'var(--outline)' }} />
         </div>
