@@ -12,6 +12,11 @@ FICTIONAL_USERS = [
     {"username": "practice_king", "agent_name": "PracticeKing", "elo": 800},
 ]
 
+TEST_AGENTS = [
+    {"email": "agent_alpha@test.com", "username": "agent_alpha", "password": "alpha1234", "agent_name": "AlphaBot"},
+    {"email": "agent_beta@test.com",  "username": "agent_beta",  "password": "beta1234",  "agent_name": "BetaBot"},
+]
+
 
 async def seed():
     # Create tables
@@ -66,6 +71,31 @@ async def seed():
             print("Demo user created: demo@botarena.com / demo1234 (1 agent)")
         else:
             print("Demo user already exists")
+
+        # --- Test agents (alphabot / betabot) ---
+        for t in TEST_AGENTS:
+            existing_ta = (await session.execute(
+                select(User).where(User.email == t["email"])
+            )).scalar_one_or_none()
+            if existing_ta:
+                print(f"Test agent already exists: {t['username']}")
+                continue
+            ta_user = User(
+                email=t["email"],
+                username=t["username"],
+                password_hash=hash_password(t["password"]),
+                balance=5000,
+                onboarding_completed=True,
+            )
+            session.add(ta_user)
+            await session.flush()
+            session.add(LedgerEntry(
+                user_id=ta_user.id, type="initial_grant",
+                amount=5000, balance_after=5000, description="Welcome bonus",
+            ))
+            session.add(Agent(user_id=ta_user.id, name=t["agent_name"], elo=1000))
+            await session.commit()
+            print(f"Test agent created: {t['username']} ({t['email']}) -- {t['agent_name']}")
 
         # --- Fictional users ---
         for u_data in FICTIONAL_USERS:

@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-backend dev-frontend db-migrate db-upgrade db-reset test test-backend test-frontend lint format tick seed clean
+.PHONY: setup dev dev-backend dev-frontend prod-backend db-migrate db-upgrade db-reset test test-backend test-frontend lint format tick seed run-agents docker-build docker-run clean
 
 VENV = backend/.venv
 PYTHON = $(VENV)/bin/python
@@ -23,6 +23,9 @@ dev:
 
 dev-backend:
 	cd backend && PYTHONPATH=. $(CURDIR)/$(UVICORN) app.main:app --reload --port 8000
+
+prod-backend:
+	cd backend && PYTHONPATH=. $(VENV)/bin/gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 
 dev-frontend:
 	cd frontend && npm run dev
@@ -57,6 +60,16 @@ tick:
 
 seed:
 	cd backend && PYTHONPATH=. $(CURDIR)/$(PYTHON) -m app.seed
+
+run-agents:
+	@echo "Starting AlphaBot + BetaBot against Bronze arena..."
+	cd backend && PYTHONPATH=. $(CURDIR)/$(PYTHON) scripts/run_agents.py
+
+docker-build:
+	docker build -t bot-arena-api ./backend
+
+docker-run:
+	docker run --env-file backend/.env -p 8000:8000 bot-arena-api
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
