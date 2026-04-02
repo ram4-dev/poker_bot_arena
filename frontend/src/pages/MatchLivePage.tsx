@@ -4,6 +4,10 @@ import { ArrowLeft, Monitor, Radio } from 'lucide-react'
 import AppShell from '../components/AppShell'
 import { matchesApi, type MatchLiveInfo, type HandInfo } from '../api/matches'
 
+const HAND_LINGER_MS = 5000   // how long to keep showing a finished hand before advancing
+const CARD_REVEAL_MS = 700    // delay between each community card appearing
+const EVENT_REVEAL_MS = 600   // delay between each action appearing in the log
+
 const SUIT_MAP: Record<string, { symbol: string; color: string }> = {
   h: { symbol: '\u2665', color: '#ef4444' },
   d: { symbol: '\u2666', color: '#ef4444' },
@@ -18,27 +22,26 @@ function CardDisplay({ card, isNew }: { card: string; isNew?: boolean }) {
   const suit = SUIT_MAP[suitKey] ?? { symbol: suitKey, color: 'var(--on-surface)' }
 
   return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 14,
-      width: 36, height: 48, borderRadius: 4,
-      background: isNew ? 'rgba(124,127,255,0.12)' : 'var(--surface-container)',
-      border: `1px solid ${isNew ? 'var(--primary)' : 'var(--outline)'}`,
-      color: suit.color,
-      letterSpacing: '-0.02em',
-      transition: 'background 0.4s, border-color 0.4s',
-    }}>
+    <span
+      className={isNew ? 'card-new' : undefined}
+      style={{
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 14,
+        width: 36, height: 48, borderRadius: 4,
+        background: isNew ? 'rgba(124,127,255,0.15)' : 'var(--surface-container)',
+        border: `1px solid ${isNew ? 'var(--primary)' : 'var(--outline)'}`,
+        color: suit.color,
+        letterSpacing: '-0.02em',
+        transition: 'background 0.6s, border-color 0.6s',
+      }}
+    >
       {rank}{suit.symbol}
     </span>
   )
 }
 
-function SeatCard({ label, seat }: {
-  label: string
-  seat: MatchLiveInfo['seat_1']
-}) {
+function SeatCard({ label, seat }: { label: string; seat: MatchLiveInfo['seat_1'] }) {
   if (!seat) return null
-
   return (
     <div style={{
       flex: 1, padding: 16,
@@ -81,112 +84,168 @@ function SeatCard({ label, seat }: {
   )
 }
 
-function streetLabel(street: string): string {
-  return street.charAt(0).toUpperCase() + street.slice(1)
+function streetLabel(s: string) { return s.charAt(0).toUpperCase() + s.slice(1) }
+
+// ── Extended event rows (actions + street dividers) ───────────────────────────
+type ActionRow   = { type: 'action' } & import('../api/matches').HandEventInfo
+type DividerRow  = { type: 'divider'; street: string; cards: string[] }
+type ExtendedRow = ActionRow | DividerRow
+
+const STREET_CARD_SLICES: Record<string, [number, number]> = {
+  flop:  [0, 3],
+  turn:  [3, 4],
+  river: [4, 5],
+}
+
+function buildExtendedEvents(
+  events: import('../api/matches').HandEventInfo[],
+  communityCards: string[],
+): ExtendedRow[] {
+  const rows: ExtendedRow[] = []
+  let lastStreet = ''
+  for (const ev of events) {
+    if (ev.street !== lastStreet) {
+      const slice = STREET_CARD_SLICES[ev.street]
+      if (slice) {
+        rows.push({ type: 'divider', street: ev.street, cards: communityCards.slice(...slice) })
+      }
+      lastStreet = ev.street
+    }
+    rows.push({ type: 'action', ...ev })
+  }
+  return rows
 }
 
 function actionColor(action: string): string {
   switch (action.toLowerCase()) {
-    case 'fold': return 'var(--tertiary)'
-    case 'raise': return 'var(--secondary)'
-    case 'bet': return 'var(--secondary)'
-    case 'call': return 'var(--primary)'
-    case 'check': return 'var(--on-surface-variant)'
+    case 'fold':   return 'var(--tertiary)'
+    case 'raise':  return 'var(--secondary)'
+    case 'bet':    return 'var(--secondary)'
+    case 'call':   return 'var(--primary)'
+    case 'check':  return 'var(--on-surface-variant)'
     case 'all_in': return '#f59e0b'
-    default: return 'var(--on-surface)'
+    default:       return 'var(--on-surface)'
   }
 }
 
 export default function MatchLivePage() {
   const { tableId } = useParams<{ tableId: string }>()
   const navigate = useNavigate()
-  const [data, setData] = useState<MatchLiveInfo | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedHandId, setSelectedHandId] = useState<string | null>(null)
-  const [followLive, setFollowLive] = useState(true)
-  const [newEventSeqs, setNewEventSeqs] = useState<Set<number>>(new Set())
-  const [newCardIndices, setNewCardIndices] = useState<Set<number>>(new Set())
-  const prevHandRef = useRef<HandInfo | null>(null)
-  const eventsEndRef = useRef<HTMLDivElement>(null)
 
+  const [data, setData]         = useState<MatchLiveInfo | null>(null)
+  const [loading, setLoading]   = useState(true)
+  const [error, setError]       = useState<string | null>(null)
+  const [followLive, setFollowLive] = useState(true)
+  // visibleHandId = what's displayed; lags latestHandId by HAND_LINGER_MS in live mode
+  const [visibleHandId, setVisibleHandId] = useState<string | null>(null)
+  // how many community cards are currently revealed
+  const [revealedCards, setRevealedCards] = useState(0)
+  // how many events are currently revealed (for step-by-step action log)
+  const [revealedEvents, setRevealedEvents] = useState(0)
+
+  const lingerTimerRef      = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const eventsEndRef        = useRef<HTMLDivElement>(null)
+  // Holds the latest counts so effect #3 can read them without adding as deps.
+  const targetCardCountRef  = useRef(0)
+  const targetEventCountRef = useRef(0)
+
+  // ── 1. Poll API (clean — no state logic here) ──────────────────────────────
   useEffect(() => {
     if (!tableId) return
-
-    const fetchLive = () => {
+    const poll = () => {
       matchesApi.live(tableId)
-        .then(r => {
-          setData(prev => {
-            const next = r.data
-
-            // Figure out which hand to show
-            if (next.recent_hands?.length) {
-              const latestHand = next.recent_hands[next.recent_hands.length - 1]
-
-              if (followLive || !selectedHandId) {
-                setSelectedHandId(latestHand.hand_id)
-              }
-
-              // Detect new events on the currently shown hand
-              const prevHand = prevHandRef.current
-              const shown = next.recent_hands.find(h =>
-                h.hand_id === (followLive ? latestHand.hand_id : selectedHandId)
-              )
-              if (shown && prevHand && prevHand.hand_id === shown.hand_id) {
-                const prevSeqs = new Set(prevHand.events.map(e => e.sequence))
-                const added = shown.events.filter(e => !prevSeqs.has(e.sequence))
-                if (added.length) {
-                  setNewEventSeqs(new Set(added.map(e => e.sequence)))
-                  setTimeout(() => setNewEventSeqs(new Set()), 2000)
-                }
-
-                // Detect new community cards
-                const prevCount = prevHand.community_cards.length
-                if (shown.community_cards.length > prevCount) {
-                  const indices = new Set<number>()
-                  for (let i = prevCount; i < shown.community_cards.length; i++) indices.add(i)
-                  setNewCardIndices(indices)
-                  setTimeout(() => setNewCardIndices(new Set()), 2000)
-                }
-              } else if (shown && (!prevHand || prevHand.hand_id !== shown.hand_id)) {
-                // New hand started — all cards are "new"
-                if (shown.community_cards.length > 0) {
-                  setNewCardIndices(new Set(shown.community_cards.map((_, i) => i)))
-                  setTimeout(() => setNewCardIndices(new Set()), 2000)
-                }
-                setNewEventSeqs(new Set(shown.events.map(e => e.sequence)))
-                setTimeout(() => setNewEventSeqs(new Set()), 2000)
-              }
-
-              prevHandRef.current = shown ?? null
-            }
-
-            return next
-          })
-          setError(null)
-        })
+        .then(r => { setData(r.data); setError(null) })
         .catch(() => setError('Failed to load match data'))
         .finally(() => setLoading(false))
     }
+    poll()
+    const iv = setInterval(poll, 1000)
+    return () => clearInterval(iv)
+  }, [tableId])
 
-    fetchLive()
-    const interval = setInterval(fetchLive, 2000)
-    return () => clearInterval(interval)
-  }, [tableId, followLive, selectedHandId])
-
-  // Auto-scroll events to bottom when new ones arrive
-  useEffect(() => {
-    if (newEventSeqs.size > 0) {
-      eventsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }
-  }, [newEventSeqs])
-
+  // ── Derived ─────────────────────────────────────────────────────────────────
   const latestHandId = data?.recent_hands?.length
     ? data.recent_hands[data.recent_hands.length - 1].hand_id
     : null
 
-  const displayHandId = followLive ? latestHandId : selectedHandId
-  const selectedHand = data?.recent_hands?.find(h => h.hand_id === displayHandId) ?? null
+  const visibleHand: HandInfo | null =
+    data?.recent_hands?.find(h => h.hand_id === visibleHandId) ?? null
+
+  // ── 2. Live hand transition with linger ────────────────────────────────────
+  useEffect(() => {
+    if (!latestHandId) return
+
+    if (!visibleHandId) {
+      // First load — show immediately
+      setVisibleHandId(latestHandId)
+      return
+    }
+
+    if (!followLive) return
+
+    if (latestHandId !== visibleHandId && !lingerTimerRef.current) {
+      // New hand arrived — wait HAND_LINGER_MS before switching
+      lingerTimerRef.current = setTimeout(() => {
+        setVisibleHandId(latestHandId)
+        lingerTimerRef.current = null
+      }, HAND_LINGER_MS)
+    }
+  }, [latestHandId, followLive, visibleHandId])
+
+  useEffect(() => () => {
+    if (lingerTimerRef.current) clearTimeout(lingerTimerRef.current)
+  }, [])
+
+  // ── 3. Reset card/event reveal when visible hand changes ──────────────────
+  useEffect(() => {
+    // Show existing cards/events immediately; only animate NEW ones arriving.
+    setRevealedCards(targetCardCountRef.current)
+    setRevealedEvents(targetEventCountRef.current)
+  }, [visibleHandId])
+
+  // ── 4. Reveal community cards one by one ───────────────────────────────────
+  const targetCardCount = visibleHand?.community_cards.length ?? 0
+  targetCardCountRef.current = targetCardCount
+
+  useEffect(() => {
+    if (revealedCards >= targetCardCount) return
+    const t = setTimeout(() => setRevealedCards(c => c + 1), CARD_REVEAL_MS)
+    return () => clearTimeout(t)
+  }, [revealedCards, targetCardCount])
+
+  // ── 5. Reveal events one by one ────────────────────────────────────────────
+  const extendedEvents: ExtendedRow[] = visibleHand
+    ? buildExtendedEvents(visibleHand.events, visibleHand.community_cards)
+    : []
+  const targetEventCount = extendedEvents.length
+  targetEventCountRef.current = targetEventCount
+
+  useEffect(() => {
+    if (revealedEvents >= targetEventCount) return
+    const t = setTimeout(() => setRevealedEvents(c => c + 1), EVENT_REVEAL_MS)
+    return () => clearTimeout(t)
+  }, [revealedEvents, targetEventCount])
+
+  // ── 6. Auto-scroll events ──────────────────────────────────────────────────
+  useEffect(() => {
+    eventsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [revealedEvents])
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+  const handleManualSelect = (handId: string, isLatest: boolean) => {
+    if (lingerTimerRef.current) { clearTimeout(lingerTimerRef.current); lingerTimerRef.current = null }
+    setVisibleHandId(handId)
+    setFollowLive(isLatest)
+  }
+
+  const handleFollowLive = () => {
+    if (lingerTimerRef.current) { clearTimeout(lingerTimerRef.current); lingerTimerRef.current = null }
+    if (latestHandId) setVisibleHandId(latestHandId)
+    setFollowLive(true)
+  }
+
+  // Is there a pending linger (visible != latest)?
+  const isLingering = followLive && latestHandId !== null && latestHandId !== visibleHandId
 
   return (
     <AppShell>
@@ -195,19 +254,23 @@ export default function MatchLivePage() {
           from { opacity: 0; transform: translateY(-4px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes cardFlip {
+          0%   { opacity: 0; transform: rotateY(90deg) scale(0.8); }
+          60%  { transform: rotateY(-8deg) scale(1.05); }
+          100% { opacity: 1; transform: rotateY(0deg) scale(1); }
+        }
         .event-new { animation: fadeSlideIn 0.25s ease-out; }
+        .card-new  { animation: cardFlip 0.4s ease-out; }
       `}</style>
 
       <div style={{ maxWidth: 960 }}>
-        {/* Back button */}
         <button
           onClick={() => navigate('/matches')}
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             background: 'transparent', border: 'none', cursor: 'pointer',
             fontFamily: 'var(--font-display)', fontSize: 12,
-            color: 'var(--on-surface-variant)', marginBottom: 20,
-            padding: 0,
+            color: 'var(--on-surface-variant)', marginBottom: 20, padding: 0,
           }}
         >
           <ArrowLeft size={14} />
@@ -215,19 +278,11 @@ export default function MatchLivePage() {
         </button>
 
         {loading ? (
-          <div style={{
-            padding: '60px 20px', textAlign: 'center',
-            fontFamily: 'var(--font-display)', fontSize: 13,
-            color: 'var(--on-surface-variant)',
-          }}>
+          <div style={{ padding: '60px 20px', textAlign: 'center', fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--on-surface-variant)' }}>
             Loading match data...
           </div>
         ) : error || !data ? (
-          <div style={{
-            padding: '60px 20px', textAlign: 'center',
-            fontFamily: 'var(--font-display)', fontSize: 13,
-            color: 'var(--tertiary)',
-          }}>
+          <div style={{ padding: '60px 20px', textAlign: 'center', fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--tertiary)' }}>
             {error ?? 'Match not found'}
           </div>
         ) : (
@@ -236,16 +291,10 @@ export default function MatchLivePage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <Monitor size={18} style={{ color: 'var(--primary)' }} />
               <div>
-                <h1 style={{
-                  fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 20,
-                  color: 'var(--on-surface)', letterSpacing: '-0.02em',
-                }}>
+                <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 20, color: 'var(--on-surface)', letterSpacing: '-0.02em' }}>
                   {data.arena.name} Arena
                 </h1>
-                <div style={{
-                  fontFamily: 'var(--font-mono)', fontSize: 10,
-                  color: 'var(--on-surface-variant)', marginTop: 2,
-                }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--on-surface-variant)', marginTop: 2 }}>
                   BLINDS {data.arena.small_blind}/{data.arena.big_blind} {'\u00B7'} HANDS {data.hands_played}
                 </div>
               </div>
@@ -268,8 +317,8 @@ export default function MatchLivePage() {
               <SeatCard label="Seat 2" seat={data.seat_2} />
             </div>
 
-            {/* Live hand panel */}
-            {selectedHand && (
+            {/* Hand panel */}
+            {visibleHand && (
               <div style={{
                 marginBottom: 20, padding: 16,
                 background: 'var(--surface-low)',
@@ -280,32 +329,35 @@ export default function MatchLivePage() {
                 {/* Hand header */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{
-                      fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
-                      letterSpacing: '0.1em', textTransform: 'uppercase' as const,
-                      color: 'var(--on-surface-variant)',
-                    }}>
-                      Hand #{selectedHand.hand_number} {'\u00B7'} {selectedHand.phase}
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--on-surface-variant)' }}>
+                      Hand #{visibleHand.hand_number} {'\u00B7'} {visibleHand.phase}
                     </div>
-                    {followLive && (
+                    {followLive && !isLingering && (
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: 4,
                         fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
                         letterSpacing: '0.1em', textTransform: 'uppercase' as const,
-                        color: 'var(--secondary)',
-                        padding: '2px 6px', borderRadius: 3,
-                        background: 'rgba(52,211,153,0.1)',
-                        border: '1px solid rgba(52,211,153,0.2)',
+                        color: 'var(--secondary)', padding: '2px 6px', borderRadius: 3,
+                        background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)',
                       }}>
-                        <Radio size={8} />
-                        Live
+                        <Radio size={8} /> Live
+                      </span>
+                    )}
+                    {isLingering && (
+                      <span style={{
+                        fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
+                        letterSpacing: '0.1em', textTransform: 'uppercase' as const,
+                        color: 'var(--on-surface-variant)', padding: '2px 6px', borderRadius: 3,
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid var(--outline)',
+                      }}>
+                        Next hand starting...
                       </span>
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     {!followLive && (
                       <button
-                        onClick={() => setFollowLive(true)}
+                        onClick={handleFollowLive}
                         style={{
                           fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
                           letterSpacing: '0.08em', textTransform: 'uppercase' as const,
@@ -317,32 +369,26 @@ export default function MatchLivePage() {
                         Follow Live
                       </button>
                     )}
-                    <div style={{
-                      fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600,
-                      color: 'var(--secondary)',
-                    }}>
-                      Pot: {selectedHand.pot}
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--secondary)' }}>
+                      Pot: {visibleHand.pot}
                     </div>
                   </div>
                 </div>
 
-                {/* Community cards */}
+                {/* Community cards — revealed one by one */}
                 <div style={{ marginBottom: 14 }}>
-                  <div style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--on-surface-variant)',
-                    marginBottom: 6, textTransform: 'uppercase' as const, letterSpacing: '0.08em',
-                  }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--on-surface-variant)', marginBottom: 6, textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>
                     Community
                   </div>
                   <div style={{ display: 'flex', gap: 6, minHeight: 48, alignItems: 'center' }}>
-                    {selectedHand.community_cards.length > 0 ? (
-                      selectedHand.community_cards.map((c, i) => (
-                        <CardDisplay key={i} card={c} isNew={newCardIndices.has(i)} />
-                      ))
-                    ) : (
+                    {visibleHand.community_cards.length === 0 ? (
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--on-surface-variant)' }}>
                         No community cards yet
                       </span>
+                    ) : (
+                      visibleHand.community_cards.slice(0, revealedCards).map((c, i) => (
+                        <CardDisplay key={i} card={c} isNew={i === revealedCards - 1} />
+                      ))
                     )}
                   </div>
                 </div>
@@ -350,62 +396,79 @@ export default function MatchLivePage() {
                 {/* Hole cards */}
                 <div style={{ display: 'flex', gap: 24, marginBottom: 14 }}>
                   {[
-                    { label: `Seat 1 (${data.seat_1?.agent_name ?? '?'})`, cards: selectedHand.player_1_hole },
-                    { label: `Seat 2 (${data.seat_2?.agent_name ?? '?'})`, cards: selectedHand.player_2_hole },
+                    { label: `Seat 1 (${data.seat_1?.agent_name ?? '?'})`, cards: visibleHand.player_1_hole },
+                    { label: `Seat 2 (${data.seat_2?.agent_name ?? '?'})`, cards: visibleHand.player_2_hole },
                   ].map(({ label, cards }) => (
                     <div key={label}>
-                      <div style={{
-                        fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--on-surface-variant)',
-                        marginBottom: 6, textTransform: 'uppercase' as const, letterSpacing: '0.08em',
-                      }}>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--on-surface-variant)', marginBottom: 6, textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>
                         {label}
                       </div>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        {cards.length > 0 ? (
-                          cards.map((c, i) => <CardDisplay key={i} card={c} />)
-                        ) : (
-                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--on-surface-variant)' }}>--</span>
-                        )}
+                        {cards.length > 0
+                          ? cards.map((c, i) => <CardDisplay key={i} card={c} />)
+                          : <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--on-surface-variant)' }}>--</span>
+                        }
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Winner info */}
-                {selectedHand.winner_seat && (
+                {/* Winner */}
+                {visibleHand.winner_seat && (
                   <div style={{
                     marginBottom: 12, paddingBottom: 12,
                     borderBottom: '1px solid var(--outline)',
                     fontFamily: 'var(--font-mono)', fontSize: 11,
                     color: 'var(--secondary)',
                   }}>
-                    Winner: Seat {selectedHand.winner_seat}
-                    {selectedHand.winning_hand_rank && ` \u00B7 ${selectedHand.winning_hand_rank.replace(/_/g, ' ')}`}
+                    Winner: Seat {visibleHand.winner_seat}
+                    {visibleHand.winning_hand_rank && ` \u00B7 ${visibleHand.winning_hand_rank.replace(/_/g, ' ')}`}
                   </div>
                 )}
 
                 {/* Events */}
                 <div>
-                  <div style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--on-surface-variant)',
-                    marginBottom: 8, textTransform: 'uppercase' as const, letterSpacing: '0.08em',
-                  }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--on-surface-variant)', marginBottom: 8, textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>
                     Actions
                   </div>
-                  {selectedHand.events.length === 0 ? (
+                  {revealedEvents === 0 ? (
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--on-surface-variant)' }}>
                       Waiting for actions...
                     </div>
                   ) : (
-                    <div style={{
-                      display: 'flex', flexDirection: 'column', gap: 3,
-                      maxHeight: 220, overflowY: 'auto',
-                    }}>
-                      {selectedHand.events.map(ev => {
-                        const isNew = newEventSeqs.has(ev.sequence)
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3, maxHeight: 220, overflowY: 'auto' }}>
+                      {extendedEvents.slice(0, revealedEvents).map((row, idx) => {
+                        const isNew = idx === revealedEvents - 1
+                        if (row.type === 'divider') {
+                          return (
+                            <div
+                              key={`divider-${row.street}`}
+                              className={isNew ? 'event-new' : undefined}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: 8,
+                                marginTop: 4, marginBottom: 2,
+                                fontFamily: 'var(--font-mono)', fontSize: 9,
+                                letterSpacing: '0.1em', textTransform: 'uppercase' as const,
+                                color: 'var(--primary)',
+                              }}
+                            >
+                              <span style={{
+                                width: 40, fontWeight: 700,
+                              }}>
+                                {streetLabel(row.street)}
+                              </span>
+                              <div style={{ display: 'flex', gap: 4 }}>
+                                {row.cards.length > 0
+                                  ? row.cards.map((c, i) => <CardDisplay key={i} card={c} isNew={isNew} />)
+                                  : <span style={{ color: 'var(--on-surface-variant)', fontSize: 9 }}>—</span>
+                                }
+                              </div>
+                            </div>
+                          )
+                        }
                         return (
                           <div
-                            key={ev.sequence}
+                            key={row.sequence}
                             className={isNew ? 'event-new' : undefined}
                             style={{
                               display: 'flex', alignItems: 'center', gap: 8,
@@ -415,30 +478,10 @@ export default function MatchLivePage() {
                               transition: 'background 0.5s',
                             }}
                           >
-                            <span style={{
-                              width: 52, fontSize: 9, color: 'var(--on-surface-variant)',
-                              textTransform: 'uppercase' as const,
-                            }}>
-                              {streetLabel(ev.street)}
-                            </span>
-                            <span style={{ width: 44, color: 'var(--on-surface-variant)' }}>
-                              Seat {ev.player_seat}
-                            </span>
-                            <span style={{
-                              fontWeight: 600, color: actionColor(ev.action),
-                              textTransform: 'uppercase' as const, fontSize: 10,
-                              width: 52,
-                            }}>
-                              {ev.action}
-                            </span>
-                            {ev.amount > 0 && (
-                              <span style={{ color: 'var(--on-surface)', fontWeight: 600 }}>
-                                {ev.amount}
-                              </span>
-                            )}
-                            <span style={{ marginLeft: 'auto', color: 'var(--on-surface-variant)', fontSize: 10 }}>
-                              pot {ev.pot_after}
-                            </span>
+                            <span style={{ width: 44, color: 'var(--on-surface-variant)' }}>Seat {row.player_seat}</span>
+                            <span style={{ fontWeight: 600, color: actionColor(row.action), textTransform: 'uppercase' as const, fontSize: 10, width: 52 }}>{row.action}</span>
+                            {row.amount > 0 && <span style={{ color: 'var(--on-surface)', fontWeight: 600 }}>{row.amount}</span>}
+                            <span style={{ marginLeft: 'auto', color: 'var(--on-surface-variant)', fontSize: 10 }}>pot {row.pot_after}</span>
                           </div>
                         )
                       })}
@@ -452,27 +495,17 @@ export default function MatchLivePage() {
             {/* Recent hands list */}
             {data.recent_hands.length > 0 ? (
               <div>
-                <div style={{
-                  fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
-                  letterSpacing: '0.1em', textTransform: 'uppercase' as const,
-                  color: 'var(--on-surface-variant)', marginBottom: 8,
-                }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--on-surface-variant)', marginBottom: 8 }}>
                   Recent Hands
                 </div>
-                <div style={{
-                  maxHeight: 220, overflowY: 'auto',
-                  border: '1px solid var(--outline)', borderRadius: 4,
-                }}>
+                <div style={{ maxHeight: 220, overflowY: 'auto', border: '1px solid var(--outline)', borderRadius: 4 }}>
                   {[...data.recent_hands].reverse().map(hand => {
-                    const isSelected = hand.hand_id === displayHandId
-                    const isLatest = hand.hand_id === latestHandId
+                    const isSelected = hand.hand_id === visibleHandId
+                    const isLatest   = hand.hand_id === latestHandId
                     return (
                       <button
                         key={hand.hand_id}
-                        onClick={() => {
-                          setSelectedHandId(hand.hand_id)
-                          setFollowLive(isLatest)
-                        }}
+                        onClick={() => handleManualSelect(hand.hand_id, isLatest)}
                         style={{
                           display: 'flex', alignItems: 'center', width: '100%',
                           padding: '10px 14px', textAlign: 'left',
@@ -480,42 +513,25 @@ export default function MatchLivePage() {
                           borderBottom: '1px solid var(--outline)',
                           border: 'none',
                           borderLeft: isSelected ? '2px solid var(--primary)' : '2px solid transparent',
-                          cursor: 'pointer',
-                          transition: 'background 0.1s',
+                          cursor: 'pointer', transition: 'background 0.1s',
                         }}
                       >
-                        <span style={{
-                          fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600,
-                          color: 'var(--on-surface)', width: 60,
-                        }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: 'var(--on-surface)', width: 60 }}>
                           #{hand.hand_number}
                         </span>
                         {isLatest && !hand.winner_seat && (
-                          <span style={{
-                            fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
-                            color: 'var(--secondary)', marginRight: 8,
-                            letterSpacing: '0.08em',
-                          }}>
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, color: 'var(--secondary)', marginRight: 8, letterSpacing: '0.08em' }}>
                             IN PLAY
                           </span>
                         )}
-                        <span style={{
-                          fontFamily: 'var(--font-mono)', fontSize: 10,
-                          color: 'var(--on-surface-variant)', width: 70,
-                        }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--on-surface-variant)', width: 70 }}>
                           Pot {hand.pot}
                         </span>
-                        <span style={{
-                          fontFamily: 'var(--font-mono)', fontSize: 10,
-                          color: 'var(--on-surface-variant)', flex: 1,
-                        }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--on-surface-variant)', flex: 1 }}>
                           {hand.community_cards.join(' ')}
                         </span>
                         {hand.winner_seat && (
-                          <span style={{
-                            fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600,
-                            color: 'var(--secondary)',
-                          }}>
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--secondary)' }}>
                             S{hand.winner_seat} wins
                           </span>
                         )}
@@ -527,11 +543,8 @@ export default function MatchLivePage() {
             ) : (
               <div style={{
                 padding: '30px 20px', textAlign: 'center',
-                background: 'var(--surface-low)',
-                border: '1px solid var(--outline)',
-                borderRadius: 4,
-                fontFamily: 'var(--font-display)', fontSize: 13,
-                color: 'var(--on-surface-variant)',
+                background: 'var(--surface-low)', border: '1px solid var(--outline)', borderRadius: 4,
+                fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--on-surface-variant)',
               }}>
                 No hands played yet
               </div>

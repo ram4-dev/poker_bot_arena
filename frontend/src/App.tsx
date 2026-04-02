@@ -38,8 +38,8 @@ function AppRoutes() {
 
       <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/agents/:id/history" element={<ProtectedRoute><AgentHistoryPage /></ProtectedRoute>} />
-      <Route path="/matches" element={<ProtectedRoute><MatchesPage /></ProtectedRoute>} />
-      <Route path="/matches/:tableId" element={<ProtectedRoute><MatchLivePage /></ProtectedRoute>} />
+      <Route path="/matches" element={<MatchesPage />} />
+      <Route path="/matches/:tableId" element={<MatchLivePage />} />
       <Route path="/arenas" element={<ProtectedRoute><ArenasPage /></ProtectedRoute>} />
       <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
       <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
