@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, bots, arenas, sessions, wallet, leaderboard, admin, matches
+from app.api import auth, agent, arenas, sessions, wallet, leaderboard, admin, game, matches
 from app.scheduler.jobs import start_scheduler, stop_scheduler
 
 
@@ -30,12 +30,13 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-app.include_router(bots.router, prefix="/api/bots", tags=["bots"])
+app.include_router(agent.router, prefix="/api", tags=["agent"])
 app.include_router(arenas.router, prefix="/api/arenas", tags=["arenas"])
 app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
 app.include_router(wallet.router, prefix="/api/wallet", tags=["wallet"])
 app.include_router(leaderboard.router, prefix="/api/leaderboard", tags=["leaderboard"])
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
+app.include_router(game.router, prefix="/api", tags=["game"])
 app.include_router(matches.router, prefix="/api/matches", tags=["matches"])
 
 

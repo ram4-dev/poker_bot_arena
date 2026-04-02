@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 from app.database import get_session
 from app.api.deps import get_current_user
 from app.models.user import User
-from app.models.bot import Bot
+from app.models.agent import Agent
 from app.models.session import Session as GameSession
 from app.models.hand import Hand, HandEvent
 from app.models.arena import Arena
@@ -16,7 +16,6 @@ from app.schemas.session import (
     SessionSummaryResponse, SessionDetailResponse, PaginatedSessionsResponse,
     HandResponse, HandEventResponse, KeyEventResponse, InsightsResponse,
 )
-from app.services import feedback_service
 
 router = APIRouter()
 
@@ -43,22 +42,22 @@ async def list_sessions(
 
     items = []
     for gs in results:
-        bot = (await session.execute(select(Bot).where(Bot.id == gs.bot_id))).scalar_one()
+        agent = (await session.execute(select(Agent).where(Agent.id == gs.agent_id))).scalar_one()
         opp_name = None
         if gs.opponent_session_id:
             opp_sess = (await session.execute(
                 select(GameSession).where(GameSession.id == gs.opponent_session_id)
             )).scalar_one_or_none()
             if opp_sess:
-                opp_bot = (await session.execute(select(Bot).where(Bot.id == opp_sess.bot_id))).scalar_one_or_none()
-                opp_name = opp_bot.name if opp_bot else None
+                opp_agent = (await session.execute(select(Agent).where(Agent.id == opp_sess.agent_id))).scalar_one_or_none()
+                opp_name = opp_agent.name if opp_agent else None
 
         profit = (gs.final_stack - gs.buy_in) if gs.final_stack is not None else None
         elo_change = (gs.elo_after - gs.elo_before) if gs.elo_after is not None and gs.elo_before is not None else None
 
         arena = (await session.execute(select(Arena).where(Arena.id == gs.arena_id))).scalar_one_or_none()
         items.append(SessionSummaryResponse(
-            id=gs.id, arena_name=arena.name if arena else "", bot_name=bot.name,
+            id=gs.id, arena_name=arena.name if arena else "", bot_name=agent.name,
             opponent_bot_name=opp_name, status=gs.status,
             profit=profit, hands_played=gs.hands_played, hands_won=gs.hands_won,
             exit_reason=gs.exit_reason, elo_change=elo_change,
@@ -82,10 +81,7 @@ async def get_session_detail(
     if gs.user_id != user.id:
         raise HTTPException(403, "Not your session")
 
-    bot = (await session.execute(select(Bot).where(Bot.id == gs.bot_id))).scalar_one()
-    from app.models.bot import BotVersion
-    ver = (await session.execute(select(BotVersion).where(BotVersion.id == gs.bot_version_id))).scalar_one()
-    from app.models.arena import Arena
+    agent = (await session.execute(select(Agent).where(Agent.id == gs.agent_id))).scalar_one()
     arena = (await session.execute(select(Arena).where(Arena.id == gs.arena_id))).scalar_one()
 
     opp_name = None
@@ -93,8 +89,8 @@ async def get_session_detail(
     if gs.opponent_session_id:
         opp_sess = (await session.execute(select(GameSession).where(GameSession.id == gs.opponent_session_id))).scalar_one_or_none()
         if opp_sess:
-            opp_bot = (await session.execute(select(Bot).where(Bot.id == opp_sess.bot_id))).scalar_one_or_none()
-            opp_name = opp_bot.name if opp_bot else None
+            opp_agent = (await session.execute(select(Agent).where(Agent.id == opp_sess.agent_id))).scalar_one_or_none()
+            opp_name = opp_agent.name if opp_agent else None
             opp_u = (await session.execute(select(User).where(User.id == opp_sess.user_id))).scalar_one_or_none()
             opp_user = opp_u.username if opp_u else None
 
@@ -108,12 +104,11 @@ async def get_session_detail(
 
     hand_responses = []
     for h in hands:
-        import json as _json
         def _parse_cards(raw: str | None) -> list[str]:
             if not raw:
                 return []
             try:
-                return _json.loads(raw)
+                return json.loads(raw)
             except Exception:
                 return [c.strip() for c in raw.split(",") if c.strip()]
 
@@ -135,8 +130,8 @@ async def get_session_detail(
             events=events,
         ))
 
-    # Generate feedback
-    feedback = await feedback_service.generate_feedback(session, gs)
+    # No feedback generation in v3
+    feedback = {}
 
     profit = (gs.final_stack - gs.buy_in) if gs.final_stack is not None else 0
     elo_change = (gs.elo_after - gs.elo_before) if gs.elo_after and gs.elo_before else 0
@@ -163,8 +158,8 @@ async def get_session_detail(
 
     return SessionDetailResponse(
         id=gs.id, status=gs.status,
-        arena_name=arena.name, bot_name=bot.name,
-        bot_version=ver.version_number,
+        arena_name=arena.name, bot_name=agent.name,
+        bot_version=1,
         opponent_bot_name=opp_name, opponent_user=opp_user,
         outcome=outcome, kpis=kpis,
         key_events=key_events,

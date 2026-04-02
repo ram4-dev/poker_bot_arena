@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_session
 from app.api.deps import get_current_user
 from app.models.user import User
-from app.models.bot import Bot
+from app.models.agent import Agent
 from app.models.arena import Arena
 from app.models.session import Session as GameSession
 from app.models.table import Table
@@ -51,13 +51,11 @@ async def queue_bot(
     if not arena:
         raise HTTPException(404, "Arena not found")
 
-    bot = (await session.execute(select(Bot).where(Bot.id == req.bot_id))).scalar_one_or_none()
-    if not bot or bot.user_id != user.id:
-        raise HTTPException(404, "Bot not found")
-    if bot.status != "idle":
-        raise HTTPException(400, "Bot is not idle")
-    if not bot.active_version_id:
-        raise HTTPException(400, "Bot has no active version")
+    agent = (await session.execute(select(Agent).where(Agent.id == req.agent_id))).scalar_one_or_none()
+    if not agent or agent.user_id != user.id:
+        raise HTTPException(404, "Agent not found")
+    if agent.status != "idle":
+        raise HTTPException(400, "Agent is not idle")
 
     # Lock buy-in (skip for practice)
     if arena.buy_in > 0:
@@ -65,20 +63,19 @@ async def queue_bot(
 
     game_session = GameSession(
         user_id=user.id,
-        bot_id=bot.id,
-        bot_version_id=bot.active_version_id,
+        agent_id=agent.id,
         arena_id=arena.id,
         buy_in=arena.buy_in,
         initial_stack=arena.buy_in if arena.buy_in > 0 else 1000,
     )
     session.add(game_session)
-    bot.status = "queued"
+    agent.status = "queued"
     await session.commit()
     await session.refresh(game_session)
 
     return QueueResponse(
         session_id=game_session.id, status="queued",
-        arena=arena.name, bot_name=bot.name,
+        arena=arena.name, bot_name=agent.name,
     )
 
 
@@ -102,8 +99,8 @@ async def dequeue_bot(
         await wallet_service.unlock_buy_in(session, user.id, game_session.buy_in)
 
     game_session.status = "cancelled"
-    bot = (await session.execute(select(Bot).where(Bot.id == game_session.bot_id))).scalar_one()
-    bot.status = "idle"
+    agent = (await session.execute(select(Agent).where(Agent.id == game_session.agent_id))).scalar_one()
+    agent.status = "idle"
     await session.commit()
 
     return {"message": "Bot removed from queue", "refunded": game_session.buy_in}

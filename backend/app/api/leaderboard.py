@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_session
 from app.api.deps import get_current_user
 from app.models.user import User
-from app.models.bot import Bot
+from app.models.agent import Agent
 from app.models.ranking import SeasonRanking
 
 router = APIRouter()
@@ -40,9 +40,9 @@ async def user_leaderboard(
         items = []
         for i, u in enumerate(users):
             total_games = 0
-            bots = (await session.execute(select(Bot).where(Bot.user_id == u.id))).scalars().all()
-            wins = sum(b.total_wins for b in bots)
-            losses = sum(b.total_losses for b in bots)
+            agents = (await session.execute(select(Agent).where(Agent.user_id == u.id))).scalars().all()
+            wins = sum(a.total_wins for a in agents)
+            losses = sum(a.total_losses for a in agents)
             total_games = wins + losses
             winrate = wins / total_games if total_games > 0 else 0
 
@@ -95,32 +95,32 @@ async def user_leaderboard(
         return {"items": items, "total": total, "season": target_season}
 
 
-@router.get("/bots")
-async def bot_leaderboard(
+@router.get("/agents")
+async def agent_leaderboard(
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    total = (await session.execute(select(func.count()).select_from(Bot))).scalar()
-    bots = (await session.execute(
-        select(Bot).order_by(Bot.elo.desc()).limit(limit).offset(offset)
+    total = (await session.execute(select(func.count()).select_from(Agent))).scalar()
+    agents = (await session.execute(
+        select(Agent).order_by(Agent.elo.desc()).limit(limit).offset(offset)
     )).scalars().all()
 
     items = []
-    for i, b in enumerate(bots):
-        owner = (await session.execute(select(User).where(User.id == b.user_id))).scalar_one()
-        total_games = b.total_wins + b.total_losses
-        winrate = b.total_wins / total_games if total_games > 0 else 0
+    for i, a in enumerate(agents):
+        owner = (await session.execute(select(User).where(User.id == a.user_id))).scalar_one()
+        total_games = a.total_wins + a.total_losses
+        winrate = a.total_wins / total_games if total_games > 0 else 0
         items.append({
             "rank": offset + i + 1,
-            "entity_id": b.id,
-            "name": b.name,
+            "entity_id": a.id,
+            "name": a.name,
             "creator": owner.username,
-            "elo": b.elo,
+            "elo": a.elo,
             "winrate": round(winrate, 2),
-            "total_wins": b.total_wins,
-            "total_losses": b.total_losses,
+            "total_wins": a.total_wins,
+            "total_losses": a.total_losses,
             "badges": [],
         })
 

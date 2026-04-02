@@ -6,10 +6,10 @@ from app.database import get_session
 from app.api.deps import get_current_user
 from app.models.user import User
 from app.schemas.auth import (
-    RegisterRequest, LoginRequest, RefreshRequest, OnboardingRequest,
+    RegisterRequest, LoginRequest, RefreshRequest,
     TokenResponse, UserResponse,
 )
-from app.services import auth_service, bot_service
+from app.services import auth_service
 
 router = APIRouter()
 
@@ -43,27 +43,3 @@ async def refresh(req: RefreshRequest, session: AsyncSession = Depends(get_sessi
 @router.get("/me", response_model=UserResponse)
 async def me(user: User = Depends(get_current_user)):
     return UserResponse.model_validate(user)
-
-
-@router.put("/onboarding")
-async def onboarding(
-    req: OnboardingRequest,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    if req.username and req.username != user.username:
-        user.username = req.username
-
-    # Accept preset_key as alias for preset
-    preset = req.preset or req.preset_key or "balanced"
-    bot_name = req.bot_name or f"{preset.capitalize()} Bot"
-
-    bot = await bot_service.create_bot(session, user.id, bot_name, None, "bot_default", preset)
-    user.onboarding_completed = True
-    await session.commit()
-    await session.refresh(user)
-
-    return {
-        "user": UserResponse.model_validate(user),
-        "bot": {"id": bot.id, "name": bot.name},
-    }

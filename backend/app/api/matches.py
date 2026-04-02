@@ -1,14 +1,14 @@
-"""Matches endpoint: live spectator view of active and recent tables."""
+import json
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends
-from sqlalchemy import select, desc
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select, desc, and_
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.database import get_session
-from app.api.deps import get_current_user
 from app.models.user import User
-from app.models.bot import Bot
+from app.models.agent import Agent
 from app.models.arena import Arena
 from app.models.table import Table
 from app.models.session import Session as GameSession
@@ -17,34 +17,67 @@ from app.models.hand import Hand, HandEvent
 router = APIRouter()
 
 
-async def _build_seat(session: AsyncSession, game_session: GameSession, table: Table) -> dict:
-    bot = (await session.execute(select(Bot).where(Bot.id == game_session.bot_id))).scalar_one()
-    user = (await session.execute(select(User).where(User.id == game_session.user_id))).scalar_one()
+def _parse_json_field(value: str | None) -> list[str]:
+    """Parse a JSON-encoded string field (cards) into a list."""
+    if not value:
+        return []
+    try:
+        parsed = json.loads(value)
+        return parsed if isinstance(parsed, list) else []
+    except (json.JSONDecodeError, TypeError):
+        return []
 
-    # Current stack from last hand
-    is_seat_1 = table.seat_1_session_id == game_session.id
-    last_hand = (await session.execute(
+
+async def _build_seat_info(
+    db: AsyncSession,
+    game_session: GameSession | None,
+    table: Table,
+    seat_num: int,
+) -> dict | None:
+    """Build seat info dict for a given session, including current stack."""
+    if not game_session:
+        return None
+
+    # Load agent and user
+    agent_result = await db.execute(
+        select(Agent).where(Agent.id == game_session.agent_id)
+    )
+    agent = agent_result.scalar_one_or_none()
+
+    user_result = await db.execute(
+        select(User).where(User.id == game_session.user_id)
+    )
+    user = user_result.scalar_one_or_none()
+
+    if not agent or not user:
+        return None
+
+    # Current stack: from latest hand if available, else initial_stack
+    stack = game_session.initial_stack
+    latest_hand_result = await db.execute(
         select(Hand)
         .where(Hand.table_id == table.id)
         .order_by(desc(Hand.hand_number))
         .limit(1)
-    )).scalar_one_or_none()
+    )
+    latest_hand = latest_hand_result.scalar_one_or_none()
+    if latest_hand:
+        if seat_num == 1 and latest_hand.player_1_stack_after is not None:
+            stack = latest_hand.player_1_stack_after
+        elif seat_num == 2 and latest_hand.player_2_stack_after is not None:
+            stack = latest_hand.player_2_stack_after
 
-    if last_hand:
-        stack = last_hand.player_1_stack_after if is_seat_1 else last_hand.player_2_stack_after
-    else:
-        stack = game_session.initial_stack
-
-    total_hands = game_session.hands_played or 0
+    # Winrate
+    hands_played = game_session.hands_played or 0
     hands_won = game_session.hands_won or 0
-    winrate = round(hands_won / total_hands, 2) if total_hands > 0 else 0.0
+    winrate = round(hands_won / hands_played, 2) if hands_played > 0 else 0.0
 
     return {
         "session_id": game_session.id,
-        "bot_id": bot.id,
-        "bot_name": bot.name,
+        "agent_id": agent.id,
+        "agent_name": agent.name,
         "username": user.username,
-        "elo": bot.elo,
+        "elo": agent.elo,
         "stack": stack,
         "initial_stack": game_session.initial_stack,
         "hands_won": hands_won,
@@ -52,175 +85,172 @@ async def _build_seat(session: AsyncSession, game_session: GameSession, table: T
     }
 
 
+async def _build_table_info(db: AsyncSession, table: Table) -> dict:
+    """Build full table info dict."""
+    # Load arena
+    arena_result = await db.execute(
+        select(Arena).where(Arena.id == table.arena_id)
+    )
+    arena = arena_result.scalar_one_or_none()
+
+    # Load sessions
+    seat_1_session = None
+    seat_2_session = None
+    if table.seat_1_session_id:
+        r = await db.execute(select(GameSession).where(GameSession.id == table.seat_1_session_id))
+        seat_1_session = r.scalar_one_or_none()
+    if table.seat_2_session_id:
+        r = await db.execute(select(GameSession).where(GameSession.id == table.seat_2_session_id))
+        seat_2_session = r.scalar_one_or_none()
+
+    seat_1 = await _build_seat_info(db, seat_1_session, table, 1)
+    seat_2 = await _build_seat_info(db, seat_2_session, table, 2)
+
+    result = {
+        "table_id": table.id,
+        "arena": {
+            "name": arena.name if arena else "Unknown",
+            "slug": arena.slug if arena else "unknown",
+            "small_blind": arena.small_blind if arena else 0,
+            "big_blind": arena.big_blind if arena else 0,
+        },
+        "hands_played": table.hands_played,
+        "started_at": table.created_at.isoformat() if table.created_at else None,
+        "seat_1": seat_1,
+        "seat_2": seat_2,
+    }
+
+    # For completed tables, determine winner
+    if table.status == "completed":
+        if seat_1_session and seat_2_session:
+            s1_final = seat_1_session.final_stack or 0
+            s2_final = seat_2_session.final_stack or 0
+            if s1_final > s2_final:
+                result["winner"] = "seat_1"
+            elif s2_final > s1_final:
+                result["winner"] = "seat_2"
+            else:
+                result["winner"] = "draw"
+        else:
+            result["winner"] = "draw"
+
+    return result
+
+
 @router.get("")
 async def list_matches(
-    user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
+    """List active matches and recently completed matches (last 30 min)."""
     # Active tables
-    active_tables = (await session.execute(
-        select(Table).where(Table.status == "active").order_by(Table.created_at)
-    )).scalars().all()
+    active_result = await session.execute(
+        select(Table)
+        .where(Table.status == "active")
+        .order_by(desc(Table.created_at))
+    )
+    active_tables = active_result.scalars().all()
 
-    active = []
+    active_matches = []
     for table in active_tables:
-        if not table.seat_1_session_id or not table.seat_2_session_id:
-            continue
-        s1 = (await session.execute(select(GameSession).where(GameSession.id == table.seat_1_session_id))).scalar_one_or_none()
-        s2 = (await session.execute(select(GameSession).where(GameSession.id == table.seat_2_session_id))).scalar_one_or_none()
-        if not s1 or not s2:
-            continue
-        arena = (await session.execute(select(Arena).where(Arena.id == table.arena_id))).scalar_one()
-
-        active.append({
-            "table_id": table.id,
-            "arena": {"name": arena.name, "slug": arena.slug, "small_blind": arena.small_blind, "big_blind": arena.big_blind},
-            "hands_played": table.hands_played,
-            "started_at": table.created_at.isoformat(),
-            "seat_1": await _build_seat(session, s1, table),
-            "seat_2": await _build_seat(session, s2, table),
-        })
+        info = await _build_table_info(session, table)
+        active_matches.append(info)
 
     # Recently completed (last 30 min)
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=30)
-    recent_tables = (await session.execute(
+    # SQLite stores datetimes without timezone, so compare naive
+    cutoff_naive = cutoff.replace(tzinfo=None)
+
+    completed_result = await session.execute(
         select(Table)
-        .where(Table.status == "completed", Table.completed_at >= cutoff)
+        .where(
+            and_(
+                Table.status == "completed",
+                Table.completed_at > cutoff_naive,
+            )
+        )
         .order_by(desc(Table.completed_at))
-        .limit(20)
-    )).scalars().all()
+    )
+    completed_tables = completed_result.scalars().all()
 
     recently_completed = []
-    for table in recent_tables:
-        if not table.seat_1_session_id or not table.seat_2_session_id:
-            continue
-        s1 = (await session.execute(select(GameSession).where(GameSession.id == table.seat_1_session_id))).scalar_one_or_none()
-        s2 = (await session.execute(select(GameSession).where(GameSession.id == table.seat_2_session_id))).scalar_one_or_none()
-        if not s1 or not s2:
-            continue
-        arena = (await session.execute(select(Arena).where(Arena.id == table.arena_id))).scalar_one()
-
-        # Determine winner
-        seat1_profit = (s1.final_stack or 0) - s1.initial_stack
-        seat2_profit = (s2.final_stack or 0) - s2.initial_stack
-        if seat1_profit > seat2_profit:
-            winner = "seat_1"
-        elif seat2_profit > seat1_profit:
-            winner = "seat_2"
-        else:
-            winner = "draw"
-
-        recently_completed.append({
-            "table_id": table.id,
-            "arena": {"name": arena.name, "slug": arena.slug, "small_blind": arena.small_blind, "big_blind": arena.big_blind},
-            "hands_played": table.hands_played,
-            "completed_at": table.completed_at.isoformat() if table.completed_at else None,
-            "winner": winner,
-            "seat_1": await _build_seat(session, s1, table),
-            "seat_2": await _build_seat(session, s2, table),
-        })
+    for table in completed_tables:
+        info = await _build_table_info(session, table)
+        recently_completed.append(info)
 
     return {
-        "active": active,
+        "active": active_matches,
         "recently_completed": recently_completed,
-        "total_active": len(active),
+        "total_active": len(active_matches),
     }
 
 
 @router.get("/{table_id}/live")
 async def match_live(
     table_id: str,
-    user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    table = (await session.execute(select(Table).where(Table.id == table_id))).scalar_one_or_none()
+    """Get live data for a specific table/match."""
+    table_result = await session.execute(
+        select(Table).where(Table.id == table_id)
+    )
+    table = table_result.scalar_one_or_none()
     if not table:
-        from fastapi import HTTPException
         raise HTTPException(404, "Table not found")
 
-    arena = (await session.execute(select(Arena).where(Arena.id == table.arena_id))).scalar_one()
+    info = await _build_table_info(session, table)
+    info["status"] = table.status
 
-    s1 = s2 = None
-    if table.seat_1_session_id:
-        s1 = (await session.execute(select(GameSession).where(GameSession.id == table.seat_1_session_id))).scalar_one_or_none()
-    if table.seat_2_session_id:
-        s2 = (await session.execute(select(GameSession).where(GameSession.id == table.seat_2_session_id))).scalar_one_or_none()
-
-    seat_1 = await _build_seat(session, s1, table) if s1 else None
-    seat_2 = await _build_seat(session, s2, table) if s2 else None
-
-    # Last 10 hands with events
-    recent_hands_rows = (await session.execute(
+    # Recent hands (last 10) with events
+    hands_result = await session.execute(
         select(Hand)
         .where(Hand.table_id == table_id)
         .order_by(desc(Hand.hand_number))
         .limit(10)
-    )).scalars().all()
+    )
+    hands = hands_result.scalars().all()
 
     recent_hands = []
-    for h in reversed(recent_hands_rows):
-        events_rows = (await session.execute(
+    for hand in reversed(hands):  # chronological order
+        # Load events
+        events_result = await session.execute(
             select(HandEvent)
-            .where(HandEvent.hand_id == h.id)
+            .where(HandEvent.hand_id == hand.id)
             .order_by(HandEvent.sequence)
-        )).scalars().all()
+        )
+        events = events_result.scalars().all()
 
+        # Determine winner_seat
         winner_seat = None
-        if h.winner_session_id == table.seat_1_session_id:
-            winner_seat = 1
-        elif h.winner_session_id == table.seat_2_session_id:
-            winner_seat = 2
-
-        import json as _json
-        try:
-            community = _json.loads(h.community_cards) if h.community_cards else []
-        except Exception:
-            community = []
-
-        def _parse(raw: str | None) -> list[str]:
-            if not raw:
-                return []
-            try:
-                return _json.loads(raw)
-            except Exception:
-                return [c.strip() for c in raw.split(",") if c.strip()]
+        if hand.winner_session_id:
+            if hand.winner_session_id == table.seat_1_session_id:
+                winner_seat = 1
+            elif hand.winner_session_id == table.seat_2_session_id:
+                winner_seat = 2
 
         recent_hands.append({
-            "hand_number": h.hand_number,
-            "pot": h.pot,
-            "community_cards": community,
+            "hand_id": hand.id,
+            "hand_number": hand.hand_number,
+            "phase": hand.phase,
+            "pot": hand.pot,
+            "community_cards": _parse_json_field(hand.community_cards),
             "winner_seat": winner_seat,
-            "winning_hand_rank": h.winning_hand_rank,
-            "player_1_stack_after": h.player_1_stack_after,
-            "player_2_stack_after": h.player_2_stack_after,
-            "player_1_hole": _parse(h.player_1_hole),
-            "player_2_hole": _parse(h.player_2_hole),
+            "winning_hand_rank": hand.winning_hand_rank,
+            "player_1_stack_after": hand.player_1_stack_after,
+            "player_2_stack_after": hand.player_2_stack_after,
+            "player_1_hole": _parse_json_field(hand.player_1_hole),
+            "player_2_hole": _parse_json_field(hand.player_2_hole),
             "events": [
                 {
-                    "sequence": e.sequence,
-                    "street": e.street,
-                    "player_seat": e.player_seat,
-                    "action": e.action,
-                    "amount": e.amount,
-                    "pot_after": e.pot_after,
-                    "hand_strength": e.hand_strength,
-                    "hole_cards": _parse(e.hole_cards),
+                    "sequence": ev.sequence,
+                    "street": ev.street,
+                    "player_seat": ev.player_seat,
+                    "action": ev.action,
+                    "amount": ev.amount,
+                    "pot_after": ev.pot_after,
                 }
-                for e in events_rows
+                for ev in events
             ],
         })
 
-    return {
-        "table_id": table.id,
-        "status": table.status,
-        "arena": {
-            "name": arena.name,
-            "slug": arena.slug,
-            "small_blind": arena.small_blind,
-            "big_blind": arena.big_blind,
-        },
-        "hands_played": table.hands_played,
-        "seat_1": seat_1,
-        "seat_2": seat_2,
-        "recent_hands": recent_hands,
-    }
+    info["recent_hands"] = recent_hands
+    return info

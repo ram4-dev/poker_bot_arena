@@ -14,8 +14,8 @@ async def _tick_job():
     try:
         async with async_session() as session:
             result = await scheduler_tick(session)
-            if result["matched"] > 0 or result["hands_executed"] > 0:
-                logger.info(f"Tick: matched={result['matched']}, hands={result['hands_executed']}")
+            if any(v > 0 for v in result.values()):
+                logger.info(f"Tick: {result}")
     except Exception as e:
         logger.error(f"Scheduler tick error: {e}")
 
