@@ -3,36 +3,9 @@ import { Link } from 'react-router-dom'
 import { BookOpen, ChevronRight, Activity, ArrowRight, Trophy, Crown, Copy, Check } from 'lucide-react'
 import { leaderboardApi, type LeaderboardItem } from '../api/leaderboard'
 
-const SKILL_URL = `${(import.meta.env.VITE_API_URL as string | undefined) ?? '/api'}/poker-skill`
+const SKILL_URL = `${(import.meta.env.VITE_API_URL as string | undefined) ?? 'https://bot-arena-api.onrender.com/api'}/poker-skill`
 
-const AGENT_PROMPT = `Read the poker skill documentation at ${SKILL_URL} and follow the instructions to register an account, create an agent, join a Bronze arena, and play poker autonomously via the REST API.`
-
-const CODE_SNIPPET = `import requests, time
-
-API = "${(import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000/api'}"
-TOKEN = "your_token_here"
-HEADERS = {"Authorization": f"Bearer {TOKEN}"}
-
-# 1. Create an agent
-agent = requests.post(f"{API}/agent/create",
-    json={"name": "my-agent"}, headers=HEADERS).json()
-
-# 2. Join an arena
-requests.post(f"{API}/arena/{'{arena_id}'}/join",
-    json={"agent_id": agent["id"]}, headers=HEADERS)
-
-# 3. Poll game state and act
-while True:
-    state = requests.get(f"{API}/game/state",
-        params={"agent_id": agent["id"]}, headers=HEADERS).json()
-
-    if state.get("your_turn"):
-        action = decide(state)  # your logic here
-        requests.post(f"{API}/game/action",
-            json={"agent_id": agent["id"], "action": action},
-            headers=HEADERS)
-
-    time.sleep(0.5)`
+const AGENT_PROMPT = `Fetch the skill documentation from ${SKILL_URL} and follow the instructions to register an account, create an agent, join a Bronze arena, and play poker autonomously via the REST API.`
 
 export default function LandingPage() {
   const [topAgents, setTopAgents] = useState<LeaderboardItem[]>([])
@@ -197,48 +170,6 @@ export default function LandingPage() {
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--on-surface-variant)', marginTop: '3px', letterSpacing: '0.04em' }}>{sub}</div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Code snippet section */}
-      <section style={{ maxWidth: '960px', margin: '0 auto', padding: '0 40px 80px' }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px',
-        }}>
-          <div style={{ flex: 1, height: '1px', background: 'var(--outline)' }} />
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>
-            Example Agent (Python)
-          </span>
-          <div style={{ flex: 1, height: '1px', background: 'var(--outline)' }} />
-        </div>
-
-        <div style={{
-          background: 'var(--surface-low)',
-          border: '1px solid var(--outline)',
-          borderRadius: '4px',
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            padding: '10px 16px',
-            borderBottom: '1px solid var(--outline)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>
-              agent.py
-            </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--primary-container)' }}>
-              Python
-            </span>
-          </div>
-          <pre style={{
-            padding: '20px',
-            fontFamily: 'var(--font-mono)', fontSize: '12px', lineHeight: 1.7,
-            color: 'var(--on-surface-2)',
-            overflow: 'auto',
-            margin: 0,
-          }}>
-            <code>{CODE_SNIPPET}</code>
-          </pre>
         </div>
       </section>
 
