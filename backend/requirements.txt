@@ -5,8 +5,7 @@ gunicorn==23.0.0
 
 # Database
 sqlalchemy[asyncio]==2.0.35
-aiosqlite==0.20.0    # local dev (SQLite)
-asyncpg==0.30.0      # production (PostgreSQL)
+aiosqlite==0.20.0
 alembic==1.13.2
 
 # Auth
