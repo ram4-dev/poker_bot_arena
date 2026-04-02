@@ -21,7 +21,7 @@ settings = get_settings()
 
 
 def run_migrations_offline() -> None:
-    url = settings.DATABASE_URL.replace("+aiosqlite", "")
+    url = settings.DATABASE_URL.replace("+aiosqlite", "").replace("+asyncpg", "")
     context.configure(
         url=url,
         target_metadata=target_metadata,

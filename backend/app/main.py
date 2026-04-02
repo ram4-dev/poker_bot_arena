@@ -5,6 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import auth, agent, arenas, sessions, wallet, leaderboard, admin, game, matches
 from app.scheduler.jobs import start_scheduler, stop_scheduler
+from app.config import get_settings
+
+settings = get_settings()
 
 
 @asynccontextmanager
@@ -21,9 +24,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+_cors_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

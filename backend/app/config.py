@@ -5,6 +5,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./bot_arena.db"
     SECRET_KEY: str = "dev-secret-key-change-in-production"
+    CORS_ORIGINS: str = "http://localhost:5173"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
