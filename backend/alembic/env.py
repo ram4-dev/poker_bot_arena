@@ -19,9 +19,13 @@ target_metadata = Base.metadata
 
 settings = get_settings()
 
+from app.database import _normalize_db_url  # noqa: E402
+
+_db_url = _normalize_db_url(settings.DATABASE_URL)
+
 
 def run_migrations_offline() -> None:
-    url = settings.DATABASE_URL.replace("+aiosqlite", "").replace("+asyncpg", "")
+    url = _db_url.replace("+aiosqlite", "").replace("+asyncpg", "")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -39,7 +43,7 @@ def do_run_migrations(connection):
 
 
 async def run_async_migrations():
-    connectable = create_async_engine(settings.DATABASE_URL, poolclass=pool.NullPool)
+    connectable = create_async_engine(_db_url, poolclass=pool.NullPool)
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
     await connectable.dispose()
