@@ -127,7 +127,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '13px',
                 color: '#fff',
               }}>
-                {user.username[0].toUpperCase()}
+                {(user.username ?? '?')[0].toUpperCase()}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
