@@ -36,12 +36,12 @@ function AppRoutes() {
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/skill" element={<DocsPage />} />
 
-      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-      <Route path="/agents/:id/history" element={<ProtectedRoute><AgentHistoryPage /></ProtectedRoute>} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/agents/:id/history" element={<AgentHistoryPage />} />
       <Route path="/matches" element={<MatchesPage />} />
       <Route path="/matches/:tableId" element={<MatchLivePage />} />
-      <Route path="/arenas" element={<ProtectedRoute><ArenasPage /></ProtectedRoute>} />
-      <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
+      <Route path="/arenas" element={<ArenasPage />} />
+      <Route path="/leaderboard" element={<LeaderboardPage />} />
       <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />

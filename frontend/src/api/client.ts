@@ -28,9 +28,9 @@ api.interceptors.response.use(
         original.headers.Authorization = `Bearer ${data.access_token}`
         return api(original)
       } catch {
+        // Only clear tokens — no redirect. ProtectedRoute on /wallet handles the redirect.
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
-        window.location.href = '/login'
       }
     }
     return Promise.reject(error)

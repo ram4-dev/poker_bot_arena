@@ -118,45 +118,63 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           borderRadius: '4px',
           position: 'relative', zIndex: 1,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{
-              width: '32px', height: '32px', borderRadius: '4px', flexShrink: 0,
-              background: 'var(--gradient-primary)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '13px',
-              color: '#fff',
-            }}>
-              {user?.username?.[0]?.toUpperCase() ?? '?'}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
-                fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '12px',
-                color: 'var(--on-surface)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                width: '32px', height: '32px', borderRadius: '4px', flexShrink: 0,
+                background: 'var(--gradient-primary)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '13px',
+                color: '#fff',
               }}>
-                {user?.username ?? 'User'}
+                {user.username[0].toUpperCase()}
               </div>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: '10px',
-                color: 'var(--secondary)', marginTop: '1px',
-              }}>
-                {'\u2659'} {user?.balance?.toLocaleString() ?? 0}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '12px',
+                  color: 'var(--on-surface)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {user.username}
+                </div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--secondary)', marginTop: '1px' }}>
+                  {'\u2659'} {user.balance?.toLocaleString() ?? 0}
+                </div>
               </div>
+              <button
+                onClick={() => { logout(); navigate('/') }}
+                title="Logout"
+                style={{
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  color: 'var(--on-surface-variant)', padding: '4px',
+                  borderRadius: '3px', display: 'flex', alignItems: 'center',
+                  transition: 'color 0.12s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--tertiary)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--on-surface-variant)')}
+              >
+                <LogOut size={13} />
+              </button>
             </div>
+          ) : (
             <button
-              onClick={() => { logout(); navigate('/login') }}
-              title="Logout"
+              onClick={() => navigate('/login')}
               style={{
-                background: 'transparent', border: 'none', cursor: 'pointer',
-                color: 'var(--on-surface-variant)', padding: '4px',
-                borderRadius: '3px', display: 'flex', alignItems: 'center',
-                transition: 'color 0.12s',
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                padding: '8px', borderRadius: '3px', cursor: 'pointer',
+                background: 'transparent',
+                border: '1px solid var(--outline)',
+                fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 600,
+                letterSpacing: '0.06em', textTransform: 'uppercase',
+                color: 'var(--primary)',
+                transition: 'border-color 0.12s, background 0.12s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--tertiary)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--on-surface-variant)')}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.background = 'rgba(124,127,255,0.06)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--outline)'; e.currentTarget.style.background = 'transparent' }}
             >
-              <LogOut size={13} />
+              <Wallet size={12} />
+              Login to Wallet
             </button>
-          </div>
+          )}
         </div>
 
         {/* Version tag */}
@@ -183,23 +201,23 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         }}>
           <div />
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            {/* Balance */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>Balance</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--secondary)' }}>
-                {'\u2659'} {user?.balance?.toLocaleString() ?? 0}
-              </span>
-            </div>
-
-            <div style={{ width: '1px', height: '16px', background: 'var(--outline)' }} />
-
-            {/* ELO */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>ELO</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--primary)' }}>
-                {user?.elo ?? 1000}
-              </span>
-            </div>
+            {user && (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>Balance</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--secondary)' }}>
+                    {'\u2659'} {user.balance?.toLocaleString() ?? 0}
+                  </span>
+                </div>
+                <div style={{ width: '1px', height: '16px', background: 'var(--outline)' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>ELO</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--primary)' }}>
+                    {user.elo ?? 1000}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </header>
 
