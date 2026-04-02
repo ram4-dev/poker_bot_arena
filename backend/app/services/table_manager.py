@@ -160,6 +160,14 @@ async def process_action(
         table.action_deadline = datetime.now(timezone.utc) + timedelta(
             seconds=settings.ACTION_TIMEOUT_SECONDS
         )
+        # Persist community cards mid-hand so the live viewer can show them
+        # progressively (flop/turn/river) without waiting for hand completion.
+        if hand._community_cards:
+            hand_record = (await session.execute(
+                select(Hand).where(Hand.id == hand.hand_id)
+            )).scalar_one_or_none()
+            if hand_record:
+                hand_record.community_cards = json.dumps(hand._community_cards)
         await session.commit()
         return {"valid": True, "hand_complete": False, "next_actor": result.next_actor}
 
@@ -168,10 +176,24 @@ async def start_new_hand(session: AsyncSession, table_id: str) -> str | None:
     """Create a new HoldemHand on the given table.
 
     Returns the hand_id or None if a hand cannot be started.
+    Idempotent: returns existing hand_id if one is already active in memory.
     """
+    # If a hand is already running in memory, return it (prevents duplicates
+    # from concurrent calls, e.g. both agents calling get_state simultaneously).
+    existing = _active_hands.get(table_id)
+    if existing:
+        return existing.hand_id
+
     table = await _get_table(session, table_id)
     if not table or table.status != "active":
         return None
+
+    # If DB shows a current hand but it's not in memory (server restart),
+    # clear it so we can start fresh rather than getting stuck.
+    if table.current_hand_id:
+        table.current_hand_id = None
+        table.pending_action_agent_id = None
+        table.action_deadline = None
 
     sess1 = await _get_session_by_id(session, table.seat_1_session_id)
     sess2 = await _get_session_by_id(session, table.seat_2_session_id)

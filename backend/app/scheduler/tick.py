@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 
 from sqlalchemy import select
@@ -7,6 +8,8 @@ from app.models.table import Table
 from app.models.session import Session as GameSession
 from app.services import matchmaker, table_manager, session_manager
 from app.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 settings = get_settings()
 
@@ -65,10 +68,35 @@ async def _start_pending_hands(db: AsyncSession) -> int:
     count = 0
     for table in tables:
         if table.seat_1_session_id and table.seat_2_session_id:
-            await table_manager.start_new_hand(db, table.id)
-            count += 1
+            hand_id = await table_manager.start_new_hand(db, table.id)
+            if hand_id:
+                count += 1
+            else:
+                # start_new_hand returned None — likely a player has stack <= 0.
+                # Close both sessions and mark the table completed.
+                await _complete_finished_table(db, table)
 
     return count
+
+
+async def _complete_finished_table(db: AsyncSession, table: Table) -> None:
+    """Close a table where no new hand can start (e.g. stack_zero). Idempotent."""
+    sess1 = (await db.execute(
+        select(GameSession).where(GameSession.id == table.seat_1_session_id)
+    )).scalar_one_or_none()
+    sess2 = (await db.execute(
+        select(GameSession).where(GameSession.id == table.seat_2_session_id)
+    )).scalar_one_or_none()
+
+    for gs in [sess1, sess2]:
+        if gs and gs.status != "completed":
+            final = gs.final_stack if gs.final_stack is not None else gs.initial_stack
+            await session_manager.close_session(db, gs.id, "stack_zero", final)
+
+    table.status = "completed"
+    table.completed_at = datetime.now(timezone.utc)
+    await db.commit()
+    logger.info(f"Table {table.id} closed (stack_zero) by scheduler.")
 
 
 async def _settle_completed_sessions(db: AsyncSession) -> int:
