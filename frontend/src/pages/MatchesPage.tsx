@@ -1,344 +1,264 @@
-import { useEffect, useState, useCallback } from 'react'
-import { Link } from 'react-router-dom'
-import { Radio, Clock, TrendingUp, TrendingDown, RefreshCw, CheckCircle } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Monitor, Swords, Clock } from 'lucide-react'
 import AppShell from '../components/AppShell'
-import { getMatches } from '../api/matches'
-import type { ActiveMatch, CompletedMatch, MatchSeat } from '../api/matches'
+import { matchesApi, type MatchInfo } from '../api/matches'
 
-const ARENA_BADGES: Record<string, string> = {
-  practice: 'badge-grey',
-  low:      'badge-mint',
-  mid:      'badge-indigo',
-  high:     'badge-crimson',
+function timeSince(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  return `${hrs}h ${mins % 60}m ago`
 }
 
-function StackBar({ stack, initial }: { stack: number; initial: number }) {
-  const base = initial > 0 ? initial : 1000
-  const pct = Math.min(Math.max((stack / base) * 100, 0), 200)
-  const color = stack >= base ? 'var(--secondary)' : 'var(--tertiary)'
+function MatchCard({ match, onClick }: { match: MatchInfo; onClick: () => void }) {
+  const s1 = match.seat_1
+  const s2 = match.seat_2
+
   return (
-    <div style={{ width: '100%', height: '4px', background: 'var(--outline)', borderRadius: '2px', overflow: 'hidden' }}>
-      <div style={{
-        width: `${Math.min(pct, 100)}%`,
-        height: '100%',
-        background: color,
-        borderRadius: '2px',
-        transition: 'width 0.5s ease',
-      }} />
-    </div>
-  )
-}
-
-function SeatPanel({ seat, isWinner }: { seat: MatchSeat; isWinner?: boolean | null }) {
-  const profit = seat.stack - seat.initial_stack
-  const profitColor = profit >= 0 ? 'var(--secondary)' : 'var(--tertiary)'
-  return (
-    <div style={{
-      flex: 1, padding: '14px 16px',
-      background: isWinner ? 'rgba(124,255,178,0.05)' : 'var(--surface-container)',
-      border: `1px solid ${isWinner ? 'rgba(124,255,178,0.2)' : 'var(--outline)'}`,
-      borderRadius: '4px',
-      display: 'flex', flexDirection: 'column', gap: '8px',
-    }}>
-      {/* Bot name */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{
-          fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '14px',
-          color: 'var(--on-surface)',
-        }}>
-          {seat.bot_name}
-        </span>
-        {isWinner === true && (
-          <span style={{ fontSize: '10px', color: 'var(--secondary)', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
-            WIN
-          </span>
-        )}
-        {isWinner === false && (
-          <span style={{ fontSize: '10px', color: 'var(--tertiary)', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
-            LOSS
-          </span>
-        )}
-      </div>
-
-      {/* Owner + ELO */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--on-surface-variant)' }}>
-          @{seat.username}
-        </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--primary)', fontWeight: 600 }}>
-          ELO {seat.elo}
-        </span>
-      </div>
-
-      {/* Stack */}
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--on-surface-variant)' }}>
-            Stack
-          </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, color: 'var(--on-surface)' }}>
-            ♟ {seat.stack.toLocaleString()}
-          </span>
-        </div>
-        <StackBar stack={seat.stack} initial={seat.initial_stack} />
-      </div>
-
-      {/* Profit / winrate */}
-      <div style={{ display: 'flex', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {profit >= 0
-            ? <TrendingUp size={11} color="var(--secondary)" />
-            : <TrendingDown size={11} color="var(--tertiary)" />}
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 600, color: profitColor }}>
-            {profit >= 0 ? '+' : ''}{profit}
-          </span>
-        </div>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--on-surface-variant)' }}>
-          {(seat.winrate * 100).toFixed(0)}% WR
-        </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--on-surface-variant)' }}>
-          {seat.hands_won}W
-        </span>
-      </div>
-    </div>
-  )
-}
-
-function ActiveMatchCard({ match }: { match: ActiveMatch }) {
-  return (
-    <Link to={`/matches/${match.table_id}`} style={{ textDecoration: 'none', display: 'block' }}>
-    <div style={{
-      background: 'var(--surface-low)',
-      border: '1px solid var(--outline)',
-      borderRadius: '6px',
-      overflow: 'hidden',
-    }}>
-      {/* Header */}
-      <div style={{
-        padding: '10px 16px',
-        borderBottom: '1px solid var(--outline)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: 'rgba(124,127,255,0.04)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span className={`badge ${ARENA_BADGES[match.arena.slug] ?? 'badge-grey'}`}>
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%', textAlign: 'left', cursor: 'pointer',
+        background: 'var(--surface-low)',
+        border: '1px solid var(--outline)',
+        borderRadius: 4, padding: 16,
+        transition: 'border-color 0.12s',
+      }}
+      onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--primary-container)')}
+      onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--outline)')}
+    >
+      {/* Top row: arena + time */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{
+            fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
+            color: 'var(--on-surface)',
+          }}>
             {match.arena.name}
           </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--on-surface-variant)' }}>
-            SB {match.arena.small_blind} / BB {match.arena.big_blind}
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: 10,
+            color: 'var(--on-surface-variant)',
+          }}>
+            {match.arena.small_blind}/{match.arena.big_blind}
           </span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--on-surface-variant)' }}>
-            Hand #{match.hands_played}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Clock size={10} style={{ color: 'var(--on-surface-variant)' }} />
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: 10,
+            color: 'var(--on-surface-variant)',
+          }}>
+            {match.started_at ? timeSince(match.started_at) : '--'}
           </span>
-          {/* Live pulse */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <div style={{
-              width: '6px', height: '6px', borderRadius: '50%',
-              background: 'var(--secondary)',
-              animation: 'pulse 1.5s infinite',
-              boxShadow: '0 0 6px var(--secondary)',
-            }} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              Live
-            </span>
+        </div>
+      </div>
+
+      {/* Matchup */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 12, marginBottom: 10,
+      }}>
+        {/* Seat 1 */}
+        <div style={{ flex: 1 }}>
+          <div style={{
+            fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14,
+            color: 'var(--on-surface)',
+          }}>
+            {s1?.agent_name ?? 'Empty'}
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: 10,
+            color: 'var(--on-surface-variant)', marginTop: 2,
+          }}>
+            {s1 ? `${s1.username} \u00B7 ELO ${s1.elo}` : '--'}
+          </div>
+        </div>
+
+        {/* VS */}
+        <div style={{
+          fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11,
+          color: 'var(--primary-container)', letterSpacing: '0.05em',
+        }}>
+          VS
+        </div>
+
+        {/* Seat 2 */}
+        <div style={{ flex: 1, textAlign: 'right' }}>
+          <div style={{
+            fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14,
+            color: 'var(--on-surface)',
+          }}>
+            {s2?.agent_name ?? 'Empty'}
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: 10,
+            color: 'var(--on-surface-variant)', marginTop: 2,
+          }}>
+            {s2 ? `${s2.username} \u00B7 ELO ${s2.elo}` : '--'}
           </div>
         </div>
       </div>
 
-      {/* Seats */}
-      <div style={{ padding: '12px 16px', display: 'flex', gap: '10px', alignItems: 'stretch' }}>
-        <SeatPanel seat={match.seat_1} />
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '0 4px',
-          fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '14px',
-          color: 'var(--on-surface-variant)',
-        }}>VS</div>
-        <SeatPanel seat={match.seat_2} />
-      </div>
-    </div>
-    </Link>
-  )
-}
-
-function CompletedMatchCard({ match }: { match: CompletedMatch }) {
-  const seat1Won = match.winner === 'seat_1'
-  const seat2Won = match.winner === 'seat_2'
-  const isDraw = match.winner === 'draw'
-
-  const completedAt = match.completed_at ? new Date(match.completed_at) : null
-  const elapsed = completedAt ? Math.floor((Date.now() - completedAt.getTime()) / 60000) : null
-
-  return (
-    <Link to={`/matches/${match.table_id}`} style={{ textDecoration: 'none', display: 'block' }}>
-    <div style={{
-      background: 'var(--surface-low)',
-      border: '1px solid var(--outline)',
-      borderRadius: '6px',
-      overflow: 'hidden',
-      opacity: 0.85,
-    }}>
-      {/* Header */}
+      {/* Bottom stats row */}
       <div style={{
-        padding: '8px 14px',
-        borderBottom: '1px solid var(--outline)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        display: 'flex', gap: 16, paddingTop: 10,
+        borderTop: '1px solid var(--outline)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <CheckCircle size={12} color="var(--on-surface-variant)" />
-          <span className={`badge ${ARENA_BADGES[match.arena.slug] ?? 'badge-grey'}`}>
-            {match.arena.name}
-          </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--on-surface-variant)' }}>
-            {match.hands_played} hands
-          </span>
-        </div>
-        {elapsed !== null && (
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--on-surface-variant)' }}>
-            {elapsed}m ago
-          </span>
-        )}
-        {isDraw && (
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--on-surface-variant)' }}>
-            DRAW
-          </span>
+        {[
+          { label: 'Hands', value: match.hands_played },
+          { label: 'S1 Stack', value: s1?.stack ?? '--' },
+          { label: 'S2 Stack', value: s2?.stack ?? '--' },
+        ].map(({ label, value }) => (
+          <div key={label}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--on-surface-variant)', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>{label}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--on-surface)', marginTop: 2 }}>{value}</div>
+          </div>
+        ))}
+        {match.winner && (
+          <div style={{ marginLeft: 'auto' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--on-surface-variant)', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>Result</div>
+            <div style={{
+              fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, marginTop: 2,
+              color: match.winner === 'draw' ? 'var(--on-surface-variant)' : 'var(--secondary)',
+            }}>
+              {match.winner === 'seat_1' ? s1?.agent_name ?? 'Seat 1' : match.winner === 'seat_2' ? s2?.agent_name ?? 'Seat 2' : 'Draw'}
+            </div>
+          </div>
         )}
       </div>
-
-      {/* Seats */}
-      <div style={{ padding: '10px 14px', display: 'flex', gap: '8px' }}>
-        <SeatPanel seat={match.seat_1} isWinner={isDraw ? null : seat1Won} />
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '0 4px',
-          fontFamily: 'var(--font-mono)', fontSize: '11px',
-          color: 'var(--on-surface-variant)',
-        }}>vs</div>
-        <SeatPanel seat={match.seat_2} isWinner={isDraw ? null : seat2Won} />
-      </div>
-    </div>
-    </Link>
+    </button>
   )
 }
 
 export default function MatchesPage() {
-  const [data, setData] = useState<{ active: ActiveMatch[]; recently_completed: CompletedMatch[] } | null>(null)
+  const [active, setActive] = useState<MatchInfo[]>([])
+  const [completed, setCompleted] = useState<MatchInfo[]>([])
   const [loading, setLoading] = useState(true)
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date())
+  const navigate = useNavigate()
 
-  const load = useCallback(async () => {
-    try {
-      const res = await getMatches()
-      setData(res)
-      setLastRefresh(new Date())
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const fetchMatches = () => {
+    matchesApi.list()
+      .then(r => {
+        setActive(r.data.active)
+        setCompleted(r.data.recently_completed)
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }
 
   useEffect(() => {
-    load()
-    const interval = setInterval(load, 5000)
+    fetchMatches()
+    const interval = setInterval(fetchMatches, 5000)
     return () => clearInterval(interval)
-  }, [load])
+  }, [])
 
   return (
     <AppShell>
-      {/* Page header */}
-      <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <Radio size={18} color="var(--secondary)" />
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '22px', color: 'var(--on-surface)', margin: 0 }}>
-              Live Matches
-            </h1>
-            {data && (
-              <span style={{
-                background: 'rgba(124,255,178,0.12)', color: 'var(--secondary)',
-                border: '1px solid rgba(124,255,178,0.3)',
-                fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
-                padding: '2px 8px', borderRadius: '20px', letterSpacing: '0.06em',
-              }}>
-                {data.active.length} ACTIVE
-              </span>
-            )}
-          </div>
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--on-surface-variant)', margin: 0 }}>
-            Auto-refresh every 5s — last updated {lastRefresh.toLocaleTimeString()}
+      <div style={{ maxWidth: 900 }}>
+        {/* Header */}
+        <div style={{ marginBottom: 28 }}>
+          <div className="label" style={{ marginBottom: 8 }}>Live Games</div>
+          <h1 style={{
+            fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22,
+            color: 'var(--on-surface)', letterSpacing: '-0.02em',
+          }}>
+            Matches
+          </h1>
+          <p style={{
+            fontFamily: 'var(--font-display)', fontSize: 13,
+            color: 'var(--on-surface-variant)', marginTop: 4,
+          }}>
+            Active and recently completed matches across all arenas.
           </p>
         </div>
-        <button
-          className="btn-ghost"
-          onClick={load}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
-        >
-          <RefreshCw size={13} />
-          Refresh
-        </button>
-      </div>
 
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--on-surface-variant)', fontFamily: 'var(--font-mono)', fontSize: '13px' }}>
-          Loading matches...
-        </div>
-      )}
-
-      {!loading && data && (
-        <>
-          {/* Active matches */}
-          <div style={{ marginBottom: '32px' }}>
-            <div style={{
-              fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
-              letterSpacing: '0.12em', textTransform: 'uppercase',
-              color: 'var(--secondary)', marginBottom: '12px',
-              display: 'flex', alignItems: 'center', gap: '8px',
+        {/* Active section */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
+          }}>
+            <Monitor size={14} style={{ color: 'var(--secondary)' }} />
+            <span style={{
+              fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
+              letterSpacing: '0.1em', textTransform: 'uppercase' as const,
+              color: 'var(--on-surface-variant)',
             }}>
-              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--secondary)', boxShadow: '0 0 6px var(--secondary)' }} />
-              In Progress ({data.active.length})
-            </div>
-
-            {data.active.length === 0 ? (
-              <div style={{
-                padding: '40px', textAlign: 'center',
-                border: '1px dashed var(--outline)', borderRadius: '6px',
-                color: 'var(--on-surface-variant)', fontFamily: 'var(--font-mono)', fontSize: '12px',
-              }}>
-                No active matches right now.{' '}
-                <Link to="/battle" style={{ color: 'var(--primary)', textDecoration: 'none' }}>
-                  Deploy a bot
-                </Link>{' '}
-                to start one.
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(480px, 1fr))', gap: '12px' }}>
-                {data.active.map(m => <ActiveMatchCard key={m.table_id} match={m} />)}
-              </div>
-            )}
+              Active ({active.length})
+            </span>
+            <div style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: active.length > 0 ? 'var(--secondary)' : 'var(--outline)',
+              boxShadow: active.length > 0 ? '0 0 6px var(--secondary)' : 'none',
+            }} />
           </div>
 
-          {/* Recently completed */}
-          {data.recently_completed.length > 0 && (
-            <div>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
-                letterSpacing: '0.12em', textTransform: 'uppercase',
-                color: 'var(--on-surface-variant)', marginBottom: '12px',
-                display: 'flex', alignItems: 'center', gap: '8px',
+          {loading ? (
+            <div style={{
+              padding: '40px 20px', textAlign: 'center',
+              fontFamily: 'var(--font-display)', fontSize: 13,
+              color: 'var(--on-surface-variant)',
+            }}>
+              Loading matches...
+            </div>
+          ) : active.length === 0 ? (
+            <div style={{
+              padding: '40px 20px', textAlign: 'center',
+              background: 'var(--surface-low)',
+              border: '1px solid var(--outline)',
+              borderRadius: 4,
+            }}>
+              <Swords size={28} style={{ color: 'var(--outline)', margin: '0 auto 10px' }} />
+              <p style={{
+                fontFamily: 'var(--font-display)', fontSize: 13,
+                color: 'var(--on-surface-variant)',
               }}>
-                <Clock size={11} />
-                Recently Completed ({data.recently_completed.length})
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(480px, 1fr))', gap: '10px' }}>
-                {data.recently_completed.map(m => <CompletedMatchCard key={m.table_id} match={m} />)}
-              </div>
+                No active matches. Agents join via API.
+              </p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {active.map(m => (
+                <MatchCard
+                  key={m.table_id}
+                  match={m}
+                  onClick={() => navigate(`/matches/${m.table_id}`)}
+                />
+              ))}
             </div>
           )}
-        </>
-      )}
+        </div>
+
+        {/* Recently Completed */}
+        {completed.length > 0 && (
+          <div>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
+            }}>
+              <Clock size={14} style={{ color: 'var(--on-surface-variant)' }} />
+              <span style={{
+                fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
+                letterSpacing: '0.1em', textTransform: 'uppercase' as const,
+                color: 'var(--on-surface-variant)',
+              }}>
+                Recently Completed ({completed.length})
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {completed.map(m => (
+                <MatchCard
+                  key={m.table_id}
+                  match={m}
+                  onClick={() => navigate(`/matches/${m.table_id}`)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </AppShell>
   )
 }

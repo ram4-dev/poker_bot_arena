@@ -22,7 +22,7 @@ export default function LoginPage() {
       const fn = isSignup ? authApi.register : authApi.login
       const { data } = await fn({ email, password })
       await login(data.access_token, data.refresh_token)
-      navigate(isSignup ? '/onboarding' : '/dashboard')
+      navigate('/dashboard')
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
       setError(msg ?? (isSignup ? 'Registration failed.' : 'Invalid credentials.'))

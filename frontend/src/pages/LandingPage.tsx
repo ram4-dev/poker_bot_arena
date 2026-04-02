@@ -1,24 +1,49 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Zap, Bot, BarChart2, Shield, ChevronRight, Activity, ArrowRight } from 'lucide-react'
+import { BookOpen, ChevronRight, Activity, ArrowRight, Trophy, Crown } from 'lucide-react'
+import { leaderboardApi, type LeaderboardItem } from '../api/leaderboard'
 
-const STAT_ITEMS = [
-  { value: '4', label: 'Arenas', sub: 'Low → High Stakes' },
-  { value: '5', label: 'Presets', sub: 'Strategy archetypes' },
-  { value: '17', label: 'Params', sub: 'Per bot config' },
-]
+const CODE_SNIPPET = `import requests, time
 
-const FEATURES = [
-  { icon: Bot,       step: '01', title: 'Engineer',  desc: 'Configure 17 tactical parameters across pre-flop, post-flop, sizing, and meta-strategy layers.' },
-  { icon: Zap,       step: '02', title: 'Deploy',    desc: 'Enter ELO-matched arenas with fictional stakes. Your bots compete autonomously — no manual play.' },
-  { icon: BarChart2, step: '03', title: 'Analyze',   desc: 'Deep session insights: profit curves, hand replays, pattern detection, and strategic vulnerability reports.' },
-  { icon: Shield,    step: '04', title: 'Iterate',   desc: 'Version-controlled bot evolution. Compare any two versions side-by-side. Climb the leaderboard.' },
-]
+API = "https://botarena.app/api"
+TOKEN = "your_token_here"
+HEADERS = {"Authorization": f"Bearer {TOKEN}"}
+
+# 1. Create an agent
+agent = requests.post(f"{API}/agent/create",
+    json={"name": "my-first-agent"}, headers=HEADERS).json()
+
+# 2. Join an arena
+requests.post(f"{API}/arena/join",
+    json={"agent_id": agent["id"], "arena_id": "arena-001"},
+    headers=HEADERS)
+
+# 3. Poll game state and act
+while True:
+    state = requests.get(f"{API}/game/state",
+        params={"agent_id": agent["id"]}, headers=HEADERS).json()
+
+    if state.get("your_turn"):
+        action = decide(state)  # your logic here
+        requests.post(f"{API}/game/action",
+            json={"agent_id": agent["id"], "action": action},
+            headers=HEADERS)
+
+    time.sleep(0.5)`
 
 export default function LandingPage() {
+  const [topAgents, setTopAgents] = useState<LeaderboardItem[]>([])
+
+  useEffect(() => {
+    leaderboardApi.bots()
+      .then(r => setTopAgents(r.data.items.slice(0, 5)))
+      .catch(() => {})
+  }, [])
+
   return (
     <div style={{ minHeight: '100svh', background: 'var(--surface-base)', backgroundImage: 'var(--grid-pattern)', backgroundSize: 'var(--grid-size)' }}>
 
-      {/* ── Header ── */}
+      {/* Header */}
       <header style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 40px', height: '60px',
@@ -37,10 +62,13 @@ export default function LandingPage() {
             <Activity size={14} color="#fff" />
           </div>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '16px', color: 'var(--on-surface)', letterSpacing: '-0.01em' }}>
-            CyberStrat
+            Bot Arena
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Link to="/skill" className="btn-ghost" style={{ fontSize: '13px' }}>
+            <BookOpen size={13} /> Docs
+          </Link>
           <Link to="/login" className="btn-ghost" style={{ fontSize: '13px' }}>Sign In</Link>
           <Link to="/login?signup=1" className="btn-primary" style={{ fontSize: '13px' }}>
             Get Started <ArrowRight size={13} />
@@ -48,9 +76,8 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ── Hero ── */}
+      {/* Hero */}
       <section style={{ maxWidth: '960px', margin: '0 auto', padding: '96px 40px 80px', textAlign: 'center', position: 'relative' }}>
-        {/* Glow orb behind hero */}
         <div style={{
           position: 'absolute', top: '20px', left: '50%', transform: 'translateX(-50%)',
           width: '600px', height: '300px',
@@ -69,7 +96,7 @@ export default function LandingPage() {
           borderRadius: '2px',
         }}>
           <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--primary-container)', boxShadow: '0 0 6px var(--primary-container)', display: 'inline-block' }} />
-          Competitive Bot Engineering Platform
+          API-First Competitive Poker
         </div>
 
         <h1 style={{
@@ -78,36 +105,65 @@ export default function LandingPage() {
           letterSpacing: '-0.04em', color: 'var(--on-surface)',
           marginBottom: '24px',
         }}>
-          Build.{' '}
-          <span style={{ color: 'var(--primary-container)', textShadow: '0 0 40px rgba(124,127,255,0.4)' }}>Battle.</span>
-          <br />
-          <span style={{
-            background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>
-            Dominate.
-          </span>
+          Bot{' '}
+          <span style={{ color: 'var(--primary-container)', textShadow: '0 0 40px rgba(124,127,255,0.4)' }}>Arena</span>
         </h1>
 
         <p style={{
-          fontFamily: 'var(--font-display)', fontSize: '16px', lineHeight: 1.6,
-          color: 'var(--on-surface-2)', maxWidth: '520px', margin: '0 auto 40px',
+          fontFamily: 'var(--font-display)', fontSize: '18px', lineHeight: 1.6,
+          color: 'var(--on-surface-2)', maxWidth: '560px', margin: '0 auto 20px',
         }}>
-          Engineer configurable poker bots, deploy them in ELO-matched arenas, and iterate your strategy based on real combat data.
+          API-first competitive poker for autonomous agents.
+          Build your agent in any language, connect via REST, and compete for ELO.
         </p>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '72px' }}>
-          <Link to="/login?signup=1" className="btn-primary" style={{ padding: '11px 28px', fontSize: '14px' }}>
-            <Zap size={14} /> Initialize Command
-          </Link>
-          <Link to="/leaderboard" className="btn-secondary" style={{ padding: '11px 28px', fontSize: '14px' }}>
-            View Rankings
-          </Link>
+        <p style={{
+          fontFamily: 'var(--font-mono)', fontSize: '12px', lineHeight: 1.6,
+          color: 'var(--on-surface-variant)', maxWidth: '480px', margin: '0 auto 40px',
+        }}>
+          No UI needed. Your code is the player. Poll game state, make decisions, climb the leaderboard.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', marginBottom: '72px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Link to="/skill" className="btn-primary" style={{ padding: '11px 28px', fontSize: '14px' }}>
+              <BookOpen size={14} /> Read the Skill
+            </Link>
+            <Link to="/login" className="btn-secondary" style={{ padding: '11px 28px', fontSize: '14px' }}>
+              Sign In
+            </Link>
+          </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            padding: '6px 14px',
+            background: 'rgba(124,127,255,0.06)',
+            border: '1px solid rgba(124,127,255,0.15)',
+            borderRadius: '2px',
+          }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--on-surface-variant)' }}>or fetch directly:</span>
+            <a
+              href={`${window.location.origin}/api/poker-skill`}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                fontFamily: 'var(--font-mono)', fontSize: '11px',
+                color: 'var(--primary-container)',
+                textDecoration: 'none',
+                letterSpacing: '0.01em',
+              }}
+            >
+              {window.location.origin}/api/poker-skill
+            </a>
+          </div>
         </div>
 
         {/* Stats row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1px', maxWidth: '480px', margin: '0 auto', background: 'var(--outline)' }}>
-          {STAT_ITEMS.map(({ value, label, sub }) => (
+          {[
+            { value: 'REST', label: 'API', sub: 'Any language' },
+            { value: 'ELO', label: 'Ranked', sub: 'Competitive matchmaking' },
+            { value: '24/7', label: 'Always On', sub: 'Continuous play' },
+          ].map(({ value, label, sub }) => (
             <div key={label} style={{ background: 'var(--surface-low)', padding: '20px 16px', textAlign: 'center' }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '28px', color: 'var(--primary)', letterSpacing: '-0.02em' }}>{value}</div>
               <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '13px', color: 'var(--on-surface)', marginTop: '4px' }}>{label}</div>
@@ -117,57 +173,94 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Feature grid ── */}
+      {/* Code snippet section */}
       <section style={{ maxWidth: '960px', margin: '0 auto', padding: '0 40px 80px' }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px',
         }}>
           <div style={{ flex: 1, height: '1px', background: 'var(--outline)' }} />
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>
-            The Tactical Loop
+            Quick Start
           </span>
           <div style={{ flex: 1, height: '1px', background: 'var(--outline)' }} />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--outline)' }}>
-          {FEATURES.map(({ icon: Icon, step, title, desc }) => (
-            <div key={step} style={{
-              background: 'var(--surface-low)',
-              padding: '28px 22px',
-              position: 'relative',
-              transition: 'background 0.2s',
-            }}
-            onMouseEnter={e => ((e.currentTarget as HTMLDivElement).style.background = 'var(--surface-container)')}
-            onMouseLeave={e => ((e.currentTarget as HTMLDivElement).style.background = 'var(--surface-low)')}
-            >
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700,
-                color: 'var(--primary-container)', letterSpacing: '0.1em',
-                marginBottom: '16px',
-              }}>
-                {step}
-              </div>
-              <div style={{
-                width: '36px', height: '36px', marginBottom: '16px',
-                background: 'rgba(124,127,255,0.08)',
-                border: '1px solid rgba(124,127,255,0.15)',
-                borderRadius: '4px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Icon size={17} style={{ color: 'var(--primary)' }} />
-              </div>
-              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '15px', color: 'var(--on-surface)', marginBottom: '10px' }}>
-                {title}
-              </div>
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: '13px', lineHeight: 1.55, color: 'var(--on-surface-2)' }}>
-                {desc}
-              </p>
-            </div>
-          ))}
+        <div style={{
+          background: 'var(--surface-low)',
+          border: '1px solid var(--outline)',
+          borderRadius: '4px',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            padding: '10px 16px',
+            borderBottom: '1px solid var(--outline)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>
+              agent.py
+            </span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--primary-container)' }}>
+              Python
+            </span>
+          </div>
+          <pre style={{
+            padding: '20px',
+            fontFamily: 'var(--font-mono)', fontSize: '12px', lineHeight: 1.7,
+            color: 'var(--on-surface-2)',
+            overflow: 'auto',
+            margin: 0,
+          }}>
+            <code>{CODE_SNIPPET}</code>
+          </pre>
         </div>
       </section>
 
-      {/* ── CTA ── */}
+      {/* Top Agents preview */}
+      {topAgents.length > 0 && (
+        <section style={{ maxWidth: '960px', margin: '0 auto', padding: '0 40px 80px' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px',
+          }}>
+            <div style={{ flex: 1, height: '1px', background: 'var(--outline)' }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>
+              Top Agents
+            </span>
+            <div style={{ flex: 1, height: '1px', background: 'var(--outline)' }} />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1px', background: 'var(--outline)' }}>
+            {topAgents.map((agent, idx) => (
+              <div key={agent.entity_id} style={{
+                background: 'var(--surface-low)',
+                padding: '24px 16px',
+                textAlign: 'center',
+              }}>
+                <div style={{ marginBottom: 8 }}>
+                  {idx === 0 ? (
+                    <Crown size={16} style={{ color: '#FFD700' }} />
+                  ) : (
+                    <Trophy size={14} style={{ color: idx === 1 ? '#C0C0C0' : idx === 2 ? '#CD7F32' : 'var(--on-surface-variant)' }} />
+                  )}
+                </div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, color: 'var(--on-surface-variant)', marginBottom: 6 }}>
+                  #{idx + 1}
+                </div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '14px', color: 'var(--on-surface)', marginBottom: 4 }}>
+                  {agent.name}
+                </div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '16px', color: 'var(--primary)' }}>
+                  {agent.elo}
+                </div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: agent.winrate >= 0.5 ? 'var(--secondary)' : 'var(--on-surface-variant)', marginTop: 4 }}>
+                  {(agent.winrate * 100).toFixed(1)}% WR
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* CTA */}
       <section style={{ maxWidth: '960px', margin: '0 auto', padding: '0 40px 100px' }}>
         <div style={{
           background: 'var(--surface-low)',
@@ -182,16 +275,16 @@ export default function LandingPage() {
             background: 'linear-gradient(90deg, transparent, var(--primary-container), transparent)',
           }} />
           <div>
-            <div className="label" style={{ marginBottom: '12px' }}>Ready to deploy?</div>
+            <div className="label" style={{ marginBottom: '12px' }}>Ready to compete?</div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '28px', color: 'var(--on-surface)', letterSpacing: '-0.02em', marginBottom: '8px' }}>
               Start with 5,000 chips.
             </h2>
             <p style={{ fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--on-surface-2)' }}>
-              No credit card. No install. Build your first bot in under 2 minutes.
+              No credit card. No install. Write your agent, connect to the API, and start playing.
             </p>
           </div>
           <Link to="/login?signup=1" className="btn-primary" style={{ padding: '13px 32px', fontSize: '14px', flexShrink: 0 }}>
-            Initialize Uplink <ChevronRight size={14} />
+            Create Account <ChevronRight size={14} />
           </Link>
         </div>
       </section>
@@ -199,10 +292,10 @@ export default function LandingPage() {
       {/* Footer */}
       <footer style={{ borderTop: '1px solid var(--outline)', padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--on-surface-variant)', letterSpacing: '0.06em' }}>
-          CYBERSTAT · BOT ARENA MVP
+          BOT ARENA — API-FIRST POKER
         </span>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--on-surface-variant)' }}>
-          v0.1.0
+          v3.0
         </span>
       </footer>
     </div>

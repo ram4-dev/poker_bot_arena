@@ -1,18 +1,17 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
-  LayoutDashboard, Bot, Swords, Zap, Trophy, Wallet,
-  LogOut, Bell, ChevronRight, Activity, Radio
+  LayoutDashboard, Monitor, Swords, Trophy, Wallet, BookOpen,
+  LogOut, ChevronRight, Activity,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const NAV_ITEMS = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Command Center', key: 'dashboard' },
-  { to: '/bots',      icon: Bot,             label: 'My Fleet',       key: 'bots' },
-  { to: '/arenas',    icon: Swords,          label: 'Arenas',         key: 'arenas' },
-  { to: '/battle',    icon: Zap,             label: 'Battle',         key: 'battle' },
-  { to: '/matches',   icon: Radio,           label: 'Live Matches',   key: 'matches' },
-  { to: '/leaderboard', icon: Trophy,        label: 'Leaderboard',    key: 'lb' },
-  { to: '/wallet',    icon: Wallet,          label: 'Wallet',         key: 'wallet' },
+  { to: '/dashboard',   icon: LayoutDashboard, label: 'Dashboard',    key: 'dashboard' },
+  { to: '/matches',     icon: Monitor,         label: 'Matches',      key: 'matches' },
+  { to: '/arenas',      icon: Swords,          label: 'Arenas',       key: 'arenas' },
+  { to: '/leaderboard', icon: Trophy,          label: 'Leaderboard',  key: 'lb' },
+  { to: '/wallet',      icon: Wallet,          label: 'Wallet',       key: 'wallet' },
+  { to: '/skill',       icon: BookOpen,        label: 'Docs',         key: 'docs' },
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -22,7 +21,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', minHeight: '100svh', background: 'var(--surface-base)' }}>
 
-      {/* ── Sidebar ── */}
+      {/* Sidebar */}
       <aside style={{
         width: '220px', flexShrink: 0,
         position: 'fixed', top: 0, left: 0, height: '100%', zIndex: 40,
@@ -60,7 +59,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '16px',
               color: 'var(--on-surface)', letterSpacing: '-0.02em',
             }}>
-              CyberStrat
+              Bot Arena
             </span>
           </div>
           <div style={{
@@ -69,7 +68,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             color: 'var(--primary-container)', opacity: 0.8,
             paddingLeft: '36px',
           }}>
-            Bot Engineering
+            API Dashboard
           </div>
         </div>
 
@@ -134,13 +133,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '12px',
                 color: 'var(--on-surface)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
-                {user?.username ?? 'Architect'}
+                {user?.username ?? 'User'}
               </div>
               <div style={{
                 fontFamily: 'var(--font-mono)', fontSize: '10px',
                 color: 'var(--secondary)', marginTop: '1px',
               }}>
-                ♟ {user?.balance?.toLocaleString() ?? 0}
+                {'\u2659'} {user?.balance?.toLocaleString() ?? 0}
               </div>
             </div>
             <button
@@ -167,11 +166,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           color: 'var(--on-surface-variant)', opacity: 0.5,
           position: 'relative', zIndex: 1,
         }}>
-          ARENA v0.1 — MVP
+          ARENA v3.0 — API Dashboard
         </div>
       </aside>
 
-      {/* ── Main ── */}
+      {/* Main */}
       <main style={{ flex: 1, marginLeft: '220px', display: 'flex', flexDirection: 'column', minHeight: '100svh' }}>
 
         {/* Top bar */}
@@ -188,7 +187,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--on-surface-variant)' }}>Balance</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--secondary)' }}>
-                ♟ {user?.balance?.toLocaleString() ?? 0}
+                {'\u2659'} {user?.balance?.toLocaleString() ?? 0}
               </span>
             </div>
 
@@ -201,16 +200,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 {user?.elo ?? 1000}
               </span>
             </div>
-
-            <div style={{ width: '1px', height: '16px', background: 'var(--outline)' }} />
-
-            <button className="btn-ghost" style={{ padding: '5px 8px' }}>
-              <Bell size={14} />
-            </button>
-
-            <NavLink to="/battle" className="btn-primary" style={{ padding: '7px 16px', fontSize: '12px' }}>
-              <Zap size={12} /> Deploy
-            </NavLink>
           </div>
         </header>
 

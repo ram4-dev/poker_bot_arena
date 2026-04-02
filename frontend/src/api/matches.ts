@@ -1,9 +1,9 @@
 import client from './client'
 
-export interface MatchSeat {
+export interface SeatInfo {
   session_id: string
-  bot_id: string
-  bot_name: string
+  agent_id: string
+  agent_name: string
   username: string
   elo: number
   stack: number
@@ -19,67 +19,52 @@ export interface ArenaInfo {
   big_blind: number
 }
 
-export interface ActiveMatch {
+export interface MatchInfo {
   table_id: string
   arena: ArenaInfo
   hands_played: number
   started_at: string
-  seat_1: MatchSeat
-  seat_2: MatchSeat
+  seat_1: SeatInfo | null
+  seat_2: SeatInfo | null
+  winner?: 'seat_1' | 'seat_2' | 'draw'
 }
 
-export interface CompletedMatch {
-  table_id: string
-  arena: ArenaInfo
-  hands_played: number
-  completed_at: string | null
-  winner: 'seat_1' | 'seat_2' | 'draw'
-  seat_1: MatchSeat
-  seat_2: MatchSeat
-}
-
-export interface MatchesResponse {
-  active: ActiveMatch[]
-  recently_completed: CompletedMatch[]
-  total_active: number
-}
-
-export const getMatches = (): Promise<MatchesResponse> =>
-  client.get('/matches').then(r => r.data)
-
-export interface LiveHandEvent {
+export interface HandEventInfo {
   sequence: number
   street: string
-  player_seat: 1 | 2
+  player_seat: number
   action: string
   amount: number
   pot_after: number
-  hand_strength: number | null
-  hole_cards: string[]
 }
 
-export interface LiveHand {
+export interface HandInfo {
+  hand_id: string
   hand_number: number
+  phase: string
   pot: number
   community_cards: string[]
-  winner_seat: 1 | 2 | null
+  winner_seat: number | null
   winning_hand_rank: string | null
-  player_1_stack_after: number
-  player_2_stack_after: number
+  player_1_stack_after: number | null
+  player_2_stack_after: number | null
   player_1_hole: string[]
   player_2_hole: string[]
-  events: LiveHandEvent[]
+  events: HandEventInfo[]
 }
 
-export interface LiveMatchResponse {
-  table_id: string
+export interface MatchLiveInfo extends MatchInfo {
   status: string
-  arena: ArenaInfo
-  hands_played: number
-  seat_1: MatchSeat | null
-  seat_2: MatchSeat | null
-  recent_hands: LiveHand[]
+  recent_hands: HandInfo[]
 }
 
-export const getLiveMatch = (tableId: string): Promise<LiveMatchResponse> =>
-  client.get(`/matches/${tableId}/live`).then(r => r.data)
+export interface MatchListResponse {
+  active: MatchInfo[]
+  recently_completed: MatchInfo[]
+  total_active: number
+}
+
+export const matchesApi = {
+  list: () => client.get<MatchListResponse>('/matches'),
+  live: (tableId: string) => client.get<MatchLiveInfo>(`/matches/${tableId}/live`),
+}

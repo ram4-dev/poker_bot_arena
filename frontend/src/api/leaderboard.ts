@@ -28,7 +28,10 @@ export interface SeasonsResponse {
 export const leaderboardApi = {
   users: (season?: string) =>
     api.get<LeaderboardResponse>(`/leaderboard/users${season ? `?season=${season}` : ''}`),
+  agents: (season?: string) =>
+    api.get<LeaderboardResponse>(`/leaderboard/agents${season ? `?season=${season}` : ''}`),
+  // Keep bots as alias for backward compat (landing page)
   bots: (season?: string) =>
-    api.get<LeaderboardResponse>(`/leaderboard/bots${season ? `?season=${season}` : ''}`),
+    api.get<LeaderboardResponse>(`/leaderboard/agents${season ? `?season=${season}` : ''}`),
   seasons: () => api.get<SeasonsResponse>('/leaderboard/seasons'),
 }

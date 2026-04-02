@@ -4,7 +4,7 @@ import AppShell from '../components/AppShell'
 import { leaderboardApi, type LeaderboardItem } from '../api/leaderboard'
 import { useAuth } from '../context/AuthContext'
 
-type Tab = 'users' | 'bots'
+type Tab = 'users' | 'agents'
 
 function RankMedal({ rank }: { rank: number }) {
   if (rank === 1) return (
@@ -42,7 +42,7 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     setLoading(true)
-    const fn = tab === 'users' ? leaderboardApi.users : leaderboardApi.bots
+    const fn = tab === 'users' ? leaderboardApi.users : leaderboardApi.agents
     fn(season || undefined)
       .then(r => {
         setItems(r.data.items)
@@ -61,10 +61,10 @@ export default function LeaderboardPage() {
           <div>
             <div className="label" style={{ marginBottom: 8 }}>Global Rankings</div>
             <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: 'var(--on-surface)', letterSpacing: '-0.02em' }}>
-              Ascend the Hierarchy
+              Leaderboard
             </h1>
             <p style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--on-surface-variant)', marginTop: 4 }}>
-              Global rankings of architects and their bots
+              Global rankings of users and their agents
             </p>
           </div>
 
@@ -79,9 +79,9 @@ export default function LeaderboardPage() {
 
         {/* Tabs */}
         <div className="tab-bar" style={{ marginBottom: 16 }}>
-          {(['users', 'bots'] as Tab[]).map(t => (
+          {([['users', 'Users'], ['agents', 'Top Agents']] as [Tab, string][]).map(([t, label]) => (
             <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
-              {t === 'users' ? 'Architects' : 'Top Bots'}
+              {label}
             </button>
           ))}
         </div>
@@ -99,8 +99,8 @@ export default function LeaderboardPage() {
                 <thead>
                   <tr>
                     <th>Rank</th>
-                    <th>{tab === 'users' ? 'Architect' : 'Bot'}</th>
-                    {tab === 'bots' && <th>Owner</th>}
+                    <th>{tab === 'users' ? 'User' : 'Agent'}</th>
+                    {tab === 'agents' && <th>Owner</th>}
                     <th>ELO</th>
                     <th>Win Rate</th>
                     <th>W / L</th>
@@ -140,7 +140,7 @@ export default function LeaderboardPage() {
                           </div>
                         </div>
                       </td>
-                      {tab === 'bots' && (
+                      {tab === 'agents' && (
                         <td style={{ color: 'var(--on-surface-variant)', fontSize: 12 }}>{item.creator}</td>
                       )}
                       <td className="text-numeric" style={{ fontWeight: 700, color: 'var(--primary)' }}>{item.elo}</td>
