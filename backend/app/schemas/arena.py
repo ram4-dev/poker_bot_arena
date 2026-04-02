@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class QueueRequest(BaseModel):
-    bot_id: str
+    agent_id: str
 
 
 class ArenaStatsResponse(BaseModel):

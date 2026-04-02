@@ -18,8 +18,7 @@ email-validator==2.2.0
 apscheduler==3.10.4
 
 # Poker engine
-pypokerengine==1.0.1
-treys==0.1.8
+# Pure Python — no external dependencies
 
 # Testing
 pytest==8.3.3

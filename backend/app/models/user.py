@@ -27,7 +27,7 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
-    bots: Mapped[list["Bot"]] = relationship(back_populates="owner")  # noqa: F821
+    agents: Mapped[list["Agent"]] = relationship(back_populates="owner")  # noqa: F821
     ledger_entries: Mapped[list["LedgerEntry"]] = relationship(back_populates="user")  # noqa: F821
 
 

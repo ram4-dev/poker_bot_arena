@@ -17,13 +17,6 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 
-class OnboardingRequest(BaseModel):
-    username: str | None = Field(None, min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")
-    preset: str | None = None
-    preset_key: str | None = None  # frontend compat alias
-    bot_name: str | None = Field(None, min_length=1, max_length=100)
-
-
 class UserResponse(BaseModel):
     id: str
     email: str

@@ -1,5 +1,5 @@
 from app.models.user import User, RefreshToken  # noqa: F401
-from app.models.bot import Bot, BotVersion  # noqa: F401
+from app.models.agent import Agent  # noqa: F401
 from app.models.arena import Arena  # noqa: F401
 from app.models.table import Table  # noqa: F401
 from app.models.session import Session  # noqa: F401

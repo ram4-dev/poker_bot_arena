@@ -9,7 +9,7 @@ from app.database import Base
 from app.config import get_settings
 
 # Import all models so they register with Base.metadata
-from app.models import user, bot, arena, table, session, hand, ledger, ranking  # noqa: F401
+from app.models import user, agent, arena, table, session, hand, ledger, ranking  # noqa: F401
 
 config = context.config
 if config.config_file_name is not None:
