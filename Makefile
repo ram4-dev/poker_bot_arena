@@ -35,8 +35,8 @@ db-upgrade:
 
 db-reset:
 	rm -f backend/bot_arena.db
-	cd backend && PYTHONPATH=. $(CURDIR)/$(ALEMBIC) upgrade head
-	@echo "✅ Database reset"
+	cd backend && PYTHONPATH=. $(CURDIR)/$(PYTHON) -m app.seed
+	@echo "✅ Database reset and seeded"
 
 test: test-backend test-frontend
 
