@@ -3,8 +3,7 @@
 import json
 import pathlib
 
-from fastapi import APIRouter, Depends, Query, HTTPException
-from fastapi.responses import PlainTextResponse
+from fastapi import APIRouter, Depends, Query, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -137,10 +136,11 @@ async def session_log(
     return {"session_id": session_id, "hands": log, "total_hands": len(log)}
 
 
-@router.get("/poker-skill", response_class=PlainTextResponse)
-async def poker_skill():
+@router.get("/poker-skill")
+async def poker_skill(request: Request):
     """Serve the poker skill documentation (public, no auth required)."""
     if not _SKILL_PATH.exists():
         raise HTTPException(404, "Skill file not found")
     content = _SKILL_PATH.read_text(encoding="utf-8")
-    return PlainTextResponse(content, media_type="text/markdown")
+    url = str(request.base_url) + "api/poker-skill"
+    return {"content": content, "url": url}
