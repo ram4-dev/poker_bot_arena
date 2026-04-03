@@ -138,6 +138,35 @@ class HoldemHand:
     # Public API
     # ------------------------------------------------------------------
 
+    # ------------------------------------------------------------------
+    # Public accessors (stable API for callers outside app.engine)
+    # ------------------------------------------------------------------
+
+    def current_actor(self) -> str | None:
+        """Return the agent_id whose turn it is, or None."""
+        return self._current_actor
+
+    def current_phase(self) -> GamePhase:
+        """Return the current game phase."""
+        return self._phase
+
+    def current_pot(self) -> int:
+        """Return the current pot size."""
+        return self._pot
+
+    def get_community_cards(self) -> list[str]:
+        """Return a copy of community cards dealt so far."""
+        return list(self._community_cards)
+
+    def get_events(self) -> list[dict]:
+        """Return a copy of all events recorded so far."""
+        return list(self._events)
+
+    def seat_for_agent(self, agent_id: str) -> int:
+        """Return seat number (1 or 2) for the given agent. Defaults to 1."""
+        player = self._players.get(agent_id)
+        return player["seat"] if player else 1
+
     def get_state(self, agent_id: str) -> GameState:
         """Return the game state from this agent's perspective."""
         if agent_id not in self._players:

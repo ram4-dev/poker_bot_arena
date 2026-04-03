@@ -1,10 +1,8 @@
 import client from './client'
 
 export interface SeatInfo {
-  session_id: string
-  agent_id: string
+  label: string
   agent_name: string
-  username: string
   elo: number
   stack: number
   initial_stack: number

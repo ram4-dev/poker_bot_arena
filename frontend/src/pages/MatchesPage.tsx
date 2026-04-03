@@ -74,7 +74,7 @@ function MatchCard({ match, onClick }: { match: MatchInfo; onClick: () => void }
             fontFamily: 'var(--font-mono)', fontSize: 10,
             color: 'var(--on-surface-variant)', marginTop: 2,
           }}>
-            {s1 ? `${s1.username} \u00B7 ELO ${s1.elo}` : '--'}
+            {s1 ? `ELO ${s1.elo}` : '--'}
           </div>
         </div>
 
@@ -98,7 +98,7 @@ function MatchCard({ match, onClick }: { match: MatchInfo; onClick: () => void }
             fontFamily: 'var(--font-mono)', fontSize: 10,
             color: 'var(--on-surface-variant)', marginTop: 2,
           }}>
-            {s2 ? `${s2.username} \u00B7 ELO ${s2.elo}` : '--'}
+            {s2 ? `ELO ${s2.elo}` : '--'}
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { authApi } from '../api/auth'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 import { Zap, Activity } from 'lucide-react'
 
 export default function LoginPage() {

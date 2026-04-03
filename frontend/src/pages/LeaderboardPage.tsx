@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Trophy, Bot, Crown } from 'lucide-react'
 import AppShell from '../components/AppShell'
 import { leaderboardApi, type LeaderboardItem } from '../api/leaderboard'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 type Tab = 'users' | 'agents'
 
@@ -31,7 +31,7 @@ export default function LeaderboardPage() {
   const [availableSeasons, setAvailableSeasons] = useState<string[]>([])
   const [items, setItems] = useState<LeaderboardItem[]>([])
   const [myPosition, setMyPosition] = useState<{ rank: number; username: string; elo: number } | undefined>()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     leaderboardApi.seasons().then(r => {
@@ -41,15 +41,17 @@ export default function LeaderboardPage() {
   }, [])
 
   useEffect(() => {
-    setLoading(true)
+    let cancelled = false
     const fn = tab === 'users' ? leaderboardApi.users : leaderboardApi.agents
     fn(season || undefined)
       .then(r => {
+        if (cancelled) return
         setItems(r.data.items)
         setMyPosition(r.data.my_position)
       })
       .catch(() => {})
-      .finally(() => setLoading(false))
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [tab, season])
 
   return (

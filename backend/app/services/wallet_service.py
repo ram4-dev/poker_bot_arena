@@ -57,7 +57,7 @@ async def lock_buy_in(session: AsyncSession, user_id: str, amount: int) -> Ledge
         description=f"Buy-in locked: {amount}",
     )
     session.add(entry)
-    await session.commit()
+    # Caller is responsible for commit
     return entry
 
 
@@ -78,7 +78,7 @@ async def unlock_buy_in(session: AsyncSession, user_id: str, amount: int) -> Led
         description=f"Buy-in refunded: {amount}",
     )
     session.add(entry)
-    await session.commit()
+    # Caller is responsible for commit
     return entry
 
 
@@ -91,7 +91,15 @@ async def settle_session(
     if not user:
         raise HTTPException(404, "User not found")
 
-    user.locked_balance -= buy_in
+    # Guard against locked_balance underflow due to inconsistent state
+    available_locked = min(user.locked_balance, buy_in)
+    if available_locked < buy_in:
+        import logging
+        logging.getLogger(__name__).warning(
+            f"locked_balance inconsistency for user {user_id}: "
+            f"expected {buy_in}, found {user.locked_balance}"
+        )
+    user.locked_balance -= available_locked
 
     # Apply reward multiplier (practice arena = 0.1)
     if reward_multiplier < 1.0:
@@ -113,7 +121,7 @@ async def settle_session(
         description=f"Session result: {'+'if net >= 0 else ''}{net}",
     )
     session.add(entry)
-    await session.commit()
+    # Caller is responsible for commit
     return entry
 
 

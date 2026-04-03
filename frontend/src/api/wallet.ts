@@ -27,13 +27,13 @@ const PAGE_SIZE = 20
 
 export const walletApi = {
   get: () =>
-    api.get<any>('/wallet').then(r => ({
+    api.get<WalletInfo>('/wallet').then(r => ({
       ...r,
-      data: { ...r.data, can_rescue: r.data.can_rescue ?? false } as WalletInfo,
+      data: { ...r.data, can_rescue: r.data.can_rescue ?? false },
     })),
 
   ledger: (page = 1) =>
-    api.get<any>(`/wallet/ledger?offset=${(page - 1) * PAGE_SIZE}&limit=${PAGE_SIZE}`).then(r => ({
+    api.get<{ items: LedgerEntry[]; total: number }>(`/wallet/ledger?offset=${(page - 1) * PAGE_SIZE}&limit=${PAGE_SIZE}`).then(r => ({
       ...r,
       data: {
         items: r.data.items,
@@ -44,5 +44,5 @@ export const walletApi = {
     })),
 
   rescue: () =>
-    api.post<any>('/wallet/rescue').then(r => ({ ...r, data: r.data as WalletInfo })),
+    api.post<WalletInfo>('/wallet/rescue'),
 }

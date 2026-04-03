@@ -4,9 +4,9 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select, desc, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.database import get_session
+from app.api.deps import get_optional_current_user
 from app.models.user import User
 from app.models.agent import Agent
 from app.models.arena import Arena
@@ -73,10 +73,8 @@ async def _build_seat_info(
     winrate = round(hands_won / hands_played, 2) if hands_played > 0 else 0.0
 
     return {
-        "session_id": game_session.id,
-        "agent_id": agent.id,
+        "label": f"Player {seat_num}",
         "agent_name": agent.name,
-        "username": user.username,
         "elo": agent.elo,
         "stack": stack,
         "initial_stack": game_session.initial_stack,
@@ -188,8 +186,13 @@ async def list_matches(
 async def match_live(
     table_id: str,
     session: AsyncSession = Depends(get_session),
+    current_user: User | None = Depends(get_optional_current_user),
 ):
-    """Get live data for a specific table/match."""
+    """Get live data for a specific table/match.
+
+    Hole cards are hidden for active hands unless the hand is complete.
+    Authenticated participants of this match see their own hole cards.
+    """
     table_result = await session.execute(
         select(Table).where(Table.id == table_id)
     )
@@ -199,6 +202,18 @@ async def match_live(
 
     info = await _build_table_info(session, table)
     info["status"] = table.status
+
+    # Determine if the current user is a participant at this table
+    viewer_user_id = current_user.id if current_user else None
+    viewer_session_ids: set[str] = set()
+    if viewer_user_id:
+        for sid in [table.seat_1_session_id, table.seat_2_session_id]:
+            if sid:
+                gs = (await session.execute(
+                    select(GameSession).where(GameSession.id == sid)
+                )).scalar_one_or_none()
+                if gs and gs.user_id == viewer_user_id:
+                    viewer_session_ids.add(sid)
 
     # Recent hands (last 10) with events
     hands_result = await session.execute(
@@ -227,6 +242,20 @@ async def match_live(
             elif hand.winner_session_id == table.seat_2_session_id:
                 winner_seat = 2
 
+        # Hole card visibility rules:
+        # - Complete hand: show all cards (showdown happened)
+        # - Active hand: only show viewer's own seat cards; hide opponent's
+        hand_complete = hand.phase == "complete"
+        is_seat_1_viewer = table.seat_1_session_id in viewer_session_ids
+        is_seat_2_viewer = table.seat_2_session_id in viewer_session_ids
+
+        if hand_complete:
+            p1_hole = _parse_json_field(hand.player_1_hole)
+            p2_hole = _parse_json_field(hand.player_2_hole)
+        else:
+            p1_hole = _parse_json_field(hand.player_1_hole) if is_seat_1_viewer else []
+            p2_hole = _parse_json_field(hand.player_2_hole) if is_seat_2_viewer else []
+
         recent_hands.append({
             "hand_id": hand.id,
             "hand_number": hand.hand_number,
@@ -237,8 +266,8 @@ async def match_live(
             "winning_hand_rank": hand.winning_hand_rank,
             "player_1_stack_after": hand.player_1_stack_after,
             "player_2_stack_after": hand.player_2_stack_after,
-            "player_1_hole": _parse_json_field(hand.player_1_hole),
-            "player_2_hole": _parse_json_field(hand.player_2_hole),
+            "player_1_hole": p1_hole,
+            "player_2_hole": p2_hole,
             "events": [
                 {
                     "sequence": ev.sequence,

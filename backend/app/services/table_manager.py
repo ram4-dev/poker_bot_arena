@@ -143,11 +143,11 @@ async def process_action(
     event = HandEventModel(
         hand_id=hand.hand_id,
         sequence=event_count,
-        street=hand._phase.value if not result.hand_complete else "complete",
+        street=hand.current_phase().value if not result.hand_complete else "complete",
         player_seat=_agent_seat(table, agent_id),
         action=action.lower(),
         amount=amount,
-        pot_after=hand._pot,
+        pot_after=hand.current_pot(),
     )
     session.add(event)
 
@@ -162,12 +162,12 @@ async def process_action(
         )
         # Persist community cards mid-hand so the live viewer can show them
         # progressively (flop/turn/river) without waiting for hand completion.
-        if hand._community_cards:
+        if hand.get_community_cards():
             hand_record = (await session.execute(
                 select(Hand).where(Hand.id == hand.hand_id)
             )).scalar_one_or_none()
             if hand_record:
-                hand_record.community_cards = json.dumps(hand._community_cards)
+                hand_record.community_cards = json.dumps(hand.get_community_cards())
         await session.commit()
         return {"valid": True, "hand_complete": False, "next_actor": result.next_actor}
 
@@ -243,8 +243,8 @@ async def start_new_hand(session: AsyncSession, table_id: str) -> str | None:
 
     _active_hands[table.id] = engine_hand
 
-    # Determine who acts first (engine sets _current_actor)
-    first_actor = engine_hand._current_actor
+    # Determine who acts first
+    first_actor = engine_hand.current_actor()
 
     # Update table state
     table.current_hand_id = hand_record.id
@@ -254,7 +254,7 @@ async def start_new_hand(session: AsyncSession, table_id: str) -> str | None:
     )
 
     # Persist blind events
-    for evt in engine_hand._events:
+    for evt in engine_hand.get_events():
         event_count = await _count_hand_events(session, hand_record.id)
         he = HandEventModel(
             hand_id=hand_record.id,
@@ -362,7 +362,7 @@ async def handle_timeout(session: AsyncSession, table_id: str, agent_id: str) ->
         player_seat=_agent_seat(table, agent_id),
         action="fold_timeout",
         amount=0,
-        pot_after=hand._pot,
+        pot_after=hand.current_pot(),
     )
     session.add(event)
 
@@ -499,18 +499,10 @@ async def _count_hand_events(session: AsyncSession, hand_id: str) -> int:
 
 
 def _agent_seat(table: Table, agent_id: str) -> int:
-    """Determine seat number (1 or 2) from agent_id.
-
-    Uses the engine hand's internal mapping to resolve the seat.
-    Falls back to seat 1 if the hand is not in memory (should not happen
-    during normal play).
-    """
+    """Determine seat number (1 or 2) from agent_id via the public engine API."""
     hand = _active_hands.get(table.id)
     if hand:
-        players = hand._players
-        for aid, pdata in players.items():
-            if aid == agent_id:
-                return pdata["seat"]
+        return hand.seat_for_agent(agent_id)
     return 1
 
 

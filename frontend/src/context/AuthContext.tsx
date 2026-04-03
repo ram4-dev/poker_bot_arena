@@ -1,21 +1,38 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { authApi, type User } from '../api/auth'
+import { AuthContext } from './authContext'
 
-interface AuthContextValue {
-  user: User | null
-  loading: boolean
-  login: (access_token: string, refresh_token: string) => Promise<void>
-  logout: () => void
-  refreshUser: () => Promise<void>
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+export { AuthContext } from './authContext'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchUser = async () => {
+  // Bootstrap: fetch user on mount. All setState calls are inside promise callbacks,
+  // not in the synchronous effect body — satisfies react-hooks/set-state-in-effect.
+  useEffect(() => {
+    let cancelled = false
+    const token = localStorage.getItem('access_token')
+    const req: Promise<User | null> = token
+      ? authApi.me().then(({ data }) => data).catch(() => null)
+      : Promise.resolve(null)
+
+    req.then(userData => {
+      if (cancelled) return
+      if (userData) {
+        setUser(userData)
+      } else if (token) {
+        setUser(null)
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+      }
+      setLoading(false)
+    })
+
+    return () => { cancelled = true }
+  }, [])
+
+  const fetchUser = useCallback(async () => {
     try {
       const { data } = await authApi.me()
       setUser(data)
@@ -23,15 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
-    }
-  }
-
-  useEffect(() => {
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      fetchUser().finally(() => setLoading(false))
-    } else {
-      setLoading(false)
     }
   }, [])
 
@@ -52,10 +60,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   )
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
-  return ctx
 }

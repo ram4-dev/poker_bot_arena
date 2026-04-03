@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Monitor, Swords, Trophy, Wallet, BookOpen,
   LogOut, ChevronRight, Activity,
 } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 const NAV_ITEMS = [
   { to: '/dashboard',   icon: LayoutDashboard, label: 'Dashboard',    key: 'dashboard' },

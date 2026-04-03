@@ -44,6 +44,10 @@ export interface HandDetail {
   }>
 }
 
+export interface AgentListResponse {
+  agents: Agent[]
+}
+
 export interface AgentHistoryResponse {
   agent: Agent
   sessions: SessionEntry[]
@@ -64,7 +68,7 @@ export const createAgent = (name: string) =>
   client.post<Agent>('/agent/create', { name })
 
 export const listAgents = () =>
-  client.get<Agent[]>('/agent/list')
+  client.get<AgentListResponse>('/agent/list')
 
 export const getAgentHistory = (agentId: string, limit = 20, offset = 0) =>
   client.get<AgentHistoryResponse>(`/agent/history?agent_id=${agentId}&limit=${limit}&offset=${offset}`)

@@ -2,20 +2,11 @@ import { useEffect, useState, useCallback } from 'react'
 import { Shield, TrendingUp, Activity, Bot } from 'lucide-react'
 import AppShell from '../components/AppShell'
 import AgentCard from '../components/AgentCard'
-import { useAuth } from '../context/AuthContext'
-import { listAgents, type Agent } from '../api/agents'
+import { useAuth } from '../context/useAuth'
+import { listAgents, getAgentHistory, type Agent, type SessionEntry } from '../api/agents'
 import { walletApi, type WalletInfo } from '../api/wallet'
-import client from '../api/client'
 
-interface RecentSession {
-  session_id: string
-  arena_name: string
-  rival_agent: string | null
-  hands_played: number
-  profit: number
-  elo_change: number
-  completed_at: string | null
-}
+type RecentSession = SessionEntry
 
 const S: Record<string, React.CSSProperties> = {
   page: { maxWidth: 960 },
@@ -32,45 +23,40 @@ export default function DashboardPage() {
   const [wallet, setWallet] = useState<WalletInfo | null>(null)
   const [recentSessions, setRecentSessions] = useState<RecentSession[]>([])
 
-  const loadData = useCallback(async () => {
-    try {
-      const [agentsRes, walletRes] = await Promise.all([
-        listAgents(),
-        walletApi.get(),
-      ])
-      const agentList: Agent[] = Array.isArray(agentsRes.data) ? agentsRes.data : (agentsRes.data as unknown as { agents: Agent[] }).agents ?? []
-      setAgents(agentList)
-      setWallet(walletRes.data)
-
-      // Collect recent sessions from all agents (first 5)
-      const allSessions: RecentSession[] = []
-      for (const agent of agentList.slice(0, 5)) {
-        try {
-          const histRes = await client.get(`/agent/history?agent_id=${agent.id}&limit=3&offset=0`)
-          const sessions = histRes.data?.sessions ?? []
-          for (const s of sessions) {
-            allSessions.push(s)
-          }
-        } catch {
-          // skip
-        }
-      }
-      allSessions.sort((a, b) => {
-        const da = a.completed_at ? new Date(a.completed_at).getTime() : 0
-        const db = b.completed_at ? new Date(b.completed_at).getTime() : 0
-        return db - da
-      })
-      setRecentSessions(allSessions.slice(0, 5))
-    } catch {
-      // silent
+  // fetchData returns data without calling setState — safe to call in effects
+  const fetchData = useCallback(async () => {
+    const [agentsRes, walletRes] = await Promise.all([listAgents(), walletApi.get()])
+    const agentList: Agent[] = agentsRes.data.agents ?? []
+    const allSessions: RecentSession[] = []
+    for (const agent of agentList.slice(0, 5)) {
+      try {
+        const histRes = await getAgentHistory(agent.id, 3, 0)
+        allSessions.push(...histRes.data.sessions)
+      } catch { /* skip — other agents still load */ }
     }
+    allSessions.sort((a, b) => {
+      const da = a.completed_at ? new Date(a.completed_at).getTime() : 0
+      const db = b.completed_at ? new Date(b.completed_at).getTime() : 0
+      return db - da
+    })
+    return { agents: agentList, wallet: walletRes.data, sessions: allSessions.slice(0, 5) }
   }, [])
 
   useEffect(() => {
-    loadData()
-    const interval = setInterval(loadData, 10000)
-    return () => clearInterval(interval)
-  }, [loadData])
+    let cancelled = false
+    const apply = ({ agents, wallet, sessions }: Awaited<ReturnType<typeof fetchData>>) => {
+      if (cancelled) return
+      setAgents(agents)
+      setWallet(wallet)
+      setRecentSessions(sessions)
+    }
+    fetchData().then(apply).catch(() => {})
+    const interval = setInterval(() => fetchData().then(apply).catch(() => {}), 10000)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+    }
+  }, [fetchData])
 
   const kpis = [
     {

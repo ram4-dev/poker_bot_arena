@@ -66,7 +66,7 @@ function SeatCard({ label, seat }: { label: string; seat: MatchLiveInfo['seat_1'
         fontFamily: 'var(--font-mono)', fontSize: 11,
         color: 'var(--on-surface-variant)', marginBottom: 12,
       }}>
-        {seat.username} {'\u00B7'} ELO {seat.elo}
+        ELO {seat.elo}
       </div>
       <div style={{ display: 'flex', gap: 16 }}>
         {[
@@ -171,14 +171,21 @@ export default function MatchLivePage() {
   const visibleHand: HandInfo | null =
     data?.recent_hands?.find(h => h.hand_id === visibleHandId) ?? null
 
+  // Counts derived from visibleHand — computed before effects so refs stay in sync
+  const targetCardCount = visibleHand?.community_cards.length ?? 0
+  const extendedEvents: ExtendedRow[] = visibleHand
+    ? buildExtendedEvents(visibleHand.events, visibleHand.community_cards)
+    : []
+  const targetEventCount = extendedEvents.length
+
   // ── 2. Live hand transition with linger ────────────────────────────────────
   useEffect(() => {
     if (!latestHandId) return
 
     if (!visibleHandId) {
-      // First load — show immediately
-      setVisibleHandId(latestHandId)
-      return
+      // First load — use timer so setState is in a callback, not synchronous in effect
+      const t = setTimeout(() => setVisibleHandId(latestHandId), 0)
+      return () => clearTimeout(t)
     }
 
     if (!followLive) return
@@ -196,6 +203,16 @@ export default function MatchLivePage() {
     if (lingerTimerRef.current) clearTimeout(lingerTimerRef.current)
   }, [])
 
+  // Sync refs inside effects — declared before effect #3 so they fire first
+  // when visibleHandId and counts change in the same commit.
+  useEffect(() => {
+    targetCardCountRef.current = targetCardCount
+  }, [targetCardCount])
+
+  useEffect(() => {
+    targetEventCountRef.current = targetEventCount
+  }, [targetEventCount])
+
   // ── 3. Reset card/event reveal when visible hand changes ──────────────────
   useEffect(() => {
     // Show existing cards/events immediately; only animate NEW ones arriving.
@@ -204,9 +221,6 @@ export default function MatchLivePage() {
   }, [visibleHandId])
 
   // ── 4. Reveal community cards one by one ───────────────────────────────────
-  const targetCardCount = visibleHand?.community_cards.length ?? 0
-  targetCardCountRef.current = targetCardCount
-
   useEffect(() => {
     if (revealedCards >= targetCardCount) return
     const t = setTimeout(() => setRevealedCards(c => c + 1), CARD_REVEAL_MS)
@@ -214,12 +228,6 @@ export default function MatchLivePage() {
   }, [revealedCards, targetCardCount])
 
   // ── 5. Reveal events one by one ────────────────────────────────────────────
-  const extendedEvents: ExtendedRow[] = visibleHand
-    ? buildExtendedEvents(visibleHand.events, visibleHand.community_cards)
-    : []
-  const targetEventCount = extendedEvents.length
-  targetEventCountRef.current = targetEventCount
-
   useEffect(() => {
     if (revealedEvents >= targetEventCount) return
     const t = setTimeout(() => setRevealedEvents(c => c + 1), EVENT_REVEAL_MS)

@@ -78,8 +78,12 @@ async def create_session(
     # Update agent status
     agent.status = "queued"
 
-    await session.commit()
-    await session.refresh(game_sess)
+    try:
+        await session.commit()
+        await session.refresh(game_sess)
+    except Exception:
+        await session.rollback()
+        raise
 
     logger.info(f"Session {game_sess.id} created: agent={agent_id} arena={arena_id}")
     return game_sess
@@ -164,8 +168,9 @@ async def close_session(
                 reward_multiplier=reward_multiplier,
             )
 
-    # Update ELO (only if hands were actually played and opponent exists)
-    if game_sess.hands_played > 0 and game_sess.opponent_session_id:
+    # Update ELO — only if hands were played, opponent exists, and ELO not yet set.
+    # Guard prevents double-update when both sessions close in the same tick.
+    if game_sess.hands_played > 0 and game_sess.opponent_session_id and game_sess.elo_after is None:
         opp_sess = (await session.execute(
             select(GameSession).where(GameSession.id == game_sess.opponent_session_id)
         )).scalar_one_or_none()

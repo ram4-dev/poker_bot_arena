@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'rec
 import { TrendingUp, Lock, AlertCircle } from 'lucide-react'
 import AppShell from '../components/AppShell'
 import { walletApi, type WalletInfo, type LedgerEntry } from '../api/wallet'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 const TYPE_LABELS: Record<string, string> = {
   initial_grant: 'Welcome Bonus',
