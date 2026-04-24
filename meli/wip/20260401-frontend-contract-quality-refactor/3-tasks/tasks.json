@@ -1,0 +1,132 @@
+{
+  "feature": "frontend-contract-quality-refactor",
+  "execution_strategy": "sequential",
+  "local_config": { "mysql": null, "kvs": null, "bigqueue": null },
+  "stats": { "total": 5, "done": 0, "by_layer": { "1": 0, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Align frontend API DTOs with backend contracts",
+      "description": "Refactor frontend API modules so they correctly model the backend response wrappers and field names for agents, session history, session log, wallet, leaderboard, and related endpoints. Introduce raw DTO types where needed.",
+      "status": "pending",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": [
+        "frontend/src/api/agents.ts",
+        "frontend/src/api/wallet.ts",
+        "frontend/src/api/leaderboard.ts"
+      ],
+      "acceptance_criteria": [
+        "AC-1: listAgents models the wrapped backend response correctly",
+        "AC-2: getAgentHistory models the actual paginated response correctly",
+        "AC-3: getSessionLog matches the backend payload shape",
+        "AC-4: No explicit any remains in targeted API files",
+        "GATE: npm run lint no longer reports any in targeted API modules"
+      ],
+      "references": ["AD-1", "AD-4"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Add frontend response normalization and view models",
+      "description": "Introduce explicit normalization/mapping in src/api modules so pages consume stable frontend view models rather than backend DTOs directly. Standardize naming such as rivalName, sessionId, completedAt, and items across the UI layer.",
+      "status": "pending",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-001"],
+      "files": [
+        "frontend/src/api/agents.ts",
+        "frontend/src/api/leaderboard.ts",
+        "frontend/src/api/wallet.ts"
+      ],
+      "acceptance_criteria": [
+        "AC-1: Pages no longer need ad hoc payload-shape branching",
+        "AC-2: Frontend naming is consistent across view models",
+        "AC-3: DTO-to-view-model mapping is centralized in api modules",
+        "GATE: DashboardPage no longer accesses mixed backend field names"
+      ],
+      "references": ["AD-2", "AD-3"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Refactor AuthContext and data-fetch pages to use typed API layer only",
+      "description": "Update AuthContext, DashboardPage, LeaderboardPage, and related high-traffic pages so they stop calling raw client.get for domain data, consume typed API helpers only, and handle loading/error/empty states explicitly.",
+      "status": "pending",
+      "layer": 2,
+      "complexity": "High",
+      "depends_on": ["TASK-002"],
+      "files": [
+        "frontend/src/context/AuthContext.tsx",
+        "frontend/src/pages/DashboardPage.tsx",
+        "frontend/src/pages/LeaderboardPage.tsx",
+        "frontend/src/pages/AgentHistoryPage.tsx"
+      ],
+      "acceptance_criteria": [
+        "AC-1: DashboardPage uses API helpers instead of raw client.get for agent history",
+        "AC-2: Main pages expose explicit loading, error, and empty states",
+        "AC-3: Auth bootstrap flow remains typed and readable",
+        "GATE: No direct domain-level client.get calls remain in targeted pages"
+      ],
+      "references": ["AD-1", "AD-6", "US-FE-1"]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Fix polling and effect patterns to satisfy lint cleanly",
+      "description": "Refactor fetch loops, effect bootstrap logic, and interval handling so the frontend complies with current react-hooks and react-refresh lint rules without suppressions or workaround patterns.",
+      "status": "pending",
+      "layer": 2,
+      "complexity": "Medium",
+      "depends_on": ["TASK-003"],
+      "files": [
+        "frontend/src/context/AuthContext.tsx",
+        "frontend/src/pages/DashboardPage.tsx",
+        "frontend/src/pages/LeaderboardPage.tsx"
+      ],
+      "acceptance_criteria": [
+        "AC-1: No react-hooks/set-state-in-effect violations remain in targeted files",
+        "AC-2: Polling still refreshes dashboard and leaderboard data correctly",
+        "AC-3: No eslint-disable comments are introduced to bypass the rules",
+        "GATE: npm run lint no longer reports hook/effect violations"
+      ],
+      "references": ["AD-5", "US-FE-2"]
+    },
+    {
+      "id": "TASK-005",
+      "title": "Restore frontend quality gates and remove silent failures",
+      "description": "Finish the frontend refactor by removing empty catch blocks from main pages, surfacing user-visible error states where appropriate, and ensuring the frontend passes lint end to end.",
+      "status": "pending",
+      "layer": 3,
+      "complexity": "Low",
+      "depends_on": ["TASK-003", "TASK-004"],
+      "files": [
+        "frontend/src/pages/DashboardPage.tsx",
+        "frontend/src/pages/LeaderboardPage.tsx",
+        "frontend/src/pages/AgentHistoryPage.tsx",
+        "frontend/src/api/wallet.ts",
+        "frontend/src/context/AuthContext.tsx"
+      ],
+      "acceptance_criteria": [
+        "AC-1: No empty catch blocks remain in targeted frontend pages",
+        "AC-2: User-visible fallback states exist for failed loads",
+        "AC-3: All targeted files pass eslint under the current config",
+        "GATE: npm run lint exits 0"
+      ],
+      "references": ["AD-6", "US-FE-3"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001"],
+        "level_1": ["TASK-002"]
+      },
+      "2": {
+        "level_0": ["TASK-003"],
+        "level_1": ["TASK-004"]
+      },
+      "3": {
+        "level_0": ["TASK-005"]
+      }
+    }
+  }
+}

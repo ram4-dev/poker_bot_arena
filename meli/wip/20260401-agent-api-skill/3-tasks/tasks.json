@@ -1,0 +1,107 @@
+{
+  "feature": "agent-api-skill",
+  "execution_strategy": "sequential",
+  "local_config": { "mysql": null, "kvs": null, "bigqueue": null },
+  "stats": { "total": 5, "done": 5, "by_layer": { "1": 5, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Create agent_service",
+      "description": "Create backend/app/services/agent_service.py with functions: create_agent(db, user_id, name) validates max 3/user and creates Agent with idle status + elo 1000, get_agents(db, user_id), get_agent_history(db, user_id, agent_id, limit, offset) returns paginated sessions with stats, update_agent_stats(db, agent_id, won, hands, profit), set_status(db, agent_id, status), increment_timeout(db, agent_id), reset_timeouts(db, agent_id).",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": ["backend/app/services/agent_service.py"],
+      "acceptance_criteria": [
+        "AC-1: create_agent enforces MAX_AGENTS_PER_USER=3",
+        "AC-2: get_agent_history returns sessions with rival info and stats",
+        "AC-3: set_status updates agent status field",
+        "AC-4: increment_timeout increments consecutive_timeouts",
+        "GATE: agent_service imports without errors"
+      ],
+      "references": ["US-1", "US-2"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Create agent API endpoints + poker_skill.md",
+      "description": "Create backend/app/api/agent.py with endpoints: POST /agent/create, GET /agent/list, GET /agent/history, GET /session/{id}/log, GET /poker-skill (public, serves poker_skill.md). Create poker_skill.md in project root with complete self-contained documentation: auth, rules, endpoints, examples.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "High",
+      "depends_on": ["TASK-001"],
+      "files": ["backend/app/api/agent.py", "poker_skill.md"],
+      "acceptance_criteria": [
+        "AC-1: POST /agent/create validates auth and max 3 agents",
+        "AC-2: GET /agent/list returns agents with stats",
+        "AC-3: GET /agent/history returns paginated sessions",
+        "AC-4: GET /session/{id}/log returns complete hand log",
+        "AC-5: GET /poker-skill serves markdown file (public)",
+        "AC-6: poker_skill.md contains complete onboarding guide",
+        "GATE: All endpoints appear in /docs"
+      ],
+      "references": ["US-1", "US-2", "US-3"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Simplify auth and update arenas",
+      "description": "Modify backend/app/api/auth.py: remove onboarding endpoint and bot_service import. Remove OnboardingRequest from schemas. Modify backend/app/api/arenas.py: replace Bot references with Agent, use agent_id instead of bot_id in queue endpoint, remove active_version_id check.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-001"],
+      "files": ["backend/app/api/auth.py", "backend/app/api/arenas.py", "backend/app/schemas/auth.py"],
+      "acceptance_criteria": [
+        "AC-1: auth.py has no onboarding endpoint",
+        "AC-2: auth.py has no bot_service import",
+        "AC-3: arenas.py uses Agent model instead of Bot",
+        "AC-4: Queue endpoint accepts agent_id",
+        "GATE: auth and arenas import without errors"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Update sessions and leaderboard for agents",
+      "description": "Modify backend/app/api/sessions.py: replace all Bot/BotVersion references with Agent. Use agent_id instead of bot_id. Remove BotVersion lookups. Modify backend/app/api/leaderboard.py: /bots endpoint becomes /agents, query Agent table instead of Bot.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": ["backend/app/api/sessions.py", "backend/app/api/leaderboard.py"],
+      "acceptance_criteria": [
+        "AC-1: sessions.py uses Agent instead of Bot/BotVersion",
+        "AC-2: leaderboard /bots becomes /agents endpoint",
+        "AC-3: No remaining Bot imports in either file",
+        "GATE: Both files import without errors"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-005",
+      "title": "Delete dead files and update main.py",
+      "description": "Delete: backend/app/api/bots.py, backend/app/api/matches.py, backend/app/services/bot_service.py. Update backend/app/main.py: remove bots and matches router imports, add agent router. Remove feedback_service import from sessions if present.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": ["TASK-002", "TASK-003", "TASK-004"],
+      "files": ["backend/app/api/bots.py", "backend/app/api/matches.py", "backend/app/services/bot_service.py", "backend/app/main.py"],
+      "acceptance_criteria": [
+        "AC-1: bots.py, matches.py, bot_service.py deleted",
+        "AC-2: main.py imports agent router instead of bots/matches",
+        "AC-3: No remaining dead imports in main.py",
+        "GATE: python -c 'from app.main import app' succeeds"
+      ],
+      "references": ["US-1"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001", "TASK-004"],
+        "level_1": ["TASK-002", "TASK-003"],
+        "level_2": ["TASK-005"]
+      }
+    }
+  }
+}

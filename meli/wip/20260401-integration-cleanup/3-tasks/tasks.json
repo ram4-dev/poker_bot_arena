@@ -1,0 +1,84 @@
+{
+  "feature": "integration-cleanup",
+  "execution_strategy": "sequential",
+  "local_config": { "mysql": null, "kvs": null, "bigqueue": null },
+  "stats": { "total": 4, "done": 4, "by_layer": { "1": 4, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Rewrite seed.py for v3",
+      "description": "Rewrite backend/app/seed.py with v3 arenas (Practice, Bronze, Silver, Gold) and fictional users with agents (no bots/versions). Remove PRESETS import. Each fictional user gets 1 agent. Demo user gets 1 agent.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": ["backend/app/seed.py"],
+      "acceptance_criteria": [
+        "AC-1: 4 arenas: Practice, Bronze, Silver, Gold",
+        "AC-2: Fictional users have agents, not bots",
+        "AC-3: No Bot/BotVersion/PRESETS imports",
+        "GATE: python seed.py runs without errors"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Delete dead code and clean imports",
+      "description": "Delete: backend/app/queue_bots.py, backend/app/services/feedback_service.py (if exists). Verify no remaining imports of: Bot, BotVersion, ConfigurableBot, BotConfig, presets, pypokerengine, treys. Clean any orphaned imports across the codebase.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": [],
+      "files": ["backend/app/queue_bots.py", "backend/app/services/feedback_service.py"],
+      "acceptance_criteria": [
+        "AC-1: queue_bots.py deleted",
+        "AC-2: feedback_service.py deleted or cleaned",
+        "AC-3: No remaining dead imports in codebase",
+        "GATE: grep -r 'from app.models.bot' returns nothing"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Create E2E game test",
+      "description": "Create backend/tests/test_e2e_game.py with integration test: register 2 users → create agents → join arena → scheduler tick matches → poll state → submit actions → hand completes → leave → verify wallet settlement and ELO update. Use test DB helper with in-memory SQLite.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "High",
+      "depends_on": ["TASK-001", "TASK-002"],
+      "files": ["backend/tests/test_e2e_game.py"],
+      "acceptance_criteria": [
+        "AC-1: Full game loop test passes",
+        "AC-2: Wallet settlement verified",
+        "AC-3: ELO changes verified",
+        "GATE: pytest test_e2e_game.py passes"
+      ],
+      "references": ["US-1", "US-2", "US-3"]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Create timeout tests",
+      "description": "Create backend/tests/test_timeout.py with tests: timeout auto-fold, 3 consecutive timeouts → auto-leave, timeout counter resets on valid action.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-001", "TASK-002"],
+      "files": ["backend/tests/test_timeout.py"],
+      "acceptance_criteria": [
+        "AC-1: Timeout auto-fold test passes",
+        "AC-2: 3 timeouts auto-leave test passes",
+        "AC-3: Timeout reset test passes",
+        "GATE: pytest test_timeout.py passes"
+      ],
+      "references": ["US-1", "US-2"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001", "TASK-002"],
+        "level_1": ["TASK-003", "TASK-004"]
+      }
+    }
+  }
+}

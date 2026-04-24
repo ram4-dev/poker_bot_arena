@@ -1,0 +1,116 @@
+{
+  "feature": "web-dashboard",
+  "execution_strategy": "sequential",
+  "local_config": { "mysql": null, "kvs": null, "bigqueue": null },
+  "stats": { "total": 5, "done": 5, "by_layer": { "1": 5, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Delete old pages and components, create API clients",
+      "description": "Delete: BotEditorPage, BotDetailPage, BotsPage, BattlePage, MatchLivePage, OnboardingPage, TacticalSlider, EfficiencyRadar, BotCard, api/bots.ts, api/matches.ts. Create frontend/src/api/agents.ts (createAgent, listAgents, getAgentHistory, getSessionLog) and frontend/src/api/game.ts (getPokerSkill, getArenas).",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": [],
+      "files": [
+        "frontend/src/api/agents.ts", "frontend/src/api/game.ts",
+        "frontend/src/pages/BotEditorPage.tsx", "frontend/src/pages/BotDetailPage.tsx",
+        "frontend/src/pages/BotsPage.tsx", "frontend/src/pages/BattlePage.tsx",
+        "frontend/src/pages/MatchLivePage.tsx", "frontend/src/pages/OnboardingPage.tsx",
+        "frontend/src/components/TacticalSlider.tsx", "frontend/src/components/EfficiencyRadar.tsx",
+        "frontend/src/components/BotCard.tsx", "frontend/src/api/bots.ts", "frontend/src/api/matches.ts"
+      ],
+      "acceptance_criteria": [
+        "AC-1: All listed pages and components deleted",
+        "AC-2: agents.ts has CRUD functions for agent API",
+        "AC-3: game.ts has poker-skill and arenas functions",
+        "GATE: No import errors from deleted files"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Rewrite App.tsx routes and AppShell navigation",
+      "description": "Rewrite frontend/src/App.tsx with 8 routes: / (Landing), /login, /skill (Docs), /dashboard, /agents/:id/history, /arenas, /leaderboard, /wallet. Update AppShell.tsx navigation: Dashboard, Arenas, Leaderboard, Wallet, Docs.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": ["TASK-001"],
+      "files": ["frontend/src/App.tsx", "frontend/src/components/AppShell.tsx"],
+      "acceptance_criteria": [
+        "AC-1: 8 routes defined matching spec",
+        "AC-2: Navigation shows 5 items",
+        "AC-3: Protected routes require auth",
+        "GATE: App compiles without errors"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Rewrite LandingPage and create DocsPage",
+      "description": "Rewrite frontend/src/pages/LandingPage.tsx: API-first hero, link to /skill, code snippet showing polling loop, leaderboard preview (top 5), CTA to /login. Create frontend/src/pages/DocsPage.tsx: fetch GET /api/poker-skill, render as markdown (react-markdown), copy URL button.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-002"],
+      "files": ["frontend/src/pages/LandingPage.tsx", "frontend/src/pages/DocsPage.tsx"],
+      "acceptance_criteria": [
+        "AC-1: LandingPage shows API-first messaging",
+        "AC-2: Leaderboard preview shows top 5 agents",
+        "AC-3: DocsPage renders poker_skill.md as formatted markdown",
+        "GATE: Pages render without errors"
+      ],
+      "references": ["US-1", "US-2"]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Rewrite DashboardPage with agent cards",
+      "description": "Rewrite frontend/src/pages/DashboardPage.tsx: wallet card (balance + locked), ELO card, agents grid with AgentCard component (name, status badge, ELO, winrate), recent 5 sessions list. Create AgentCard.tsx component. Polling every 10s.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-002"],
+      "files": ["frontend/src/pages/DashboardPage.tsx", "frontend/src/components/AgentCard.tsx"],
+      "acceptance_criteria": [
+        "AC-1: Wallet and ELO cards displayed",
+        "AC-2: Agent grid shows all user agents with status",
+        "AC-3: Recent sessions list with profit/loss",
+        "AC-4: Auto-refresh every 10s",
+        "GATE: Page renders with mock data"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-005",
+      "title": "Create AgentHistoryPage and adapt ArenasPage/LeaderboardPage",
+      "description": "Create frontend/src/pages/AgentHistoryPage.tsx: stats summary, bankroll/ELO charts (Recharts), sessions table with expandable rows, hand log modal. Create SessionRow, HandLogModal, BankrollChart components. Adapt ArenasPage: show arena info without 'Enter' button. Adapt LeaderboardPage: agents instead of bots.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "High",
+      "depends_on": ["TASK-002"],
+      "files": [
+        "frontend/src/pages/AgentHistoryPage.tsx",
+        "frontend/src/pages/ArenasPage.tsx",
+        "frontend/src/pages/LeaderboardPage.tsx"
+      ],
+      "acceptance_criteria": [
+        "AC-1: AgentHistoryPage shows stats and charts",
+        "AC-2: Sessions table with expandable rows",
+        "AC-3: HandLogModal shows hand-by-hand detail",
+        "AC-4: ArenasPage shows info-only (no enter button)",
+        "AC-5: LeaderboardPage references agents not bots",
+        "GATE: All pages compile"
+      ],
+      "references": ["US-1", "US-2"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001"],
+        "level_1": ["TASK-002"],
+        "level_2": ["TASK-003", "TASK-004", "TASK-005"]
+      }
+    }
+  }
+}

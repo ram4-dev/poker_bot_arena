@@ -1,0 +1,151 @@
+{
+  "feature": "backend-code-quality-refactor",
+  "execution_strategy": "sequential",
+  "local_config": { "mysql": null, "kvs": null, "bigqueue": null },
+  "stats": { "total": 6, "done": 0, "by_layer": { "1": 0, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Expose stable public read API on HoldemHand",
+      "description": "Refactor backend/app/engine/holdem.py to provide public accessor methods for current actor, phase, pot, community cards, initial events, seat lookup, and public snapshot data so callers no longer need to reach into private engine fields.",
+      "status": "pending",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": ["backend/app/engine/holdem.py"],
+      "acceptance_criteria": [
+        "AC-1: HoldemHand exposes public methods for all state currently consumed by table_manager",
+        "AC-2: Public methods cover seat resolution and event/bootstrap data needed by persistence",
+        "AC-3: No behavior change in hand execution logic",
+        "GATE: engine tests continue passing"
+      ],
+      "references": ["AD-1"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Refactor table_manager to stop using engine internals",
+      "description": "Update backend/app/services/table_manager.py to consume only the new public HoldemHand API, extract event/persistence mapping helpers where useful, and remove all direct access to hand._* internals.",
+      "status": "pending",
+      "layer": 1,
+      "complexity": "High",
+      "depends_on": ["TASK-001"],
+      "files": ["backend/app/services/table_manager.py"],
+      "acceptance_criteria": [
+        "AC-1: table_manager contains no references to private HoldemHand attributes",
+        "AC-2: Event persistence still records blinds, actions, and hand completion correctly",
+        "AC-3: Game state responses remain functionally equivalent",
+        "GATE: grep for 'hand._' outside backend/app/engine returns nothing relevant"
+      ],
+      "references": ["AD-1", "US-BE-1"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Introduce backend query services",
+      "description": "Create dedicated query service modules for agent history, leaderboard, matches, and sessions to own read-side joins, eager loading, aggregation, and response shaping. Keep mutation logic in existing service modules.",
+      "status": "pending",
+      "layer": 2,
+      "complexity": "High",
+      "depends_on": [],
+      "files": [
+        "backend/app/services/agent_queries.py",
+        "backend/app/services/leaderboard_queries.py",
+        "backend/app/services/match_queries.py",
+        "backend/app/services/session_queries.py"
+      ],
+      "acceptance_criteria": [
+        "AC-1: Agent history reads are implemented in agent_queries",
+        "AC-2: Leaderboard reads are implemented in leaderboard_queries",
+        "AC-3: Match list/live reads are implemented in match_queries",
+        "AC-4: Session list/detail reads are implemented in session_queries",
+        "GATE: new query service modules import without errors"
+      ],
+      "references": ["AD-2", "AD-4"]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Move router read logic onto query services and schemas",
+      "description": "Refactor backend routers and any overloaded read services so agent, leaderboard, matches, and sessions endpoints delegate to query services and return stable schema-aligned payloads instead of inline dict assembly and ad hoc naming.",
+      "status": "pending",
+      "layer": 2,
+      "complexity": "High",
+      "depends_on": ["TASK-003"],
+      "files": [
+        "backend/app/api/agent.py",
+        "backend/app/api/leaderboard.py",
+        "backend/app/api/matches.py",
+        "backend/app/api/sessions.py",
+        "backend/app/services/agent_service.py",
+        "backend/app/schemas/agent.py",
+        "backend/app/schemas/leaderboard.py",
+        "backend/app/schemas/session.py"
+      ],
+      "acceptance_criteria": [
+        "AC-1: Main routers no longer build complex response dicts inline",
+        "AC-2: Response naming is consistent across similar endpoints",
+        "AC-3: Read-side logic is removed from agent_service where it no longer belongs",
+        "AC-4: Endpoints validate against stable response schemas",
+        "GATE: endpoint contract tests pass"
+      ],
+      "references": ["AD-2", "AD-3", "US-BE-2"]
+    },
+    {
+      "id": "TASK-005",
+      "title": "Eliminate obvious N+1 query patterns in hot endpoints",
+      "description": "Optimize hot backend read paths using selectinload, joins, or aggregate queries so leaderboard, session history, and match views do not execute per-row lookup queries for arena, owner, rival, or ranking data.",
+      "status": "pending",
+      "layer": 3,
+      "complexity": "Medium",
+      "depends_on": ["TASK-003", "TASK-004"],
+      "files": [
+        "backend/app/services/agent_queries.py",
+        "backend/app/services/leaderboard_queries.py",
+        "backend/app/services/match_queries.py",
+        "backend/app/services/session_queries.py"
+      ],
+      "acceptance_criteria": [
+        "AC-1: user leaderboard does not query agents per listed user row",
+        "AC-2: agent leaderboard does not query owner per listed row",
+        "AC-3: agent history and sessions views avoid per-item arena/opponent lookups",
+        "GATE: integration checks confirm reduced query fan-out or equivalent eager loading"
+      ],
+      "references": ["AD-4", "US-BE-3"]
+    },
+    {
+      "id": "TASK-006",
+      "title": "Add contextual logging for recoverable backend read/build failures",
+      "description": "Improve observability in backend services and scheduler-adjacent read paths by replacing broad silent exception handling with structured logging that includes resource identifiers and operation context.",
+      "status": "pending",
+      "layer": 3,
+      "complexity": "Low",
+      "depends_on": ["TASK-004"],
+      "files": [
+        "backend/app/api/agent.py",
+        "backend/app/api/sessions.py",
+        "backend/app/services/table_manager.py",
+        "backend/app/scheduler/tick.py"
+      ],
+      "acceptance_criteria": [
+        "AC-1: Recoverable exceptions are logged with context",
+        "AC-2: No silent catch blocks remain in targeted backend read/build paths",
+        "AC-3: Logging does not alter endpoint contracts",
+        "GATE: grep for empty catch/pass patterns in targeted files returns nothing relevant"
+      ],
+      "references": ["AD-5"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001"],
+        "level_1": ["TASK-002"]
+      },
+      "2": {
+        "level_0": ["TASK-003"],
+        "level_1": ["TASK-004"]
+      },
+      "3": {
+        "level_0": ["TASK-005", "TASK-006"]
+      }
+    }
+  }
+}

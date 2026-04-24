@@ -1,0 +1,71 @@
+{
+  "feature": "scheduler-matchmaking",
+  "execution_strategy": "sequential",
+  "local_config": { "mysql": null, "kvs": null, "bigqueue": null },
+  "stats": { "total": 3, "done": 3, "by_layer": { "1": 3, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Rewrite matchmaker with real ELO matching",
+      "description": "Rewrite backend/app/services/matchmaker.py. Replace Bot imports with Agent. Implement real _can_match: no same-user, rematch cooldown (5 min), ELO range with progressive expansion (base 200, +50/min, cap 1000). Use agent_id instead of bot_id everywhere. _create_match creates table, updates sessions to playing, updates agent status, starts first hand via table_manager.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": ["backend/app/services/matchmaker.py"],
+      "acceptance_criteria": [
+        "AC-1: No same-user matching",
+        "AC-2: ELO range = base + (wait_min * expansion), capped at 1000",
+        "AC-3: 5-minute rematch cooldown between same agent pairs",
+        "AC-4: _create_match starts first hand via table_manager.start_new_hand",
+        "AC-5: All Bot references replaced with Agent",
+        "GATE: matchmaker imports without errors"
+      ],
+      "references": ["US-1", "US-2"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Rewrite scheduler tick for v3",
+      "description": "Rewrite backend/app/scheduler/tick.py. New 5-step tick: (1) match queue via matchmaker, (2) detect timeouts (tables with action_deadline < now → handle_timeout), (3) start pending hands (complete hands → start next), (4) settle completed sessions, (5) cleanup empty tables. Update jobs.py log format.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-001"],
+      "files": ["backend/app/scheduler/tick.py", "backend/app/scheduler/jobs.py"],
+      "acceptance_criteria": [
+        "AC-1: 5-step tick: match, timeouts, next hands, settle, cleanup",
+        "AC-2: Timeout detection queries tables with action_deadline < now",
+        "AC-3: Auto-fold on timeout via table_manager.handle_timeout",
+        "AC-4: Empty table cleanup (both seats vacated)",
+        "AC-5: jobs.py logs tick stats correctly",
+        "GATE: scheduler_tick callable with async session"
+      ],
+      "references": ["US-1", "US-2", "US-3"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Update elo_service for Agent model",
+      "description": "Rewrite backend/app/services/elo_service.py. Replace all Bot references with Agent. update_elo looks up agents via session.agent_id. recalculate_user_elo aggregates from user's agents instead of bots.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": [],
+      "files": ["backend/app/services/elo_service.py"],
+      "acceptance_criteria": [
+        "AC-1: All Bot imports replaced with Agent",
+        "AC-2: update_elo uses session.agent_id to find agents",
+        "AC-3: recalculate_user_elo queries Agent table",
+        "GATE: elo_service imports without errors"
+      ],
+      "references": ["US-1"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001", "TASK-003"],
+        "level_1": ["TASK-002"]
+      }
+    }
+  }
+}

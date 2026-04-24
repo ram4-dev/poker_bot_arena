@@ -1,0 +1,123 @@
+{
+  "feature": "data-model-migration",
+  "execution_strategy": "sequential",
+  "local_config": {
+    "mysql": null,
+    "kvs": null,
+    "bigqueue": null
+  },
+  "stats": { "total": 5, "done": 5, "by_layer": { "1": 5, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Create Agent model (replaces Bot + BotVersion)",
+      "description": "Create backend/app/models/agent.py with Agent model per technical spec. Delete backend/app/models/bot.py (Bot + BotVersion). Update backend/app/models/__init__.py to import Agent instead of Bot/BotVersion.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": [
+        "backend/app/models/agent.py",
+        "backend/app/models/bot.py",
+        "backend/app/models/__init__.py"
+      ],
+      "acceptance_criteria": [
+        "AC-1: Agent model has id, user_id, name, status, elo, total_wins, total_losses, total_hands, consecutive_timeouts, created_at, updated_at",
+        "AC-2: Bot and BotVersion classes no longer exist",
+        "AC-3: __init__.py exports Agent instead of Bot/BotVersion",
+        "GATE: python -c 'from app.models.agent import Agent' succeeds"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Update Session, Table, Hand models for v3",
+      "description": "Modify Session model: replace bot_id + bot_version_id with agent_id FK, add timeout_count. Modify Table: add current_hand_id, dealer_seat, pending_action_agent_id, action_deadline. Modify Hand: add phase, current_bet, pot_main fields. Remove 'turn' from HandEvent street values.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-001"],
+      "files": [
+        "backend/app/models/session.py",
+        "backend/app/models/table.py",
+        "backend/app/models/hand.py"
+      ],
+      "acceptance_criteria": [
+        "AC-1: Session.agent_id is FK to agents table, bot_id and bot_version_id removed",
+        "AC-2: Session.timeout_count exists with default 0",
+        "AC-3: Table has current_hand_id, dealer_seat, pending_action_agent_id, action_deadline",
+        "AC-4: Hand has phase, current_bet, pot_main fields",
+        "GATE: All models import without errors"
+      ],
+      "references": ["US-2", "US-3", "US-4"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Create Agent schema and delete Bot schemas",
+      "description": "Create backend/app/schemas/agent.py with Pydantic schemas: AgentCreate, AgentResponse, AgentListResponse. Delete backend/app/schemas/bot.py (BotConfigSchema and related).",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": ["TASK-001"],
+      "files": [
+        "backend/app/schemas/agent.py",
+        "backend/app/schemas/bot.py"
+      ],
+      "acceptance_criteria": [
+        "AC-1: AgentCreate schema with name field (required)",
+        "AC-2: AgentResponse with all Agent model fields + computed winrate",
+        "AC-3: BotConfigSchema no longer exists",
+        "GATE: python -c 'from app.schemas.agent import AgentCreate' succeeds"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Update config.py with v3 settings",
+      "description": "Update Settings class in config.py: add ACTION_TIMEOUT_SECONDS=30, MAX_ACTION_RETRIES=2, CONSECUTIVE_TIMEOUT_LIMIT=3. Rename MAX_BOTS to MAX_AGENTS_PER_USER. Update SCHEDULER_INTERVAL_SECONDS default from 30 to 5. Add MATCHMAKER_ELO_RANGE_CAP=1000. Remove HANDS_PER_TICK and MAX_VERSIONS_PER_DAY (not needed in v3).",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": [],
+      "files": [
+        "backend/app/config.py"
+      ],
+      "acceptance_criteria": [
+        "AC-1: ACTION_TIMEOUT_SECONDS, MAX_ACTION_RETRIES, CONSECUTIVE_TIMEOUT_LIMIT exist",
+        "AC-2: MAX_AGENTS_PER_USER=3 replaces MAX_BOTS",
+        "AC-3: SCHEDULER_INTERVAL_SECONDS default is 5",
+        "AC-4: HANDS_PER_TICK and MAX_VERSIONS_PER_DAY removed",
+        "GATE: Settings() instantiates without error"
+      ],
+      "references": ["US-1"]
+    },
+    {
+      "id": "TASK-005",
+      "title": "Create Alembic migration for v3 schema",
+      "description": "Create Alembic migration that: drops bot_versions table, drops bots table, creates agents table, alters sessions (drop bot_id/bot_version_id, add agent_id/timeout_count), alters tables (add timeout tracking fields), alters hands (add phase/current_bet/pot_main). Since this is MVP with test data only, use clean migration approach.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-001", "TASK-002"],
+      "files": [
+        "backend/alembic/versions/20260401_v3_schema.py"
+      ],
+      "acceptance_criteria": [
+        "AC-1: Migration drops bot_versions and bots tables",
+        "AC-2: Migration creates agents table with correct schema",
+        "AC-3: Migration alters sessions, tables, hands per spec",
+        "GATE: alembic upgrade head runs without errors on clean DB"
+      ],
+      "references": ["US-1", "US-2", "US-3", "US-4"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001", "TASK-004"],
+        "level_1": ["TASK-002", "TASK-003"],
+        "level_2": ["TASK-005"]
+      }
+    }
+  }
+}

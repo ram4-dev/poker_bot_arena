@@ -1,0 +1,162 @@
+{
+  "feature": "security-quality-hardening",
+  "execution_strategy": "sequential",
+  "local_config": { "mysql": null, "kvs": null, "bigqueue": null },
+  "stats": { "total": 8, "done": 0, "by_layer": { "1": 0, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Protect admin tick endpoint",
+      "description": "Modify backend auth dependencies to introduce admin authorization and protect POST /api/admin/tick. Add explicit 401/403 behavior. Support either authenticated admin user or ADMIN_API_KEY-backed admin access according to the technical spec.",
+      "status": "pending",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": ["backend/app/api/deps.py", "backend/app/api/admin.py", "backend/app/config.py"],
+      "acceptance_criteria": [
+        "AC-1: POST /api/admin/tick rejects anonymous requests",
+        "AC-2: POST /api/admin/tick rejects authenticated non-admin users",
+        "AC-3: Admin-authenticated requests still execute scheduler_tick",
+        "GATE: test_admin_tick_requires_auth passes"
+      ],
+      "references": ["AD-1", "US-SEC-1"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Sanitize public matches and gate live match details",
+      "description": "Refactor backend/app/api/matches.py so public match endpoints do not expose usernames, session identifiers, agent identifiers unless justified, or any hole cards. Introduce protected or sanitized behavior for GET /api/matches/{table_id}/live based on participant authorization.",
+      "status": "pending",
+      "layer": 1,
+      "complexity": "High",
+      "depends_on": [],
+      "files": ["backend/app/api/matches.py", "backend/app/api/deps.py"],
+      "acceptance_criteria": [
+        "AC-1: Public matches payload contains no active hole cards",
+        "AC-2: Public matches payload contains no username or raw session_id fields",
+        "AC-3: Live match details require participant access or return sanitized data",
+        "GATE: test_matches_public_payload_hides_sensitive_fields passes"
+      ],
+      "references": ["AD-2", "US-SEC-2"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Enforce secure SECRET_KEY configuration",
+      "description": "Harden backend/app/config.py and startup behavior so the app fails fast outside test environments when SECRET_KEY is missing or set to the insecure legacy development default. Add ENV-aware validation and adjust any tests/bootstrap code that rely on defaults.",
+      "status": "pending",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": ["backend/app/config.py", "backend/app/main.py", "backend/tests/test_e2e_game.py", "backend/tests/test_timeout.py"],
+      "acceptance_criteria": [
+        "AC-1: App startup fails in dev/prod with missing SECRET_KEY",
+        "AC-2: App startup fails in dev/prod with insecure legacy SECRET_KEY value",
+        "AC-3: Test environment can still boot with explicit test configuration",
+        "GATE: test_app_fails_startup_with_insecure_secret_key passes"
+      ],
+      "references": ["AD-3", "US-SEC-3"]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Make wallet mutations transactional helpers",
+      "description": "Refactor backend/app/services/wallet_service.py so internal wallet mutation functions do not commit independently when used inside larger business flows. Preserve ledger creation and validation behavior while allowing an outer service to own commit/rollback.",
+      "status": "pending",
+      "layer": 2,
+      "complexity": "Medium",
+      "depends_on": ["TASK-003"],
+      "files": ["backend/app/services/wallet_service.py"],
+      "acceptance_criteria": [
+        "AC-1: lock_buy_in no longer commits implicitly inside session orchestration flows",
+        "AC-2: unlock_buy_in no longer commits implicitly inside session orchestration flows",
+        "AC-3: settle_session no longer commits implicitly inside session orchestration flows",
+        "GATE: wallet_service imports and existing call sites compile"
+      ],
+      "references": ["AD-4", "US-QUAL-1"]
+    },
+    {
+      "id": "TASK-005",
+      "title": "Make session lifecycle atomic",
+      "description": "Rewrite backend/app/services/session_manager.py create_session and close_session flows so wallet updates, session state transitions, ELO updates, and agent status updates commit exactly once per use case, with rollback on failure and idempotent close behavior.",
+      "status": "pending",
+      "layer": 2,
+      "complexity": "High",
+      "depends_on": ["TASK-004"],
+      "files": ["backend/app/services/session_manager.py", "backend/app/services/elo_service.py"],
+      "acceptance_criteria": [
+        "AC-1: create_session never leaves locked balance without a queued session",
+        "AC-2: close_session never leaves wallet settled while agent remains playing",
+        "AC-3: close_session remains idempotent when called twice for the same session",
+        "AC-4: session_result ledger entry is written once per closed session",
+        "GATE: test_create_session_rolls_back_locked_balance_on_failure passes"
+      ],
+      "references": ["AD-4", "US-QUAL-2"]
+    },
+    {
+      "id": "TASK-006",
+      "title": "Move refresh token flow out of localStorage",
+      "description": "Refactor backend auth endpoints and frontend auth client so refresh tokens are handled via HttpOnly cookies and the frontend no longer reads or stores refresh tokens in localStorage. Keep the access token in memory or equivalent non-persistent app state, and add logout invalidation behavior if the backend contract is updated.",
+      "status": "pending",
+      "layer": 3,
+      "complexity": "High",
+      "depends_on": ["TASK-001", "TASK-003"],
+      "files": ["backend/app/api/auth.py", "backend/app/schemas/auth.py", "backend/app/main.py", "frontend/src/api/client.ts", "frontend/src/context/AuthContext.tsx"],
+      "acceptance_criteria": [
+        "AC-1: refresh token is not stored in localStorage",
+        "AC-2: refresh requests use cookie-backed credentials flow",
+        "AC-3: logout clears local auth state and invalidates refresh session if supported",
+        "GATE: test_refresh_uses_http_only_cookie_flow passes"
+      ],
+      "references": ["AD-5", "US-SEC-4"]
+    },
+    {
+      "id": "TASK-007",
+      "title": "Apply real rate limiting and improve scheduler observability",
+      "description": "Implement rate limiting enforcement for register, login, refresh, and optionally game polling using the existing configuration, and replace silent exception swallowing in backend/app/scheduler/tick.py with structured logging and failure counters.",
+      "status": "pending",
+      "layer": 3,
+      "complexity": "Medium",
+      "depends_on": ["TASK-001", "TASK-003"],
+      "files": ["backend/app/api/auth.py", "backend/app/api/game.py", "backend/app/config.py", "backend/app/scheduler/tick.py", "backend/app/scheduler/jobs.py"],
+      "acceptance_criteria": [
+        "AC-1: RATE_LIMIT_PER_MINUTE is enforced on login/register/refresh",
+        "AC-2: Exceeded limits return explicit 429 responses",
+        "AC-3: scheduler tick logs failed settlement exceptions with context",
+        "AC-4: silent except-pass blocks are removed from critical scheduler paths",
+        "GATE: grep for 'except Exception: pass' in scheduler paths returns nothing"
+      ],
+      "references": ["AD-6", "AD-7", "US-SEC-5"]
+    },
+    {
+      "id": "TASK-008",
+      "title": "Restore frontend lint compliance and type safety",
+      "description": "Fix frontend lint violations by replacing explicit any usage in wallet API responses and refactoring hook/effect patterns in AuthContext, DashboardPage, and LeaderboardPage so eslint passes cleanly under the current ruleset.",
+      "status": "pending",
+      "layer": 3,
+      "complexity": "Medium",
+      "depends_on": ["TASK-006"],
+      "files": ["frontend/src/api/wallet.ts", "frontend/src/context/AuthContext.tsx", "frontend/src/pages/DashboardPage.tsx", "frontend/src/pages/LeaderboardPage.tsx"],
+      "acceptance_criteria": [
+        "AC-1: frontend/src/api/wallet.ts contains no explicit any",
+        "AC-2: AuthContext no longer violates react-hooks/set-state-in-effect",
+        "AC-3: DashboardPage and LeaderboardPage no longer violate react-hooks/set-state-in-effect",
+        "AC-4: npm run lint passes",
+        "GATE: npm run lint exits 0"
+      ],
+      "references": ["US-QUAL-3"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001", "TASK-002", "TASK-003"]
+      },
+      "2": {
+        "level_0": ["TASK-004"],
+        "level_1": ["TASK-005"]
+      },
+      "3": {
+        "level_0": ["TASK-006", "TASK-007"],
+        "level_1": ["TASK-008"]
+      }
+    }
+  }
+}

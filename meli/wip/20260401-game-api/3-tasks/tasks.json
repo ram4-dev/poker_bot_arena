@@ -1,0 +1,88 @@
+{
+  "feature": "game-api",
+  "execution_strategy": "sequential",
+  "local_config": { "mysql": null, "kvs": null, "bigqueue": null },
+  "stats": { "total": 4, "done": 4, "by_layer": { "1": 4, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Create game schemas",
+      "description": "Create backend/app/schemas/game.py with Pydantic schemas: GameStateResponse, JoinArenaRequest, ActionRequest, ActionResponse, LeaveRequest, LeaveResponse, SessionResultResponse.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": [],
+      "files": ["backend/app/schemas/game.py"],
+      "acceptance_criteria": [
+        "AC-1: All request/response schemas defined with proper field types",
+        "AC-2: GameStateResponse matches v3 game_state format from spec",
+        "GATE: Schemas import without errors"
+      ],
+      "references": ["US-2", "US-3"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Create TableManager service",
+      "description": "Create backend/app/services/table_manager.py with TableManager class. Manages active HoldemHand instances in memory (dict keyed by table_id). Methods: get_game_state(db, agent_id), process_action(db, agent_id, hand_id, action, amount), start_new_hand(db, table_id), complete_hand(db, table_id, result), process_leave(db, agent_id), handle_timeout(db, table_id, agent_id).",
+      "status": "done",
+      "layer": 1,
+      "complexity": "High",
+      "depends_on": ["TASK-001"],
+      "files": ["backend/app/services/table_manager.py"],
+      "acceptance_criteria": [
+        "AC-1: Active hands stored in-memory dict",
+        "AC-2: get_game_state returns waiting/your_turn/idle based on agent state",
+        "AC-3: process_action validates, applies to engine, persists events",
+        "AC-4: start_new_hand creates HoldemHand + Hand DB record",
+        "AC-5: complete_hand persists result, updates session stacks",
+        "GATE: TableManager can be instantiated and methods are callable"
+      ],
+      "references": ["US-1", "US-2", "US-3", "US-4", "US-5"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Rewrite SessionManager",
+      "description": "Rewrite backend/app/services/session_manager.py. No longer executes hands in batch. New methods: create_session(db, agent_id, arena_id) creates queued session with buy-in lock, start_session(db, session_id, table_id) transitions to playing, close_session(db, session_id, exit_reason, final_stack) settles wallet + ELO + agent stats.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": [],
+      "files": ["backend/app/services/session_manager.py"],
+      "acceptance_criteria": [
+        "AC-1: create_session validates balance, locks buy-in, creates queued session",
+        "AC-2: start_session transitions session to playing",
+        "AC-3: close_session calls wallet_service.settle_session, elo_service, updates agent stats",
+        "GATE: Methods callable with async session"
+      ],
+      "references": ["US-1", "US-4"]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Create game API endpoints",
+      "description": "Create backend/app/api/game.py with FastAPI router: GET /api/game/state, POST /api/game/action, POST /api/game/leave, POST /api/arena/join. Wire to TableManager and SessionManager. Register router in main.py.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-001", "TASK-002", "TASK-003"],
+      "files": ["backend/app/api/game.py", "backend/app/main.py"],
+      "acceptance_criteria": [
+        "AC-1: GET /game/state returns waiting/your_turn/idle",
+        "AC-2: POST /game/action validates and applies action via TableManager",
+        "AC-3: POST /game/leave triggers session settlement",
+        "AC-4: POST /arena/join validates balance, creates session, enqueues",
+        "AC-5: Router registered in main.py",
+        "GATE: Endpoints appear in /docs"
+      ],
+      "references": ["US-1", "US-2", "US-3", "US-4"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001", "TASK-003"],
+        "level_1": ["TASK-002"],
+        "level_2": ["TASK-004"]
+      }
+    }
+  }
+}

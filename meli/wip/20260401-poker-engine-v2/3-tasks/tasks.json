@@ -1,0 +1,111 @@
+{
+  "feature": "poker-engine-v2",
+  "execution_strategy": "sequential",
+  "local_config": { "mysql": null, "kvs": null, "bigqueue": null },
+  "stats": { "total": 5, "done": 5, "by_layer": { "1": 5, "2": 0, "3": 0 } },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Create engine types and deck",
+      "description": "Rewrite backend/app/engine/types.py with GamePhase, PlayerAction enums and GameState, ActionResult, HandResult dataclasses. Create backend/app/engine/deck.py with Deck class (52 cards, seeded shuffle, deal method).",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": [],
+      "files": ["backend/app/engine/types.py", "backend/app/engine/deck.py"],
+      "acceptance_criteria": [
+        "AC-1: GamePhase has preflop, flop, river, showdown, complete",
+        "AC-2: PlayerAction has fold, check, call, raise, all_in",
+        "AC-3: Deck deals unique cards, seed produces deterministic shuffle",
+        "GATE: python imports succeed"
+      ],
+      "references": ["US-1", "US-2"]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Create hand evaluator",
+      "description": "Create backend/app/engine/evaluator.py with hand evaluation for 5-card poker hands. Must evaluate best 5 of 6 cards (2 hole + 4 community). Support all standard rankings: royal flush through high card. Include compare_hands function.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "High",
+      "depends_on": ["TASK-001"],
+      "files": ["backend/app/engine/evaluator.py"],
+      "acceptance_criteria": [
+        "AC-1: evaluate_hand returns (score, rank_name) for best 5 of 6 cards",
+        "AC-2: compare_hands returns 1 (p1 wins), -1 (p2 wins), 0 (tie)",
+        "AC-3: Correctly ranks: royal_flush > straight_flush > four_of_a_kind > full_house > flush > straight > three_of_a_kind > two_pair > pair > high_card",
+        "GATE: Known hand comparisons produce correct results"
+      ],
+      "references": ["US-4"]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Implement HoldemHand state machine",
+      "description": "Create backend/app/engine/holdem.py with HoldemHand class. State machine: init → post blinds → preflop betting → flop dealing/betting → river dealing/betting → showdown → complete. Methods: get_state(agent_id), apply_action(agent_id, action, amount), is_complete(), get_result(). Includes action validation, phase transitions, and pot management.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "High",
+      "depends_on": ["TASK-001", "TASK-002"],
+      "files": ["backend/app/engine/holdem.py"],
+      "acceptance_criteria": [
+        "AC-1: Blinds posted automatically on init",
+        "AC-2: get_state hides opponent hole cards",
+        "AC-3: apply_action validates (check/call/raise/fold/all_in) and returns ActionResult",
+        "AC-4: Phase transitions: preflop→flop→river→showdown→complete",
+        "AC-5: Fold ends hand immediately, winner gets pot",
+        "AC-6: Showdown evaluates hands and awards pot",
+        "GATE: Full hand can be played to completion"
+      ],
+      "references": ["US-1", "US-2", "US-3", "US-4"]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Delete old engine files and dependencies",
+      "description": "Delete configurable_bot.py, presets.py, runner.py, hand_evaluator.py. Remove pypokerengine and treys from requirements.txt. Update engine/__init__.py.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Low",
+      "depends_on": ["TASK-003"],
+      "files": [
+        "backend/app/engine/configurable_bot.py",
+        "backend/app/engine/presets.py",
+        "backend/app/engine/runner.py",
+        "backend/app/engine/hand_evaluator.py",
+        "backend/requirements.txt"
+      ],
+      "acceptance_criteria": [
+        "AC-1: configurable_bot.py, presets.py, runner.py, hand_evaluator.py deleted",
+        "AC-2: pypokerengine and treys removed from requirements.txt",
+        "GATE: No import errors from engine package"
+      ],
+      "references": []
+    },
+    {
+      "id": "TASK-005",
+      "title": "Engine unit tests",
+      "description": "Create backend/tests/test_engine.py with unit tests covering: deck dealing, hand evaluation (known hands), action validation, full hand playthrough, fold scenario, showdown, tie splitting, get_state hides cards.",
+      "status": "done",
+      "layer": 1,
+      "complexity": "Medium",
+      "depends_on": ["TASK-003"],
+      "files": ["backend/tests/test_engine.py"],
+      "acceptance_criteria": [
+        "AC-1: Tests for deck: unique cards, deterministic with seed",
+        "AC-2: Tests for evaluator: known hand rankings",
+        "AC-3: Tests for HoldemHand: full hand, fold, showdown, validation errors",
+        "GATE: pytest test_engine.py passes"
+      ],
+      "references": ["US-1", "US-2", "US-3", "US-4"]
+    }
+  ],
+  "dependency_graph": {
+    "by_layer": {
+      "1": {
+        "level_0": ["TASK-001"],
+        "level_1": ["TASK-002"],
+        "level_2": ["TASK-003"],
+        "level_3": ["TASK-004", "TASK-005"]
+      }
+    }
+  }
+}
